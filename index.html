@@ -7,7 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
+<script src="https://cdn.amplitude.com/libs/analytics-browser-2.0.0-min.js.gz"></script>
+<script>
+  window.amplitude.init('62280d38083601e001bf153dbcf38a9b', {
+    defaultTracking: true
+  });
+  window.amplitude.track('Page Viewed');
+</script>
+<style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ink: #1a1612;
