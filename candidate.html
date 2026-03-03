@@ -765,11 +765,13 @@ async function loadCycle(cycle) {
         apiFetch('/reporting-dates/', { report_year: cycle-1, sort: 'due_date', per_page: 100 }),
         apiFetch('/reporting-dates/', { report_year: cycle,   sort: 'due_date', per_page: 100 })
       ]);
-      // Exclude monthly presidential types (M1–M12, MSA, MYS, CA, SA).
-      // These are presidential Form 3P filers; Form 3 (House/Senate) uses quarterly types only.
-      var EXCLUDE_TYPES = ['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12','MSA','MYS','CA','SA'];
+      // Keep only quarterly filing deadlines — the rhythm that matters on the chart.
+      // Pre-primary/pre-general deadlines (12P, 12G, etc.) are state-specific and
+      // redundant with the election dates overlay. Filtering to quarterly also avoids
+      // the per_page=100 cutoff (2026 alone has 182 records, mostly pre-primary).
+      var QUARTERLY_TYPES = ['Q1', 'Q2', 'Q3', 'YE', 'MY'];
       deadlines = (dlY1.results||[]).concat(dlY2.results||[]).filter(function(d) {
-        return EXCLUDE_TYPES.indexOf(d.report_type) === -1;
+        return QUARTERLY_TYPES.indexOf(d.report_type) !== -1;
       });
     } catch(e) { console.warn('Deadlines fetch failed:', e.message); }
 
