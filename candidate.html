@@ -343,11 +343,13 @@
 
 <script>
 // ── Config ─────────────────────────────────────────
-var CANDIDATE_ID = 'H2WA03217';
-var CAND_STATE   = 'WA';
-var CAND_DIST    = '03';
-var ALL_CYCLES   = [2022, 2024, 2026];
-var activeCycle  = 2024;
+var urlParams    = new URLSearchParams(window.location.search);
+var CANDIDATE_ID = urlParams.get('id') || 'H2WA03217';
+var CAND_STATE   = null;   // populated from API in init()
+var CAND_DIST    = null;
+var CAND_OFFICE  = null;   // 'H', 'S', or 'P'
+var ALL_CYCLES   = [];
+var activeCycle  = null;
 var BASE         = 'https://api.open.fec.gov/v1';
 var API_KEY      = 'Y7CL6AyMB9NPbwuuMWHduJ6LVu6OWsv49TDZcXZT';
 var chartInstance = null;
@@ -757,16 +759,16 @@ async function loadCycle(cycle) {
 
     var deadlines = [];
     try {
-      var dlJson = await apiFetch('/reporting-dates/', {
-        due_date_gte: (cycle-1)+'-01-01',
-        due_date_lte: cycle+'-12-31',
-        per_page: 50
-      });
-      // Filter to House/Senate (Form 3) report types only.
-      // The endpoint returns no report_form field — only report_type (e.g. "Q1", "YE").
-      // Exclude monthly types (M1-M12, presidential filers) and party/PAC types.
+      // due_date_gte/lte are silently ignored by this endpoint.
+      // Correct filter is report_year. Fetch both years of the cycle in parallel.
+      var [dlY1, dlY2] = await Promise.all([
+        apiFetch('/reporting-dates/', { report_year: cycle-1, sort: 'due_date', per_page: 100 }),
+        apiFetch('/reporting-dates/', { report_year: cycle,   sort: 'due_date', per_page: 100 })
+      ]);
+      // Exclude monthly presidential types (M1–M12, MSA, MYS, CA, SA).
+      // These are presidential Form 3P filers; Form 3 (House/Senate) uses quarterly types only.
       var EXCLUDE_TYPES = ['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12','MSA','MYS','CA','SA'];
-      deadlines = (dlJson.results || []).filter(function(d) {
+      deadlines = (dlY1.results||[]).concat(dlY2.results||[]).filter(function(d) {
         return EXCLUDE_TYPES.indexOf(d.report_type) === -1;
       });
     } catch(e) { console.warn('Deadlines fetch failed:', e.message); }
@@ -775,14 +777,10 @@ async function loadCycle(cycle) {
     try {
       // /election-dates/ returns actual primary + general election dates per state/office/year.
       // election_date is the actual date field. election_type_full distinguishes primary vs general.
-      var elJson = await apiFetch('/election-dates/', {
-        election_state: CAND_STATE,
-        office_sought: 'H',
-        election_year: cycle,
-        per_page: 10
-      });
+      var elParams = { office_sought: CAND_OFFICE, election_year: cycle, per_page: 10 };
+      if (CAND_OFFICE !== 'P') elParams.election_state = CAND_STATE;
+      var elJson = await apiFetch('/election-dates/', elParams);
       electionDates = elJson.results || [];
-      console.log('ELECTION-DATES sample:', JSON.stringify(electionDates[0], null, 2));
     } catch(e) { console.warn('Election-dates fetch failed:', e.message); }
 
     // ── Step 3: populate stats ──
@@ -876,6 +874,13 @@ async function init() {
     var cand = (candJson.results||[])[0];
     if (!cand) throw new Error('Candidate not found');
 
+    // Derive globals from API — replaces all hardcoded constants
+    CAND_STATE  = cand.state    || '';
+    CAND_DIST   = cand.district || '';
+    CAND_OFFICE = cand.office   || 'H';
+    ALL_CYCLES  = (cand.election_years || []).slice().sort(function(a,b){ return a-b; });
+    if (!ALL_CYCLES.length) throw new Error('No election years found for this candidate');
+
     // Avatar initials
     document.getElementById('avatar').textContent = getInitials(cand.name);
 
@@ -885,6 +890,7 @@ async function init() {
       ? parts.slice(1).join(' ').trim()+' '+parts[0].trim()
       : cand.name).toLowerCase().replace(/\b\w/g, function(c){ return c.toUpperCase(); });
     document.getElementById('candidate-name').textContent = displayName;
+    document.title = displayName + ' — ledger.fec';
 
     // Breadcrumb
     document.getElementById('breadcrumb').innerHTML =
