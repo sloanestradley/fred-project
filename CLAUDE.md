@@ -64,12 +64,11 @@ A homepage (`index.html`) doesn't exist yet — candidate.html is the entry poin
 
 ## Candidate page: current state
 
-The candidate page (`candidate.html`) is the main work in progress. It is hardcoded to one candidate while the architecture is being proven out:
+The candidate page (`candidate.html`) is the main work in progress. It accepts any candidate via `?id=` URL param (e.g. `candidate.html?id=H2WA03217`). MGP is the default fallback for development.
 
-- **Candidate:** Marie Gluesenkamp Perez
-- **Candidate ID:** `H2WA03217`
-- **State:** WA, **District:** 03, **Office:** House
-- **Cycles shown:** 2022, 2024, 2026
+- **Test candidate:** Marie Gluesenkamp Perez — `H2WA03217` (House, WA-03)
+- **Also verified with:** Kirsten Gillibrand — `S0NY00410` (Senate, NY)
+- **Local dev:** `python3 -m http.server 8080` from project root, then `localhost:8080/candidate.html?id=H2WA03217`
 
 ### What's working
 - Profile header with initials avatar, party tag, office/district tag, incumbency tag
@@ -87,11 +86,11 @@ The candidate page (`candidate.html`) is the main work in progress. It is hardco
 
 2. **Election date markers** — ✅ Mostly working. Current cycle shows primary only (general not yet scheduled in FEC system — expected behavior). Past cycles show both. Field name confirmed: `election_date`.
 
-3. **Filing deadline markers** — ✅ Fixed. `/reporting-dates/` has no `report_form` field — filter by excluding presidential monthly report types (M1–M12, MSA, MYS, CA, SA) instead. Has not been verified live yet — confirm on next deploy.
+3. **Filing deadline markers** — ✅ Fixed and verified live. `due_date_gte`/`due_date_lte` are silently ignored by the API — returns all 4,896 records if used. Fix: 4 parallel calls per cycle year, one each for Q1, Q2, Q3, YE using `report_year` + `report_type`. Each returns exactly 1 record.
 
 ### Chart architecture
 - Type: line chart with `type: 'time'` x-axis (requires date-fns adapter)
-- X-axis spans full FEC two-year cycle: Jan 1 of prior odd year → Dec 31 of cycle year
+- X-axis spans full election cycle, office-aware: House = 2yr, Senate = 6yr, President = 4yr
 - Points only at actual filing dates (quarterly cadence = 4–8 points per cycle)
 - Raised and Spent: `stepped: 'before'` (cumulative, stair-step between filing dates)
 - Cash on Hand: linear connect (snapshot value, not cumulative)
@@ -103,7 +102,7 @@ GET /candidate/{id}/                          — candidate metadata
 GET /candidate/{id}/totals/?cycle={year}      — cycle-level financial totals
 GET /candidate/{id}/committees/?cycle={year}  — associated committees
 GET /committee/{id}/reports/?cycle={year}     — per-period filing reports (chart data)
-GET /reporting-dates/?due_date_gte=&..._lte=  — filing deadlines
+GET /reporting-dates/?report_year={year}&report_type={type} — filing deadlines (one call per type)
 GET /election-dates/?election_state=&office_sought=&election_year= — actual election dates
 ```
 
@@ -122,7 +121,12 @@ Reporting-dates endpoint (`/reporting-dates/`) returns:
 - `report_type_full` — human label e.g. `"APRIL QUARTERLY"`, `"YEAR-END"`
 - `due_date` — e.g. `"2027-01-31"` (no timestamp, safe to use directly)
 - No `report_form` or `form_type` field exists on this endpoint
-- Filter by excluding monthly presidential types: M1–M12, MSA, MYS, CA, SA
+- **Critical:** `due_date_gte` / `due_date_lte` are silently ignored — API returns all 4,896 records across all time if used
+- **Critical:** Correct filter is `report_year=<year>` (one value per call)
+- **Critical:** Default sort is by creation date descending — always pass `sort=due_date`
+- **Critical:** `per_page` max is 100; 2026 has 182 records so unfiltered fetch cuts off Q3 and YE
+- **Critical:** `MY` (mid-year) appears in results but is a PAC type, not a Form 3 quarterly deadline — exclude it
+- **Correct approach:** 4 parallel calls per cycle year, one each for Q1, Q2, Q3, YE — each returns exactly 1 record, sidestepping pagination and false positives entirely
 
 Candidate totals endpoint returns:
 - `receipts` — cycle total raised
@@ -132,17 +136,38 @@ Candidate totals endpoint returns:
 
 ---
 
-## Known architectural debt to address
+## What to build next
 
-1. **Everything is hardcoded to MGP.** The candidate ID, state, district, office, and cycle list are all hardcoded constants. The page needs to derive these from the candidate API response so it works for any candidate. Specifically:
-   - Cycle list should come from the candidate's `election_years` array
-   - X-axis span should be derived from office type (House = 2yr, Senate = 6yr, President = 4yr)
-   - Form type filter for deadlines should come from committee's `report_form`
-   - State/district for election date lookup should come from candidate data
+See `project-brief.md` for the full phased roadmap. Short version:
 
-2. **No homepage / search yet.** The entry point is candidate.html with a hardcoded ID. Search is the next major feature after the candidate page is solid.
+**Phase 1 (current):** Finish the candidate page before building anything new.
+- Raised tab (contributor breakdown, geography, top donors)
+- Spent tab (category breakdown, spend timeline)
+- Associated committees — header-level modal, not cycle-scoped
+- Data freshness indicators on all data displays
+- Empty and error states
+- Design system documentation page
+- Mobile chart pass
 
-3. **Raised/Spent/Committees tabs are placeholders.** Only Summary is implemented.
+**Phase 2:** Search and navigation.
+**Phase 3:** Committee page, race page (which is also the compare feature — two modes, one UI).
+**Phase 4:** Early signal data (48/24hr reports), AI insights.
+
+## Remaining architectural debt
+
+- **YTD per_page limit:** Reports currently fetched with `per_page=20` per sub-cycle — verify this is sufficient for Senate candidates with dense filing histories. Some cycles may have more than 20 reports.
+- **Presidential cycle untested:** 4-year cycle is architecturally supported via `getCycleSpanYears()` / `getSubCycles()` but has not been tested with a real presidential candidate.
+- **Multi-cycle stat labels:** Stats row (Raised, Spent, COH) doesn't yet indicate when figures represent a multi-sub-cycle sum (e.g. "6-year total" vs. "cycle total"). Needs a label or caveat for Senate candidates.
+
+## Senate multi-sub-cycle architecture
+
+Senate 6-year cycles introduce a multi-sub-cycle pattern worth understanding before modifying:
+
+- `getSubCycles(cycle)` returns `[cycle-4, cycle-2, cycle]` — three FEC 2-year periods
+- Reports are fetched from all three in parallel and combined
+- **Raised / Spent totals:** summed across all sub-cycles
+- **COH and debt:** use most recent sub-cycle only
+- **YTD stitching:** carries cumulative base forward across each calendar year reset within each sub-cycle, then chains sub-cycles together
 
 ---
 
@@ -155,6 +180,9 @@ Candidate totals endpoint returns:
 - **Points only at filing dates** — no interpolation between quarters
 - **YTD field strategy** — use `_ytd` fields from reports and carry year-1 total as base for year-2 (avoids per-period accumulation errors)
 - **Election dates from `/election-dates/`** — not `/elections/` (which returns candidate financial summaries, not actual dates)
+- **Mobile nav search icon** — at smaller breakpoints, search does not collapse into the hamburger drawer. A search icon remains exposed left of the menu icon at all times.
+- **Global nav links** — Home, Candidates, Committees, Races present from launch as stubs; activated as pages are built per phase plan.
+- **Race page = compare feature** — two modes, one shared UI. Curated mode: a specific contest auto-populates all declared candidates. Ad hoc mode: user selects any candidates across races (designed for consultants tracking multiple frontline races). No editorial curation required.
 
 ---
 
@@ -165,22 +193,27 @@ Candidate totals endpoint returns:
 - Senate = 6-year terms; presidential = 4-year. X-axis logic must account for this
 - `_ytd` fields reset each January 1, so a two-year cycle requires stitching year 1 final YTD + year 2 running YTD
 - Memoed transactions must be excluded from any manual totals (we avoid this by using FEC-computed `_ytd` fields)
-- The FEC `/reporting-dates/` endpoint returns deadlines for ALL form types — must filter to `Form 3` for House/Senate candidate pages
+- The FEC API silently ignores unrecognized query parameters — always verify a filter is working by checking total result counts, not just response shape
+- The FEC `/reporting-dates/` endpoint ignores date range params; use `report_year` + `report_type` for targeted queries
 - Tim (domain expert, congressional campaign manager) is available for validation questions
 
 ---
 
 ## What "done" looks like for the candidate page
 
-- [ ] Chart renders real data (not $0)
-- [ ] Stepped lines visible between quarterly filing points
-- [ ] Full cycle x-axis with future quarters shown as empty space
-- [ ] Filing deadline markers: Form 3 only, correctly positioned
-- [ ] Election date markers: primary + general, amber dotted lines
-- [ ] Health banner: active vs. closed cycle logic working
-- [ ] All hardcoded candidate values derived from API response
-- [ ] Page works for any candidate ID passed as a URL param (`?id=H2WA03217`)
-- [ ] Responsive: mobile header, hamburger nav, chart doesn't overflow viewport
+- [x] Chart renders real data (not $0)
+- [x] Stepped lines visible between quarterly filing points
+- [x] Full cycle x-axis with future quarters shown as empty space — office-aware (H=2yr, S=6yr, P=4yr)
+- [x] Filing deadline markers: Form 3 quarterly only, correctly positioned, verified live
+- [x] Election date markers: primary + general, amber dotted lines (current cycle: primary only — general not yet in FEC system)
+- [x] Health banner: active vs. closed cycle logic working
+- [x] All hardcoded candidate values derived from API response (state, district, office, cycle list from `election_years`)
+- [x] Page works for any candidate ID passed as a URL param (`?id=H2WA03217`) — verified with MGP (House) and Gillibrand (Senate)
+- [x] Responsive: mobile header, hamburger nav, chart doesn't overflow viewport
+- [ ] Search / homepage
+- [ ] Raised tab: contributor breakdown, geography heatmap, top donors
+- [ ] Spent tab: category breakdown, spend timeline
+- [ ] Committees tab: full ecosystem view (currently lists only, no detail)
 
 ---
 
@@ -195,8 +228,20 @@ The full product brief (`project-brief.md`) has MVP scope, audience definition, 
 ## How to start a session
 
 ```bash
-cd [your project directory]
+cd ~/Vibecoding/fred-project
 claude
 ```
 
-First thing: read this file, then read `candidate.html`. Ask Sloane what's been tested since the last session and what the current priority is. Don't assume the latest file in the repo matches what's been deployed — ask.
+First thing: read this file. Then read `candidate.html` for current implementation state.
+
+Before diving in, note what's been updated since the last session:
+- `CLAUDE.md` — updated with verified API behavior, remaining debt items, Senate architecture notes
+- `project-brief.md` — significantly expanded: now includes a phased roadmap, global nav spec (including mobile search icon behavior), race page / compare architecture, and new open questions on associated committees and unserious candidates
+- `process-log.html` — updated with Mar 3 session entry and a new Mar 4 entry stub
+
+Ask Sloane what's been tested since the last session and what the current priority is. Don't assume the latest file in the repo matches what's been deployed — ask.
+
+**Suggested opening prompt for Sloane to paste at session start:**
+```
+Read CLAUDE.md and project-brief.md, then summarize: what's the current state of the candidate page, what's the top Phase 1 priority, and what do you need from me to get started?
+```

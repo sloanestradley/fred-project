@@ -317,6 +317,28 @@
       opacity: 0.3;
     }
 
+    /* TIL */
+    .field-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--muted);
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0 3px 3px 0;
+    }
+    .field-notes-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .field-notes-text {
+      font-size: 0.72rem;
+      color: var(--subtle);
+      line-height: 1.7;
+    }
+
     /* Offline note */
     .offline-note {
       font-size: 0.7rem;
@@ -384,7 +406,12 @@
           <div class="changelog-item"><span class="changelog-bullet">–</span>Explored Figma Make prompting best practices in a separate session</div>
         </div>
 
-        <div class="stack">
+        <div class="field-notes">
+            <div class="field-notes-label">Field notes</div>
+            <div class="field-notes-text">Shipping something broken but live is more valuable than perfecting something local. Navigated a real development environment — terminal, Git, environment variables, serverless functions — without a background in engineering. Most designers don't get this close to the infrastructure. It's uncomfortable and slow at first, and that's exactly why it matters.</div>
+          </div>
+
+          <div class="stack">
           <span class="stack-tag">FRED API</span>
           <span class="stack-tag">Chart.js</span>
           <span class="stack-tag">Netlify</span>
@@ -392,6 +419,7 @@
           <span class="stack-tag">Git / GitHub</span>
           <span class="stack-tag">Amplitude</span>
           <span class="stack-tag">Node.js</span>
+          <span class="stack-tag">Claude</span>
         </div>
 
         <div class="insight">
@@ -435,10 +463,16 @@
           <div class="changelog-item"><span class="changelog-bullet">–</span>Iterated on avatar initials (MGP format), cycle switcher, health indicator, chart animation behavior, overspend handling, and tab anchor links</div>
         </div>
 
-        <div class="stack">
+        <div class="field-notes">
+            <div class="field-notes-label">Field notes</div>
+            <div class="field-notes-text">Domain expertise is a design input, not just background reading. Two days of conversation with Tim produced a clearer product brief than weeks of desk research would have — because the real questions only surface when someone who uses data like this every day starts poking holes in your assumptions. Knowing when to step away from the screen is its own skill.</div>
+          </div>
+
+          <div class="stack">
           <span class="stack-tag">FEC API</span>
           <span class="stack-tag">Chart.js</span>
           <span class="stack-tag">HTML / CSS / JS</span>
+          <span class="stack-tag">Claude</span>
         </div>
 
         <div class="insight">
@@ -454,18 +488,60 @@
 
       <!-- Mar 3 — today -->
       <div class="entry today">
-        <div class="entry-date">Tue, Mar 3, 2026 — Today</div>
-        <div class="entry-title">In progress</div>
-        <div class="entry-summary">Session ongoing. This entry will be updated at end of day.</div>
+          <div class="entry-date">Tue, Mar 3, 2026</div>
+          <div class="entry-title">Debugging in the dark, then the lights came on</div>
+          <div class="entry-summary">Spent most of the day chasing a bug that turned out to be three bugs stacked on top of each other — and in doing so, stumbled into a completely different way of working. By the end of the day, the chart was showing real data for the first time, the tool had been handed off to Claude Code, and the candidate page could load any politician in the country, not just MGP.</div>
 
-        <div class="changelog">
-          <div class="changelog-item"><span class="changelog-bullet">–</span>Launched this process log</div>
-          <div class="changelog-item"><span class="changelog-bullet">–</span><em style="color:var(--muted)">More to come…</em></div>
-        </div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Spent the morning manually inspecting Network tab responses and pasting API output into Chat — a slow but instructive loop that eventually pinpointed why filing deadline markers weren't showing up</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Discovered the FEC API silently ignores unrecognized query parameters — the date filters we'd been passing for weeks were doing nothing; the fix required a completely different approach to how we query for deadlines</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Installed Claude Code, set up a local dev server, and moved the build workflow out of Chat and into the terminal — a significant shift in how the project gets built day to day</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Added a <code>CLAUDE.md</code> file to the repo — a persistent brief that orients Claude Code at the start of every session, capturing decisions, field names, and context that would otherwise be lost between conversations</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Removed all hardcoded candidate references; the page now works for any candidate by passing <code>?id=</code> in the URL — tested against both a House and Senate candidate</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Chart x-axis now spans the full election cycle for any office type — a Senate candidate's chart correctly renders a 6-year window</div>
+          </div>
 
-        <div class="stack">
-          <span class="stack-tag">In progress</span>
-        </div>
+          <div class="insight">
+            <div class="insight-label">On silent failures</div>
+            <div class="insight-text">The FEC API doesn't error when you pass an unrecognized query parameter — it just ignores it and returns everything. The deadline filter looked like it was working because the results accidentally landed in the right date range. The lesson: always verify a filter is actually filtering by checking the total result count, not just the shape of the returned data. Claude Code made this kind of verification instant — collapsing a debugging loop that had taken several Chat rounds into a single terminal command.</div>
+          </div>
+
+          <div class="insight">
+            <div class="insight-label">On switching tools mid-project</div>
+            <div class="insight-text">Moving from Chat to Claude Code mid-session felt like switching from whiteboard to workshop. Chat was the right place to think through decisions, learn how the tools work, and build the brief that would carry context forward. Claude Code is the right place to build — it can read files, run commands, and verify API responses autonomously. The two aren't competing; they're different modes of the same collaboration.</div>
+          </div>
+
+          <div class="field-notes">
+            <div class="field-notes-label">Field notes</div>
+            <div class="field-notes-text">Debugging isn't always about the code — sometimes it's about understanding what the API is actually doing versus what you assumed it was doing. Learned to verify filters by checking result counts, not just eyeballing the data shape. Also took a first real step into agentic AI tooling: not just prompting, but setting up a persistent context file so an AI tool can orient itself in a codebase independently. That's a different kind of skill than most designers are building right now.</div>
+          </div>
+
+          <div class="field-notes">
+            <div class="field-notes-label">Field notes</div>
+            <div class="field-notes-text">"What does financially healthy actually mean to a strategist?" is a design question, not a data question — and the answer changes what you build entirely. Also learned that working with an AI collaborator on a codebase requires the same thing good design requires: knowing what problem you're actually solving before you start making things.</div>
+          </div>
+
+          <div class="stack">
+            <span class="stack-tag">FEC API</span>
+            <span class="stack-tag">HTML / CSS / JS</span>
+            <span class="stack-tag">Chart.js</span>
+            <span class="stack-tag">Claude</span>
+            <span class="stack-tag">Claude Code</span>
+          </div>
+      </div>
+
+      <div class="entry today">
+          <div class="entry-date">Wed, Mar 4, 2026 — Today</div>
+          <div class="entry-title">In progress</div>
+          <div class="entry-summary">Session ongoing. This entry will be updated at end of day.</div>
+
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span><em style="color:var(--muted)">More to come…</em></div>
+          </div>
+
+          <div class="stack">
+            <span class="stack-tag">In progress</span>
+          </div>
       </div>
 
     </div>

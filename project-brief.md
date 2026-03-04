@@ -38,6 +38,11 @@ A visual, non-partisan tool for answering one question fast: *where is money flo
 
 ## MVP Requirements
 
+### Global Navigation
+- Navigation links: Home, Candidates, Committees, Races (present from launch as stubs; activated as pages are built per phase plan)
+- Search exposed in nav across all pages
+- **Mobile nav:** at smaller breakpoints, search remains accessible via a search icon exposed left of the hamburger menu icon — search does not collapse into the drawer
+
 ### Homepage
 - Search by candidate and committee profiles
 - Browse aggregate-level data
@@ -155,10 +160,59 @@ Note: the brief is currently written with the active cycle mid-stage as the prim
   - Thoughtfully handle non-ideal states (error, empty, no-data-for-cycle, pre-filing, post-cycle with debt)
   - Reduce cognitive load
   - Diligent data transparency — always show coverage dates, data freshness, and caveats
+- Local dev: `python3 -m http.server 8080` from project root; URL params work identically to production (e.g. `localhost:8080/candidate.html?id=H2WA03217`)
 - Scale is crucial. Ensure architectural decisions consider post-MVP growth (design system, interactive charts, high traffic, early signal data, AI insights, auth, paywall, additional data sources).
 - Include a design system documentation page from the start: foundations (color, type, spacing) and all components with states. Sidebar navigation for easy reference.
 
 ---
+
+
+---
+
+## Phased Roadmap
+
+### Phase 1 — Make the candidate page genuinely useful
+*Goal: one page that a real campaign staffer would actually use. Complete before building any new pages.*
+
+- **Raised tab** — contributor breakdown, top donors, geography heatmap
+- **Spent tab** — category breakdown, spend timeline
+- **Associated committees** — belongs at the candidate profile level (header modal or persistent section), not scoped to a cycle. Resolve F2 / leadership PAC data model with Tim before building. Committees will eventually link to committee pages.
+- **Data freshness indicators** — always show coverage date and filing recency. Staffers need to know if they're looking at last quarter or last week.
+- **Empty / zero-data states** — declared candidates with no filings, past candidates with closed cycles, candidates with debt remaining. Each needs a deliberate design treatment.
+- **Error states** — FEC API failures, slow responses, unexpected data shapes.
+- **Design system page** — start now, not later. Build it as a living reference alongside Phase 1 components. Every component built before it's documented becomes debt.
+- **Mobile chart** — nav is responsive; chart needs a dedicated pass before adding more complexity.
+
+### Phase 2 — Make it navigable
+*Goal: a user can find any candidate, not just one you link them to.*
+
+- **Search** — scoped to candidates only to start; architecture anticipates committees and races without building them yet
+- **Search results page** — one template, candidate-only for now, type-aware formatting ready for committees and races
+- **Candidate breadcrumbs** — House/Senate pages are filtered search results at this stage, not standalone pages. Don't build them as real pages yet.
+
+### Phase 3 — Expand the data model
+*Goal: show the full money ecosystem, not just the candidate.*
+
+- **Committee page** — build after search exists so it can be navigated to meaningfully
+- **Race page** — the compare feature lives here. Two modes, one shared UI:
+  - **Curated mode:** a specific contest (e.g. WA-03 2026) auto-populates all declared candidates; no user input needed
+  - **Ad hoc mode:** user searches and selects any candidates to compare regardless of race — designed for consultants managing multiple frontline races simultaneously (Tim's use case). No editorial curation required.
+- **Associated committees** — link to live committee pages once those exist
+
+### Phase 4 — Differentiation features
+*Goal: reasons to return; things OpenSecrets doesn't do.*
+
+- **Early signal data** — 48/24-hour reports surfaced on candidate pages; strongest repeat-usage driver
+- **AI insights** — 2–3 sentence plain-language narrative on candidate and race pages, generated on load
+- **Transactions search** — FEC-style linked data; useful but not differentiating; lower priority than above
+
+---
+
+## Gaps to Address (no phase assigned yet)
+
+- **The name** — "Ledger" appears in the process log nav but hasn't been committed to. Name and domain matter for portfolio presentation and user perception.
+- **UI, interaction, and accessibility** — needs a holistic pass; not scoped to a single phase. Accessibility standards, motion design, touch targets, color contrast, keyboard navigation.
+- **House / Senate browsing pages** — breadcrumbs reference these but they're not priority pages. Filtered search results serve this function for MVP; revisit post-Phase 2.
 
 ## Open Questions
 
@@ -169,6 +223,9 @@ Note: the brief is currently written with the active cycle mid-stage as the prim
 - How do we best visualize "how much are they spending just to raise?" — is this a ratio, a dollar figure, a chart? *(Validate with Tim)*
 - What does a healthy vs. concerning spend-down rate look like in the final two weeks before a primary/general? *(Validate with Tim)*
 - At what point in the active cycle sub-stages does the raised-to-spent ratio become a meaningful signal vs. noise? *(Validate with Tim)*
+- **Race page — defining "unserious" candidates:** Candidates with low or no financial data should be shown with reduced visual hierarchy on race pages, but what threshold defines "unserious"? A declared candidate with zero filings is different from one with minimal activity. *(Validate with Tim — what would a strategist actually want to see?)*
+- **Associated committees — F2 reliability at scale:** Can F2 (Statement of Candidacy) filings be used to surface associated committees reliably for any candidate, at scale? What are the edge cases? *(Validate with Tim)*
+- **Associated committees — leadership PAC identification:** Leadership PACs can't be identified through F2 alone. What's the most reliable method for surfacing them? *(Validate with Tim)*
 
 ---
 
