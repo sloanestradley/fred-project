@@ -20,7 +20,6 @@
       --green:   #3dbf7a;
       --amber:   #e8a020;
       --accent:  #4a90d9;
-      --banner-h: 28px;
     }
 
     body {
@@ -30,7 +29,6 @@
       font-size: 13px;
       line-height: 1.6;
       min-height: 100vh;
-      padding-top: var(--banner-h);
     }
 
     /* ── Layout ── */
@@ -46,8 +44,8 @@
       border-right: 1px solid var(--border);
       padding: 2rem 0;
       position: sticky;
-      top: var(--banner-h);
-      height: calc(100vh - var(--banner-h));
+      top: 0;
+      height: 100vh;
       overflow-y: auto;
     }
 
@@ -349,20 +347,43 @@
       line-height: 1.7;
     }
 
+    /* ── View toggle ── */
+    .view-toggle {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      padding-bottom: 0;
+    }
+
+    .view-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0 0 0.35rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .view-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    .view-btn:hover:not(.active) {
+      color: var(--subtle);
+    }
+
     /* Responsive */
     @media (max-width: 860px) {
       .layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .main { padding: 1.5rem; }
     }
-
-    /* Global banner */
-    .global-banner { position:fixed; top:0; left:0; right:0; z-index:300;
-      background:var(--amber); height:var(--banner-h);
-      display:flex; align-items:center; justify-content:center; }
-    .global-banner-text { font-size:0.57rem; color:rgba(13,15,18,0.75); letter-spacing:0.05em;
-      text-align:center; line-height:1; }
-    .global-banner-text span { color:#0d0f12; font-weight:500; }
   </style>
 </head>
 <body>
@@ -381,10 +402,6 @@
       <a class="nav-item"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
       <a class="nav-item"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
     </div>
-    <div class="nav-section" style="margin-top:1.5rem">
-      <div class="nav-label">About</div>
-      <a class="nav-item active"><span class="nav-dot" style="background:var(--accent)"></span>Process Log</a>
-    </div>
   </nav>
 
   <!-- Main -->
@@ -394,8 +411,15 @@
       <div class="page-eyebrow">Behind the build</div>
       <h1 class="page-title">Process Log</h1>
       <p class="page-desc">A running record of how this project came to be — decisions made, pivots taken, and things learned along the way. Written for a future case study.</p>
+      <p class="page-desc" style="margin-top:0.75rem; color:var(--muted);">Domain expertise in this project comes from a personal contact with extensive experience in congressional campaign finance. Their name has been changed for privacy.</p>
+
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="reflections">Reflections</button>
+        <button class="view-btn" data-view="build">Build Log</button>
+      </div>
     </header>
 
+    <div id="view-build" hidden>
     <div class="timeline">
 
       <!-- Feb 27 -->
@@ -447,7 +471,7 @@
       <div class="entry offline">
         <div class="entry-date">Sat, Feb 28 – Sun, Mar 1, 2026</div>
         <div class="entry-title">Domain research and offline discovery</div>
-        <div class="entry-summary">Stepped away from the screen to go deep on campaign finance with Tim — the campaign manager behind this project's domain expertise.</div>
+        <div class="entry-summary">Stepped away from the screen to go deep on campaign finance with John — the campaign manager behind this project's domain expertise.</div>
         <p class="offline-note">No code written. Time spent learning the landscape of campaign finance: how money flows between candidates, committees, PACs, and joint fundraising vehicles; reviewing sample FEC data; drawing diagrams; and taking notes that would directly inform the project brief drafted on Monday. This groundwork proved essential — the brief that emerged is more specific and more credible because of it.</p>
 
         <div class="insight">
@@ -475,7 +499,7 @@
 
         <div class="field-notes">
             <div class="field-notes-label">Field notes</div>
-            <div class="field-notes-text">Domain expertise is a design input, not just background reading. Two days of conversation with Tim produced a clearer product brief than weeks of desk research would have — because the real questions only surface when someone who uses data like this every day starts poking holes in your assumptions. Knowing when to step away from the screen is its own skill.</div>
+            <div class="field-notes-text">Domain expertise is a design input, not just background reading. Two days of conversation with John produced a clearer product brief than weeks of desk research would have — because the real questions only surface when someone who uses data like this every day starts poking holes in your assumptions. Knowing when to step away from the screen is its own skill.</div>
           </div>
 
           <div class="stack">
@@ -541,25 +565,233 @@
       </div>
 
       <div class="entry today">
-          <div class="entry-date">Wed, Mar 4, 2026 — Today</div>
-          <div class="entry-title">In progress</div>
-          <div class="entry-summary">Session ongoing. This entry will be updated at end of day.</div>
+          <div class="entry-date">Wed, Mar 4, 2026</div>
+          <div class="entry-title">The data was there — I was just asking the wrong question</div>
+          <div class="entry-summary">Two tabs shipped today: Raised and Spent. Both required the same move — recognizing that the first technically correct version was answering a less interesting question than the data actually supported. The day started with a donor table that worked fine and ended with a spending breakdown built on top of a free-text field the FEC doesn't enforce. Everything in between was about finding the right question.</div>
 
           <div class="changelog">
-            <div class="changelog-item"><span class="changelog-bullet">–</span><em style="color:var(--muted)">More to come…</em></div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Raised tab shipped: contributor type donut, contributor geography choropleth (D3-geo + TopoJSON), and top committee contributors table</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Mid-session pivot: replaced Top Individual Donors with Top Committee Contributors — individual contribution limits make the individual list too compressed to be meaningful; one parameter flip on the Schedule A call (<code>is_individual: false</code>) surfaced the more interesting question</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Added diagonal stripe pattern to the unitemized donut segment to communicate "same source, less granular" — implemented via native Canvas API, no plugin needed; Chart.js 4 accepts <code>CanvasPattern</code> objects natively</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Dedup logic for committee contributors uses FEC committee ID rather than name-matching — more reliable since the same PAC can file under slight name variations</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Spent tab built from scratch: spending by category donut (FEC totals endpoint), spending by purpose horizontal bar chart (keyword-mapped), and top vendors table</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Discovered <code>disbursement_purpose_description</code> is always null in FEC data — actual text lives in <code>disbursement_description</code>; fixed across all spend logic</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Built keyword-mapping layer on top of FEC's four coarse spend buckets — surfaces categories like TV & Radio, Digital, Direct Mail, Staff & Payroll, Consulting, Events & Travel, Legal & Compliance; methodology disclosed transparently above the chart</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Implemented cursor-based pagination for Schedule B — ensures full coverage for any candidate (MGP's 2024 cycle had 2,227 disbursements)</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Added global disclaimer banner: "Early build, actively evolving. All data sourced from the FEC public API. Non-partisan by design."</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Deployed to Netlify</div>
+          </div>
+
+          <div class="insight">
+            <div class="insight-label">On finding the right question</div>
+            <div class="insight-text">The FEC's own spend categories sound useful until you look at them: ADVERTISING, MATERIALS, TRANSFERS, OTHER. "OTHER" contains payroll, digital consulting, legal fees, and bank charges — all lumped together. The granularity is there, it just lives in a free-text field nobody enforces. The individual donor table had the same problem from the other direction: technically correct, but individual contribution limits make the amounts too compressed to tell you anything strategic. Both fixes required the same thing — noticing the question was wrong before touching the code. That's the part that takes the most time and shows up least in a changelog.</div>
+          </div>
+
+          <div class="field-notes">
+            <div class="field-notes-label">Field notes</div>
+            <div class="field-notes-text">What you get out of AI is a reflection of what you bring to it — your values, your instincts, your priorities. The pivot from individual donors to committee contributors wasn't a technical decision; it was a product instinct about what campaign finance data is actually for. The code change was one parameter. The judgment call behind it took five days of learning this domain to make. Designing in this environment is less about knowing how to use the tools and more about knowing what to ask them to build. That same principle showed up in how the day was structured: opening a Claude Code session with a clear context file and a deliberate prompt, closing it with a drafted log entry. Those aren't just workflow habits — they're the skill. CLAUDE.md isn't a readme for the codebase; it's a brief for a collaborator who forgets everything between sessions. Knowing how to write it, keep it current, and hand off between tools is its own kind of design work. The workflow itself kept getting more fluent as the day went on. Plan mode used strategically at the start of a task — review, push back, approve — rather than as a default. Auto-accepting edits running in the background while attention goes to strategy, domain questions, UX. Steering mid-task instead of waiting for completion. Five days ago this felt like learning a new tool. Today it felt more like working with a partner — one where understanding how it thinks is what makes the collaboration actually productive.</div>
           </div>
 
           <div class="stack">
-            <span class="stack-tag">In progress</span>
+            <span class="stack-tag">FEC API</span>
+            <span class="stack-tag">HTML / CSS / JS</span>
+            <span class="stack-tag">Chart.js</span>
+            <span class="stack-tag">Canvas API</span>
+            <span class="stack-tag">D3-geo</span>
+            <span class="stack-tag">TopoJSON</span>
+            <span class="stack-tag">Claude</span>
+            <span class="stack-tag">Claude Code</span>
           </div>
       </div>
 
-    </div>
+    </div><!-- /.timeline -->
+    </div><!-- /#view-build -->
+
+    <div id="view-reflections">
+
+      <!-- ─────────────────────────────────────────────
+           REFLECTION ENTRY TEMPLATE — copy to add more
+           <div class="timeline">
+             <div class="entry">
+               <div class="entry-date">Month DD, YYYY</div>
+               <div class="entry-title">Entry title</div>
+               <div class="changelog">
+                 <div class="changelog-item"><span class="changelog-bullet">–</span>Bullet point</div>
+               </div>
+               <div class="insight">
+                 <div class="insight-label">Built</div>
+                 <div class="insight-text">...</div>
+               </div>
+               <div class="insight">
+                 <div class="insight-label">Skill unlocked</div>
+                 <div class="insight-text">...</div>
+               </div>
+               <div class="insight">
+                 <div class="insight-label">On AI</div>
+                 <div class="insight-text">...</div>
+               </div>
+             </div>
+           </div>
+           ───────────────────────────────────────────── -->
+
+      <div class="timeline">
+
+        <div class="entry">
+          <div class="entry-date">Fri, Feb 27, 2026</div>
+          <div class="entry-title">Something I couldn't have built alone</div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Came in with a loose goal: build something interesting, hooked up to real data, with AI insights layered on top</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Spent most of the day on environment setup — API keys, CORS errors, Git authentication, Netlify functions — none of which I'd done before</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Workflow was a loop: back and forth with Claude Chat, following instructions outside the tool, pasting results back in. Manual. Slow. Focused away from the actual goal.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Something live at a real URL by end of day — pulling real data, rendering a real chart</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>The pivot happened almost as an afterthought: is this compelling? Is it new? Is it purposeful? Alex had a real use case and suddenly the project had a reason to exist</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Built</div>
+            <div class="insight-text">FRED proof-of-concept live at sloanestradley.netlify.app; environment fully set up end-to-end</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Skill unlocked</div>
+            <div class="insight-text">First terminal session with real intent — local dev server, Git, environment variables, Netlify deployment, serverless functions</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">On AI</div>
+            <div class="insight-text">Woah. I'm building something I would not have had the patience to build without AI.</div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-date">Sat – Sun, Mar 1, 2026</div>
+          <div class="entry-title">The part that can't be skipped</div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>No code written. Two days offline with Alex — interviewing him about the domain, understanding how campaign finance data actually gets used</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Researched the FEC API structure, mapped data relationships, drew diagrams</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Validated the market gap; identified what would make this different from OpenSecrets</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>The brief that came out of it was specific and credible in a way that desk research alone never produces</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Domain expertise isn't background reading — it's a design input. The real questions only surface when someone who actually uses this data starts poking holes in your assumptions</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Built</div>
+            <div class="insight-text">Nothing deployable — but the foundation everything else would be built on</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Skill unlocked</div>
+            <div class="insight-text">Structured domain research as a design input; translating expert knowledge into product requirements</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">On AI</div>
+            <div class="insight-text">A tool waiting for better questions.</div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-date">Mon, Mar 2, 2026</div>
+          <div class="entry-title">Going through the motions</div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Drafted the project brief; started the candidate page; got real FEC data on the screen</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>By any measure a productive day — and yet it felt hollow</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Workflow was Claude generating all output while I directed from a distance. Copy, paste, download, replace, deploy. Repeat.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>The uncomfortable question: is this actually impressive, or am I just checking a box for hiring managers? Anyone can follow instructions.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Started the process log today — framed from the start as documentation for a future case study. The instinct to document while building rather than reconstruct later turned out to matter more than I knew at the time.</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Built</div>
+            <div class="insight-text">Project brief; first candidate profile page with live FEC data; process log infrastructure</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Skill unlocked</div>
+            <div class="insight-text">FEC API orientation; structuring a product brief with audience, differentiators, MVP scope, and open questions</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">On AI</div>
+            <div class="insight-text">I'm adjacent to this, not in partnership with it.</div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-date">Tue, Mar 3, 2026</div>
+          <div class="entry-title">Slow on purpose</div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Continued a frustrating back-and-forth debugging a visualization — bugs, but also something harder to name: a sense that this tool wasn't being used right</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Had tried to raise the workflow question before but didn't have the vocabulary to solve it. This was the day I stopped pushing through and stepped back.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Reassessed with Claude; identified that Claude Code + Chat was a more appropriate workflow than Chat alone</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Installed Claude Code mid-session — used a second Chat window just to learn what Claude Code was asking of me, how to respond, what its prompts meant</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Still moving slowly, but with a different feeling about it. Took notes in my phone that night — excited, brain dumping, sketching the next session</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Added design system to the roadmap: flagged as "start now, not later" — every component built before it's documented becomes debt</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Built</div>
+            <div class="insight-text">Debugged chart data ($0 bug resolved); refactored candidate page to work for any candidate ID via URL param; verified against both a House and Senate candidate</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Skill unlocked</div>
+            <div class="insight-text">Claude Code installation and first real session; CLAUDE.md as a persistent context file; understanding the Chat + Code handoff as a deliberate workflow choice</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">On AI</div>
+            <div class="insight-text">I'm working with a powerful tool badly. I know it — I just don't have the vocabulary to fix it yet.</div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-date">Wed, Mar 4, 2026</div>
+          <div class="entry-title">The week I stopped watching and started building</div>
+          <div class="changelog">
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Everything clicked. The Claude Code learning curve crested and the other side was a completely different experience</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Plan mode used strategically — review the approach, push back, approve before a line gets written</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Auto-accepting edits in the background while attention went to strategy, domain questions, UX decisions</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>Steering mid-task instead of waiting for completion. Less monitoring, more thinking.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>The pivot from individual donors to committee contributors on the Raised tab wasn't a technical call — it was a product instinct about what campaign finance data is actually for. The code change was one parameter. The judgment behind it took a week of domain learning to make.</div>
+            <div class="changelog-item"><span class="changelog-bullet">–</span>What you get out of AI reflects what you bring: your instincts, your priorities, your willingness to recognize when the first answer is wrong</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Built</div>
+            <div class="insight-text">Raised tab (contributor donut, geography choropleth, top committee contributors); Spent tab (category breakdown, keyword-mapped purpose bars, top vendors); global disclaimer banner</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Skill unlocked</div>
+            <div class="insight-text">Plan mode as a strategic review tool; auto-accept edits for parallel tasking; CLAUDE.md as a living brief; steering an agentic tool mid-task rather than waiting for completion</div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">On AI</div>
+            <div class="insight-text">AI is an extension of my skills. A mirror of my strengths. I can accomplish anything I dream up with these tools.</div>
+          </div>
+        </div>
+
+      </div><!-- /.timeline -->
+
+    </div><!-- /#view-reflections -->
+
   </main>
 </div>
 
-<div class="global-banner">
-  <p class="global-banner-text"><span>Early build, actively evolving.</span> &nbsp;All data sourced from the FEC public API. &nbsp;Non-partisan by design.</p>
-</div>
+<script>
+  (function () {
+    const buildView = document.getElementById('view-build');
+    const reflectionsView = document.getElementById('view-reflections');
+    const buttons = document.querySelectorAll('.view-btn');
+
+    function setView(view) {
+      const isReflections = view === 'reflections';
+      buildView.hidden = isReflections;
+      reflectionsView.hidden = !isReflections;
+      buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+      history.replaceState(null, '', '#' + view);
+    }
+
+    // Set initial view from hash; default is reflections
+    const hash = location.hash.replace('#', '');
+    if (hash === 'build') {
+      setView('build');
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+  })();
+</script>
+
 </body>
 </html>

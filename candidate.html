@@ -174,6 +174,37 @@
     .committee-type { font-size:0.6rem; color:var(--muted); text-align:right; }
     .committee-id { font-size:0.6rem; color:var(--muted); }
 
+    /* Committees trigger link */
+    .committees-link { background:none; border:none; cursor:pointer;
+      font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--subtle);
+      padding:0; margin-top:0.75rem; display:inline-block;
+      text-decoration:underline; text-decoration-color:transparent;
+      text-underline-offset:2px; transition:color 0.15s, text-decoration-color 0.15s; }
+    .committees-link:hover { color:var(--text); text-decoration-color:var(--subtle); }
+
+    /* Committees modal */
+    .modal-overlay { position:fixed; inset:0; background:rgba(13,15,18,0.88);
+      z-index:200; display:flex; align-items:center; justify-content:center; }
+    .modal-panel { background:var(--surface); border:1px solid var(--border);
+      border-radius:6px; width:min(600px,92vw); max-height:80vh;
+      display:flex; flex-direction:column; overflow:hidden; }
+    .modal-header { display:flex; justify-content:space-between; align-items:center;
+      padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); flex-shrink:0; }
+    .modal-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700;
+      letter-spacing:-0.02em; }
+    .modal-close { background:none; border:none; cursor:pointer; color:var(--muted);
+      font-size:1.1rem; padding:0.15rem 0.35rem; transition:color 0.15s; line-height:1; }
+    .modal-close:hover { color:var(--text); }
+    .modal-tabs { display:flex; gap:1.5rem; padding:0.85rem 1.5rem;
+      border-bottom:1px solid var(--border); flex-shrink:0; }
+    .modal-tab-btn { background:none; border:none; border-bottom:2px solid transparent;
+      padding:0 0 0.3rem; font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+      letter-spacing:0.07em; text-transform:uppercase; color:var(--muted);
+      cursor:pointer; transition:color 0.15s, border-color 0.15s; }
+    .modal-tab-btn.active { color:var(--text); border-bottom-color:var(--text); }
+    .modal-tab-btn:hover:not(.active) { color:var(--subtle); }
+    .modal-body { overflow-y:auto; padding:1.5rem; flex:1; }
+
     .data-note { font-size:0.6rem; color:var(--muted); margin-top:1.25rem;
       padding-top:1rem; border-top:1px solid var(--border); line-height:1.8; }
     .placeholder { font-size:0.75rem; color:var(--muted); padding:2rem;
@@ -299,10 +330,6 @@
       <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
       <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Search</a>
     </div>
-    <div class="nav-section" style="margin-top:1.5rem">
-      <div class="nav-label">About</div>
-      <a class="nav-item" href="process-log.html"><span class="nav-dot" style="background:var(--muted)"></span>Process Log</a>
-    </div>
   </nav>
 
   <!-- Mobile header -->
@@ -319,7 +346,6 @@
     <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
     <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
     <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Search</a>
-    <a class="nav-item" href="process-log.html"><span class="nav-dot" style="background:var(--muted)"></span>Process Log</a>
   </nav>
 
   <!-- Main -->
@@ -338,15 +364,17 @@
           <div class="cycle-switcher" id="cycle-switcher">
             <span class="cycle-label">Cycle</span>
           </div>
+          <div id="committees-trigger" style="display:none">
+            <button class="committees-link" onclick="openCommitteesModal()">Committees →</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="tabs-bar" id="tabs-bar" style="display:none">
-      <a class="tab active" href="#summary"    onclick="showTab('summary',event)">Summary</a>
-      <a class="tab"        href="#raised"     onclick="showTab('raised',event)">Raised</a>
-      <a class="tab"        href="#spent"      onclick="showTab('spent',event)">Spent</a>
-      <a class="tab"        href="#committees" onclick="showTab('committees',event)">Committees</a>
+      <a class="tab active" href="#summary" onclick="showTab('summary',event)">Summary</a>
+      <a class="tab"        href="#raised"  onclick="showTab('raised',event)">Raised</a>
+      <a class="tab"        href="#spent"   onclick="showTab('spent',event)">Spent</a>
     </div>
 
     <div class="content" id="content" style="display:none">
@@ -493,16 +521,28 @@
         </div>
       </div>
 
-      <!-- Committees tab -->
-      <div id="tab-committees" style="display:none">
-        <div class="section-title">Associated Committees</div>
-        <div id="committees-list"></div>
-        <div class="data-note">Committee associations sourced from FEC candidate filings.</div>
-      </div>
-
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /layout -->
+
+<!-- Committees modal — outside layout so it's not clipped -->
+<div id="committees-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeCommitteesModal()">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div class="modal-title">Committee Ecosystem</div>
+      <button class="modal-close" onclick="closeCommitteesModal()">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab-btn active" data-tab="active" onclick="showModalTab('active')">Active<span id="modal-active-count"></span></button>
+      <button class="modal-tab-btn" data-tab="history" id="modal-history-tab-btn" onclick="showModalTab('history')" style="display:none">History<span id="modal-history-count"></span></button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-active-list"></div>
+      <div id="modal-history-list" style="display:none"></div>
+      <div class="data-note">This list reflects committees directly linked to this candidate in FEC records. Some joint fundraising committees where this candidate is a participant may not appear — the FEC doesn't always index these associations in a way that's queryable by candidate. For a complete picture, see this candidate's most recent Statement of Candidacy (Form F2) on the FEC website.</div>
+    </div>
+  </div>
+</div>
 
 <!-- Map tooltip — outside layout so it's not clipped -->
 <div class="map-tt" id="map-tt">
@@ -524,12 +564,13 @@ var API_KEY      = 'Y7CL6AyMB9NPbwuuMWHduJ6LVu6OWsv49TDZcXZT';
 var chartInstance = null;
 var donutInstance = null;
 var spentDonutInstance = null;
-var raisedDataPromise = null;
-var raisedRendered    = false;
-var spentDataPromise  = null;
-var spentRendered     = false;
-var usTopoCache       = null;
-var CAND_PARTY        = null;
+var raisedDataPromise    = null;
+var raisedRendered       = false;
+var spentDataPromise     = null;
+var spentRendered        = false;
+var usTopoCache          = null;
+var CAND_PARTY           = null;
+var committeesLoaded     = false;
 
 var FIPS_TO_ABBR = {
   '01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT',
@@ -541,6 +582,106 @@ var FIPS_TO_ABBR = {
   '47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV',
   '55':'WI','56':'WY'
 };
+
+// ── Committees modal ────────────────────────────────
+function showModalTab(name) {
+  document.getElementById('modal-active-list').style.display  = name === 'active'  ? 'block' : 'none';
+  document.getElementById('modal-history-list').style.display = name === 'history' ? 'block' : 'none';
+  document.querySelectorAll('.modal-tab-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+}
+function openCommitteesModal() {
+  document.getElementById('committees-modal').style.display = 'flex';
+  showModalTab('active');
+  if (!committeesLoaded) fetchAndRenderCommittees();
+}
+function closeCommitteesModal() {
+  document.getElementById('committees-modal').style.display = 'none';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCommitteesModal();
+});
+
+function renderCommitteeGroups(comms, muted) {
+  if (!comms.length) return '';
+  var assigned = new Set();
+  function takeGroup(pred) {
+    return comms.filter(function(c) {
+      if (assigned.has(c.committee_id) || !pred(c)) return false;
+      assigned.add(c.committee_id); return true;
+    });
+  }
+  var groups = [
+    { label: 'Principal Committee', items: takeGroup(function(c){ return c.designation === 'P'; }) },
+    { label: 'Joint Fundraising',   items: takeGroup(function(c){ return c.committee_type === 'J'; }) },
+    { label: 'Leadership PAC',      items: takeGroup(function(c){ return c._isLeadershipPac || c.leadership_pac === true; }) },
+    { label: 'Other Authorized',    items: takeGroup(function(c){ return c.designation === 'A'; }) },
+    { label: 'Other',               items: takeGroup(function(c){ return true; }) }
+  ].filter(function(g){ return g.items.length > 0; });
+  return groups.map(function(g) {
+    return '<div class="section-title">'+g.label+'</div>' +
+      g.items.map(function(c) {
+        var lpac = c._isLeadershipPac || c.leadership_pac === true;
+        var nameStyle = muted ? 'color:var(--muted)' : '';
+        return '<div class="committee-row"'+(lpac?' style="border-left:2px solid var(--amber);padding-left:0.75rem"':'')+'>'+
+          '<div class="committee-name"'+(nameStyle?' style="'+nameStyle+'"':'')+'>'+( c.name||'—')+'</div>'+
+          '<div class="committee-type">'+committeeTypeLabel(c.committee_type)+'</div>'+
+          '<div class="committee-id">'+(c.committee_id||'')+'</div>'+
+        '</div>';
+      }).join('');
+  }).join('');
+}
+
+async function fetchAndRenderCommittees() {
+  var activeEl  = document.getElementById('modal-active-list');
+  var historyEl = document.getElementById('modal-history-list');
+  activeEl.innerHTML = '<div style="display:flex;align-items:center;gap:0.75rem;color:var(--muted);font-size:.72rem;padding:1rem 0"><div class="loader"></div>Loading…</div>';
+  try {
+    // Two parallel calls: authorized committees + sponsored (leadership PACs use sponsor_candidate_id)
+    var results = await Promise.all([
+      apiFetch('/candidate/'+CANDIDATE_ID+'/committees/', { per_page: 50 }),
+      apiFetch('/committees/', { sponsor_candidate_id: CANDIDATE_ID, per_page: 50 })
+    ]);
+    var authorized = results[0].results || [];
+    var sponsored  = (results[1].results || []).map(function(c) {
+      c._isLeadershipPac = true; return c;
+    });
+
+    // Deduplicate by committee_id
+    var seen = new Set();
+    var unique = authorized.concat(sponsored).filter(function(c) {
+      if (seen.has(c.committee_id)) return false;
+      seen.add(c.committee_id); return true;
+    });
+
+    // Split: filing_frequency 'T' = terminated
+    var active     = unique.filter(function(c){ return c.filing_frequency !== 'T'; });
+    var terminated = unique.filter(function(c){ return c.filing_frequency === 'T'; });
+
+    // Render Active tab
+    var activeHtml = renderCommitteeGroups(active, false);
+    activeEl.innerHTML = activeHtml ||
+      '<div style="color:var(--muted);font-size:.72rem;padding:1rem 0">No active committee data available.</div>';
+
+    // Render History tab — only if terminated committees exist
+    if (terminated.length) {
+      historyEl.innerHTML = renderCommitteeGroups(terminated, true);
+      document.getElementById('modal-history-tab-btn').style.display = 'inline-block';
+    }
+
+    // Update trigger label, show it, and update tab counts
+    var triggerBtn = document.querySelector('#committees-trigger .committees-link');
+    if (triggerBtn) triggerBtn.textContent = 'Committees (' + active.length + ') →';
+    if (active.length || terminated.length) document.getElementById('committees-trigger').style.display = 'block';
+    document.getElementById('modal-active-count').textContent  = ' (' + active.length + ')';
+    document.getElementById('modal-history-count').textContent = ' (' + terminated.length + ')';
+
+    committeesLoaded = true;
+  } catch(err) {
+    activeEl.innerHTML = '<div style="color:var(--red);font-size:.72rem;padding:1rem 0">⚠ Could not load committees: '+err.message+'</div>';
+  }
+}
 
 // ── Scroll-aware header ─────────────────────────────
 (function() {
@@ -671,7 +812,7 @@ function committeeTypeLabel(t) {
 // ── Tab routing ─────────────────────────────────────
 function showTab(name, e) {
   if (e) e.preventDefault();
-  ['summary','raised','spent','committees'].forEach(function(t) {
+  ['summary','raised','spent'].forEach(function(t) {
     document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
   });
   document.querySelectorAll('.tab').forEach(function(el) {
@@ -1600,19 +1741,7 @@ async function loadCycle(cycle) {
     // ── Step 5: chart ──
     renderChart(reports, deadlines, electionDates, cycle);
 
-    // ── Step 6: committees tab ──
-    var listEl = document.getElementById('committees-list');
-    listEl.innerHTML = committees.length
-      ? committees.map(function(c) {
-          return '<div class="committee-row">'+
-            '<div class="committee-name">'+(c.name||'—')+'</div>'+
-            '<div class="committee-type">'+committeeTypeLabel(c.committee_type)+'</div>'+
-            '<div class="committee-id">'+(c.committee_id||'')+'</div>'+
-          '</div>';
-        }).join('')
-      : '<div style="color:var(--muted);font-size:.72rem;padding:1rem 0">No committee data for this cycle.</div>';
-
-    // ── Step 7: update URL hash ──
+    // ── Step 6: update URL hash ──
     var activeTabEl = document.querySelector('.tab.active');
     var tabName = activeTabEl ? activeTabEl.getAttribute('href').replace('#','') : 'summary';
     history.replaceState(null, '', '#'+cycle+'#'+tabName);
@@ -1697,7 +1826,10 @@ async function init() {
 
     // Restore tab from hash
     var tabHash = hashParts[1];
-    if (['summary','raised','spent','committees'].indexOf(tabHash) !== -1) showTab(tabHash);
+    if (['summary','raised','spent'].indexOf(tabHash) !== -1) showTab(tabHash);
+
+    // Fetch committees at init — data is small, count needed immediately for trigger label
+    fetchAndRenderCommittees();
 
   } catch(err) {
     var el = document.getElementById('state-msg');

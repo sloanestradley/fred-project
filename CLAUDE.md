@@ -74,10 +74,10 @@ The candidate page (`candidate.html`) is the main work in progress. It accepts a
 - Profile header with initials avatar, party tag, office/district tag, incumbency tag
 - Cycle switcher (buttons to toggle between cycles, re-fetches data)
 - URL anchor encodes cycle + tab: `candidate.html#2024#summary`
-- Tab navigation: Summary, Raised, Spent, Committees
+- Tab navigation: Summary, Raised, Spent
 - Stats row: Total Raised, Total Spent, Cash on Hand, Raised-to-Spent Ratio
 - Cycle-aware banner: health signal (green/amber/red) for active cycles; "Cycle Complete" summary for closed cycles
-- Committees tab: lists associated committees with type labels
+- Associated committees modal: "Committees (N) →" trigger in profile header opens a modal with Active and History tabs; committees fetched eagerly at init so count is immediate
 - Responsive layout: desktop sidebar nav, mobile scroll-aware header + hamburger drawer
 - Smooth fade-in animations on load
 
@@ -100,7 +100,8 @@ The candidate page (`candidate.html`) is the main work in progress. It accepts a
 ```
 GET /candidate/{id}/                          — candidate metadata
 GET /candidate/{id}/totals/?cycle={year}      — cycle-level financial totals
-GET /candidate/{id}/committees/?cycle={year}  — associated committees
+GET /candidate/{id}/committees/               — associated committees (not cycle-scoped; returns all)
+GET /committees/?sponsor_candidate_id={id}    — leadership PACs sponsored by this candidate (separate endpoint!)
 GET /committee/{id}/reports/?cycle={year}     — per-period filing reports (chart data)
 GET /reporting-dates/?report_year={year}&report_type={type} — filing deadlines (one call per type)
 GET /election-dates/?election_state=&office_sought=&election_year= — actual election dates
@@ -141,9 +142,9 @@ Candidate totals endpoint returns:
 See `project-brief.md` for the full phased roadmap. Short version:
 
 **Phase 1 (current):** Finish the candidate page before building anything new.
-- Raised tab (contributor breakdown, geography, top donors)
-- Spent tab (category breakdown, spend timeline)
-- Associated committees — header-level modal, not cycle-scoped
+- ~~Raised tab~~ ✅ live
+- **Spent tab** (category breakdown, spend timeline) — current priority
+- ~~Associated committees~~ ✅ live — header modal with active/history tabs, leadership PAC support, JFA gap note
 - Data freshness indicators on all data displays
 - Empty and error states
 - Design system documentation page
@@ -158,6 +159,25 @@ See `project-brief.md` for the full phased roadmap. Short version:
 - **YTD per_page limit:** Reports currently fetched with `per_page=20` per sub-cycle — verify this is sufficient for Senate candidates with dense filing histories. Some cycles may have more than 20 reports.
 - **Presidential cycle untested:** 4-year cycle is architecturally supported via `getCycleSpanYears()` / `getSubCycles()` but has not been tested with a real presidential candidate.
 - **Multi-cycle stat labels:** Stats row (Raised, Spent, COH) doesn't yet indicate when figures represent a multi-sub-cycle sum (e.g. "6-year total" vs. "cycle total"). Needs a label or caveat for Senate candidates.
+- **JFA committee gap:** Joint fundraising committees where a candidate is a participant (not the principal) have `candidate_ids: []` and `sponsor_candidate_ids: null` in the FEC API — they don't appear in either `/candidate/{id}/committees/` or `/committees/?sponsor_candidate_id=`. The only source of truth is the candidate's F2 filing document, which lists them as authorized committees. Surfacing these would require fetching the most recent F2 via `/filings/?candidate_id=&form_type=F2` and parsing committee references from the filing data. Not built yet; validate approach with John before implementing.
+
+## Committee modal architecture
+
+The associated committees feature is a modal triggered from the profile header — not a tab, and not cycle-scoped. Key design decisions and API patterns:
+
+- **Two parallel API calls at init:** `/candidate/{id}/committees/` (authorized committees) + `/committees/?sponsor_candidate_id={id}` (leadership PACs). Results merged, deduped by `committee_id`.
+- **Leadership PAC identification:** `leadership_pac: true` boolean field on the committee record is the reliable signal. `committee_type === 'D'` is unreliable — some leadership PACs have `committee_type: 'N'`. Records from the sponsor endpoint are tagged `_isLeadershipPac = true` as a fallback.
+- **Active vs. terminated split:** `filing_frequency === 'T'` = terminated. Active committees go in the Active tab; terminated in History tab (hidden if empty).
+- **Committee grouping order:** Principal Committee → Joint Fundraising → Leadership PAC → Other Authorized → Other. Uses an `assigned` Set to prevent double-counting.
+- **Eager loading:** `fetchAndRenderCommittees()` called in `init()` (not on modal open) so the count in the trigger label is immediate. `committeesLoaded` flag prevents double-fetch on modal re-open.
+- **JFA gap acknowledged in modal:** A `.data-note` at the bottom of the modal explains that JFA committees where the candidate is a participant (not principal) may not appear — this is an FEC API indexing limitation, not a bug.
+
+Key committee fields:
+- `designation` — `'P'` = Principal CC, `'A'` = Authorized, `'J'` = Joint Fundraising
+- `committee_type` — `'J'` = JFA, `'D'` = Leadership PAC (unreliable for LP detection — use `leadership_pac` boolean)
+- `filing_frequency` — `'T'` = terminated, `'Q'` = quarterly (active)
+- `leadership_pac` — boolean; most reliable leadership PAC signal
+- `sponsor_candidate_ids` — array on committee record; leadership PACs carry the candidate's ID here
 
 ## Senate multi-sub-cycle architecture
 
@@ -175,7 +195,7 @@ Senate 6-year cycles introduce a multi-sub-cycle pattern worth understanding bef
 
 - **Stepped line chart** (not smooth) for Raised and Spent — honest to the quarterly reporting rhythm
 - **Full cycle x-axis** — even for active cycles where future quarters are empty; shows where we are in the cycle
-- **"Raised-to-spent ratio"** — not "burn rate" (domain expert feedback from Tim, a congressional campaign manager)
+- **"Raised-to-spent ratio"** — not "burn rate" (domain expert feedback from John, a congressional campaign manager)
 - **Health indicator hidden for closed cycles** — replaced with "Cycle Complete" contextual summary
 - **Points only at filing dates** — no interpolation between quarters
 - **YTD field strategy** — use `_ytd` fields from reports and carry year-1 total as base for year-2 (avoids per-period accumulation errors)
@@ -195,7 +215,7 @@ Senate 6-year cycles introduce a multi-sub-cycle pattern worth understanding bef
 - Memoed transactions must be excluded from any manual totals (we avoid this by using FEC-computed `_ytd` fields)
 - The FEC API silently ignores unrecognized query parameters — always verify a filter is working by checking total result counts, not just response shape
 - The FEC `/reporting-dates/` endpoint ignores date range params; use `report_year` + `report_type` for targeted queries
-- Tim (domain expert, congressional campaign manager) is available for validation questions
+- John (domain expert, congressional campaign manager) is available for validation questions
 
 ---
 
@@ -211,15 +231,15 @@ Senate 6-year cycles introduce a multi-sub-cycle pattern worth understanding bef
 - [x] Page works for any candidate ID passed as a URL param (`?id=H2WA03217`) — verified with MGP (House) and Gillibrand (Senate)
 - [x] Responsive: mobile header, hamburger nav, chart doesn't overflow viewport
 - [ ] Search / homepage
-- [ ] Raised tab: contributor breakdown, geography heatmap, top donors
-- [ ] Spent tab: category breakdown, spend timeline
-- [ ] Committees tab: full ecosystem view (currently lists only, no detail)
+- [x] Raised tab: contributor breakdown, geography heatmap, top committee contributors — live and verified
+- [ ] Spent tab: category breakdown, spend timeline — next priority
+- [x] Associated committees: header modal with Active/History tabs, leadership PAC via sponsor endpoint, JFA gap note
 
 ---
 
 ## Design reference
 
-The process log (`process-log.html`) has the full project history including domain research notes, Tim's feedback, and all key decisions with rationale. Read it for context on *why* things are the way they are.
+The process log (`process-log.html`) has the full project history including domain research notes, John's feedback, and all key decisions with rationale. Read it for context on *why* things are the way they are.
 
 The full product brief (`project-brief.md`) has MVP scope, audience definition, backlog, open questions, and definitions.
 
@@ -245,3 +265,16 @@ Ask Sloane what's been tested since the last session and what the current priori
 ```
 Read CLAUDE.md and project-brief.md, then summarize: what's the current state of the candidate page, what's the top Phase 1 priority, and what do you need from me to get started?
 ```
+
+---
+
+## When compacting or ending a session
+
+Before running /compact or ending a session, always output a process log entry draft covering:
+- A title in the voice of the existing entries (e.g. "Debugging in the dark, then the lights came on")
+- A 2–3 sentence summary written from Sloane's perspective, not a technical changelog
+- Changelog bullets: what changed, in plain language
+- A field notes block: a journal-style reflection on what the session revealed — about the product, the process, or the tools
+- Stack tags for anything new introduced this session
+
+Format it as a fenced code block so it's easy to copy. Sloane will paste it into Claude Chat for final tone editing before adding it to process-log.html.

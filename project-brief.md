@@ -226,6 +226,7 @@ Note: the brief is currently written with the active cycle mid-stage as the prim
 - **Race page — defining "unserious" candidates:** Candidates with low or no financial data should be shown with reduced visual hierarchy on race pages, but what threshold defines "unserious"? A declared candidate with zero filings is different from one with minimal activity. *(Validate with Tim — what would a strategist actually want to see?)*
 - **Associated committees — F2 reliability at scale:** Can F2 (Statement of Candidacy) filings be used to surface associated committees reliably for any candidate, at scale? What are the edge cases? *(Validate with Tim)*
 - **Associated committees — leadership PAC identification:** Leadership PACs can't be identified through F2 alone. What's the most reliable method for surfacing them? *(Validate with Tim)*
+- **Raised tab — "Transfers In" category:** Tim flagged confusion between "Transfers In" and "PAC / Other Committees" — they appear to overlap because JFA contributions are categorized as "Transfers In" by the FEC rather than under "Individual" or "PAC." Total raised figures match campaign-confirmed numbers so double-counting is not occurring. Two actions needed: (1) confirm `receipt_type` values behind "Transfers In" via Schedule A in Claude Code; (2) add plain-language tooltip or footnote explaining the category to users. *(FEC note: contributions received as part of a joint fundraising transfer are included in "Transfers In" rather than "Individual contributions" in some data files)*
 
 ---
 
