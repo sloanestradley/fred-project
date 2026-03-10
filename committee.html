@@ -165,7 +165,8 @@
 <script src="utils.js"></script>
 <script>
 var urlParams    = new URLSearchParams(window.location.search);
-var COMMITTEE_ID = urlParams.get('id');
+var _pathId      = window.location.pathname.split('/').pop();
+var COMMITTEE_ID = urlParams.get('id') || (_pathId && _pathId !== 'committee.html' ? _pathId : null);
 
 function designationLabel(d) {
   var map = { P:'Principal Committee', A:'Authorized', J:'Joint Fundraising',

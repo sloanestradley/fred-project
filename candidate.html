@@ -354,7 +354,8 @@ var CHART_COLORS = {
 
 // ── Config ─────────────────────────────────────────
 var urlParams    = new URLSearchParams(window.location.search);
-var CANDIDATE_ID = urlParams.get('id') || 'H2WA03217';
+var _pathId      = window.location.pathname.split('/').pop();
+var CANDIDATE_ID = urlParams.get('id') || (_pathId && _pathId !== 'candidate.html' ? _pathId : null) || 'H2WA03217';
 var CAND_STATE   = null;   // populated from API in init()
 var CAND_DIST    = null;
 var CAND_OFFICE  = null;   // 'H', 'S', or 'P'

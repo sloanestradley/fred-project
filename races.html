@@ -179,7 +179,7 @@ function goToCuratedRace() {
   var district = document.getElementById('form-district').value.trim();
   var year     = document.getElementById('form-year').value.trim();
   if (!state || !year) { alert('Please enter state and year.'); return; }
-  var url = 'race.html?office=' + office + '&state=' + state + '&year=' + year;
+  var url = '/race?office=' + office + '&state=' + state + '&year=' + year;
   if (office === 'H' && district) url += '&district=' + district;
   window.location.href = url;
 }

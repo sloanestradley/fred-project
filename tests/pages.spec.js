@@ -388,10 +388,10 @@ test.describe('design-system.html', () => {
 // ── index.html ────────────────────────────────────────────────────────────────
 
 test.describe('index.html', () => {
-  test('redirects to search.html', async ({ page }) => {
+  test('redirects to search', async ({ page }) => {
     await mockAmplitude(page);
     await page.goto('/index.html');
-    await expect(page).toHaveURL(/search\.html/, { timeout: 5000 });
+    await expect(page).toHaveURL(/\/search(?:\.html)?$/, { timeout: 5000 });
   });
 });
 
