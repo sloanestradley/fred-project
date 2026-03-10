@@ -6,7 +6,8 @@
   <title>Process Log — FEC Data Viz</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Amplitude Analytics -->
   <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.6.22-min.js.gz"></script>
   <style>
@@ -33,11 +34,12 @@
     }
 
     .page-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      line-height: 1;
       margin-bottom: 0.75rem;
     }
 
@@ -121,11 +123,12 @@
 
     /* Title */
     .entry-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      line-height: 1.1;
       margin-bottom: 0.6rem;
     }
 
@@ -153,7 +156,7 @@
       padding: 0.3rem 0;
       font-size: 0.7rem;
       color: var(--subtle);
-      border-bottom: 1px solid rgba(37,42,56,0.6);
+      border-bottom: 1px solid var(--border);
       line-height: 1.5;
     }
 
@@ -284,7 +287,7 @@
 
     .view-btn.active {
       color: var(--text);
-      border-bottom-color: var(--text);
+      border-bottom-color: var(--accent);
     }
 
     .view-btn:hover:not(.active) {
@@ -308,15 +311,15 @@
     </div>
     <div class="nav-section">
       <div class="nav-label">Pages</div>
-      <a class="nav-item" href="index.html"><span class="nav-dot" style="background:var(--muted)"></span>Dashboard</a>
-      <a class="nav-item" href="candidate.html"><span class="nav-dot" style="background:var(--muted)"></span>Candidates</a>
-      <a class="nav-item"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
-      <a class="nav-item"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
+      <a class="nav-item" href="index.html"><span class="nav-dot"></span>Dashboard</a>
+      <a class="nav-item" href="candidate.html"><span class="nav-dot"></span>Candidates</a>
+      <a class="nav-item"><span class="nav-dot"></span>Committees</a>
+      <a class="nav-item"><span class="nav-dot"></span>Races</a>
     </div>
-    <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--border)">
+    <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--sidebar-border)">
       <div class="nav-label">Documentation</div>
-      <a class="nav-item active" href="process-log.html"><span class="nav-dot" style="background:var(--subtle)"></span>Process Log</a>
-      <a class="nav-item" href="design-system.html"><span class="nav-dot" style="background:var(--muted)"></span>Design System</a>
+      <a class="nav-item active" href="process-log.html"><span class="nav-dot"></span>Process Log</a>
+      <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
     </div>
   </nav>
 
@@ -330,11 +333,11 @@
 
   <!-- Mobile nav -->
   <nav class="mobile-nav" id="mobile-nav">
-    <a class="nav-item" href="candidate.html"><span class="nav-dot" style="background:var(--muted)"></span>Candidates</a>
-    <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
-    <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
-    <a class="nav-item active" href="process-log.html" style="border-top:1px solid var(--border);padding-top:0.85rem"><span class="nav-dot" style="background:var(--subtle)"></span>Process Log</a>
-    <a class="nav-item" href="design-system.html"><span class="nav-dot" style="background:var(--muted)"></span>Design System</a>
+    <a class="nav-item" href="candidate.html"><span class="nav-dot"></span>Candidates</a>
+    <a class="nav-item" href="#"><span class="nav-dot"></span>Committees</a>
+    <a class="nav-item" href="#"><span class="nav-dot"></span>Races</a>
+    <a class="nav-item active" href="process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
+    <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
   </nav>
 
   <!-- Main -->

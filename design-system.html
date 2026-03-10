@@ -6,7 +6,8 @@
   <title>Design System — ledger.fec</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Amplitude Analytics -->
   <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.6.22-min.js.gz"></script>
   <style>
@@ -15,8 +16,8 @@
 
     /* ── Design system layout ── */
     .ds-section { margin-bottom: 4rem; }
-    .ds-section-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700;
-      letter-spacing:-0.02em; margin-bottom:1.5rem; padding-bottom:0.75rem;
+    .ds-section-title { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:800;
+      letter-spacing:0; text-transform:uppercase; margin-bottom:1.5rem; padding-bottom:0.75rem;
       border-bottom:2px solid var(--border); color:var(--text); }
 
     /* ── Component cards ── */
@@ -33,22 +34,22 @@
     /* ── Status badges ── */
     .ds-status { font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase;
       padding:0.15rem 0.45rem; border-radius:2px; font-weight:500; border:1px solid; }
-    .ds-status.stable      { color:var(--green);  border-color:rgba(61,191,122,0.3);  background:rgba(61,191,122,0.08); }
-    .ds-status.candidate-only { color:var(--dem); border-color:rgba(74,144,217,0.3);  background:rgba(74,144,217,0.08); }
-    .ds-status.log-only    { color:var(--ind);   border-color:rgba(155,142,212,0.3); background:rgba(155,142,212,0.08); }
+    .ds-status.stable      { color:var(--green);  border-color:rgba(30,102,68,0.3);   background:rgba(30,102,68,0.06); }
+    .ds-status.candidate-only { color:var(--dem); border-color:rgba(30,58,95,0.3);   background:rgba(30,58,95,0.06); }
+    .ds-status.log-only    { color:var(--ind);   border-color:rgba(90,74,122,0.3);   background:rgba(90,74,122,0.06); }
     .ds-status.planned     { color:var(--muted); border-color:var(--border);          background:var(--surface2); }
-    .ds-status.deprecated  { color:var(--red);   border-color:rgba(217,74,74,0.3);   background:rgba(217,74,74,0.08); }
+    .ds-status.deprecated  { color:var(--red);   border-color:rgba(168,50,40,0.3);   background:rgba(168,50,40,0.06); }
 
     /* ── Token table ── */
     .ds-token-table { width:100%; border-collapse:collapse; }
     .ds-token-table th { padding:0.45rem 0.75rem; text-align:left; font-size:0.55rem;
       letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
       border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; }
-    .ds-token-table td { padding:0.55rem 0.75rem; border-bottom:1px solid rgba(37,42,56,0.4);
+    .ds-token-table td { padding:0.55rem 0.75rem; border-bottom:1px solid var(--border);
       vertical-align:middle; font-size:0.64rem; color:var(--subtle);
       font-family:'IBM Plex Mono',monospace; }
     .ds-token-table tr:last-child td { border-bottom:none; }
-    .ds-token-table tr:hover td { background:rgba(28,32,48,0.35); }
+    .ds-token-table tr:hover td { background:var(--surface2); }
     .ds-token-dot { width:12px; height:12px; border-radius:2px; display:inline-block;
       vertical-align:middle; border:1px solid rgba(255,255,255,0.06); margin-right:0.35rem; }
     .ds-token-name { color:var(--dem); }
@@ -61,7 +62,7 @@
       color:var(--muted); margin-bottom:0.75rem; }
     .ds-swatch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:0.75rem; }
     .ds-swatch-color { height:44px; border-radius:3px; margin-bottom:0.4rem;
-      border:1px solid rgba(255,255,255,0.05); }
+      border:1px solid var(--border); }
     .ds-swatch-token { font-size:0.6rem; color:var(--subtle); font-family:'IBM Plex Mono',monospace; }
     .ds-swatch-hex   { font-size:0.55rem; color:var(--muted); margin-top:0.1rem; }
     .ds-swatch-desc  { font-size:0.54rem; color:var(--muted); margin-top:0.15rem; font-style:italic; }
@@ -71,7 +72,7 @@
     .ds-type-group-label { font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase;
       color:var(--muted); margin-bottom:0.75rem; }
     .ds-type-row { display:flex; align-items:baseline; justify-content:space-between;
-      gap:2rem; padding:0.85rem 0; border-bottom:1px solid rgba(37,42,56,0.5); }
+      gap:2rem; padding:0.85rem 0; border-bottom:1px solid var(--border); }
     .ds-type-row:last-child { border-bottom:none; }
     .ds-type-meta { font-size:0.57rem; color:var(--muted); white-space:nowrap;
       flex-shrink:0; font-family:'IBM Plex Mono',monospace; line-height:1.4; text-align:right; }
@@ -104,8 +105,8 @@
       padding:1.5rem 0 1.5rem; margin-bottom:3.5rem; }
     .page-eyebrow { font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase;
       color:var(--accent); margin-bottom:0.4rem; }
-    .page-title { font-family:'Syne',sans-serif; font-size:clamp(1.6rem,3vw,2.2rem);
-      font-weight:800; letter-spacing:-0.03em; line-height:1.05; margin-bottom:0.75rem; }
+    .page-title { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.6rem,3vw,2.4rem);
+      font-weight:800; letter-spacing:0; text-transform:uppercase; line-height:1; margin-bottom:0.75rem; }
     .page-desc { font-size:0.75rem; color:var(--subtle); max-width:540px; line-height:1.7; }
 
     /* ── Component CSS: Tags, banner, candidate header ── */
@@ -113,12 +114,12 @@
     .breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em;
       text-transform:uppercase; margin-bottom:1.25rem; }
     .candidate-row { display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:1.25rem; }
-    .avatar { width:60px; height:60px; border-radius:4px; background:var(--surface2);
-      border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
-      font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800;
-      color:var(--subtle); letter-spacing:0.05em; flex-shrink:0; }
-    .candidate-name { font-family:'Syne',sans-serif; font-size:clamp(1.4rem,3vw,2.2rem);
-      font-weight:800; line-height:1.05; letter-spacing:-0.03em; margin-bottom:0.6rem; }
+    .avatar { width:60px; height:60px; border-radius:2px; background:var(--surface2);
+      border:1.5px solid var(--border-strong); display:flex; align-items:center; justify-content:center;
+      font-family:'Barlow Condensed',sans-serif; font-size:0.9rem;
+      color:var(--muted); letter-spacing:0; text-transform:uppercase; flex-shrink:0; }
+    .candidate-name { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.6rem,3vw,2.4rem);
+      font-weight:800; line-height:1; letter-spacing:0; text-transform:uppercase; margin-bottom:0.6rem; }
     .meta-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
     .cycle-switcher { display:flex; align-items:center; gap:0.35rem; margin-top:1rem; flex-wrap:wrap; }
     .cycle-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase;
@@ -141,18 +142,19 @@
     .stat-card  { background:var(--surface); padding:1.2rem 1.4rem; }
     .stat-label { font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase;
       color:var(--muted); margin-bottom:0.35rem; }
-    .stat-value { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700;
-      line-height:1; letter-spacing:-0.02em; margin-bottom:0.25rem; }
+    .stat-value { font-family:'Barlow Condensed',sans-serif; font-size:2rem; font-weight:800;
+      line-height:1; letter-spacing:0; margin-bottom:0.25rem; }
     .stat-sub   { font-size:0.6rem; color:var(--muted); }
     .stat-sub.pos  { color:var(--green); }
     .stat-sub.neg  { color:var(--red); }
     .stat-sub.warn { color:var(--amber); }
 
     /* Global banner */
-    .global-banner { background:var(--amber); height:28px;
+    .global-banner { background:#1c1710; height:36px;
       display:flex; align-items:center; justify-content:center; border-radius:3px; }
-    .global-banner-text { font-size:0.57rem; color:rgba(13,15,18,0.75); letter-spacing:0.05em; }
-    .global-banner-text span { color:#0d0f12; font-weight:500; }
+    .global-banner-text { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0;
+      text-transform:uppercase; color:#7a7060; }
+    .global-banner-text strong { color:#c8c0b0; }
 
     /* Raised tab grid */
     .raised-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px;
@@ -176,8 +178,8 @@
       background:var(--border); border:1.5px solid var(--muted); }
     .entry-date { font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase;
       color:var(--muted); margin-bottom:0.3rem; }
-    .entry-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700;
-      letter-spacing:-0.02em; line-height:1.2; margin-bottom:0.6rem; }
+    .entry-title { font-family:'Barlow Condensed',sans-serif; font-size:1.3rem; font-weight:700;
+      letter-spacing:0; text-transform:uppercase; line-height:1.1; margin-bottom:0.6rem; }
     .entry-summary { font-size:0.75rem; color:var(--subtle); line-height:1.7;
       margin-bottom:0; max-width:560px; }
 
@@ -218,15 +220,15 @@
     <div class="sidebar-logo"><a href="index.html">ledger<em>.fec</em></a></div>
     <div class="nav-section">
       <div class="nav-label">Pages</div>
-      <a class="nav-item" href="candidate.html"><span class="nav-dot" style="background:var(--muted)"></span>Candidates</a>
-      <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
-      <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
-      <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Search</a>
+      <a class="nav-item" href="candidate.html"><span class="nav-dot"></span>Candidates</a>
+      <a class="nav-item" href="#"><span class="nav-dot"></span>Committees</a>
+      <a class="nav-item" href="#"><span class="nav-dot"></span>Races</a>
+      <a class="nav-item" href="#"><span class="nav-dot"></span>Search</a>
     </div>
-    <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--border)">
+    <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--sidebar-border)">
       <div class="nav-label">Documentation</div>
-      <a class="nav-item" href="process-log.html"><span class="nav-dot" style="background:var(--muted)"></span>Process Log</a>
-      <a class="nav-item active" href="design-system.html"><span class="nav-dot" style="background:var(--subtle)"></span>Design System</a>
+      <a class="nav-item" href="process-log.html"><span class="nav-dot"></span>Process Log</a>
+      <a class="nav-item active" href="design-system.html"><span class="nav-dot"></span>Design System</a>
     </div>
   </nav>
 
@@ -240,11 +242,11 @@
 
   <!-- Mobile nav -->
   <nav class="mobile-nav" id="mobile-nav">
-    <a class="nav-item" href="candidate.html"><span class="nav-dot" style="background:var(--muted)"></span>Candidates</a>
-    <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
-    <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
-    <a class="nav-item" href="process-log.html" style="border-top:1px solid var(--border);padding-top:0.85rem"><span class="nav-dot" style="background:var(--muted)"></span>Process Log</a>
-    <a class="nav-item active" href="design-system.html"><span class="nav-dot" style="background:var(--subtle)"></span>Design System</a>
+    <a class="nav-item" href="candidate.html"><span class="nav-dot"></span>Candidates</a>
+    <a class="nav-item" href="#"><span class="nav-dot"></span>Committees</a>
+    <a class="nav-item" href="#"><span class="nav-dot"></span>Races</a>
+    <a class="nav-item" href="process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
+    <a class="nav-item active" href="design-system.html"><span class="nav-dot"></span>Design System</a>
   </nav>
 
   <!-- Main -->
@@ -267,20 +269,28 @@
       <div style="margin-bottom:1.5rem">
         <div class="ds-swatch-group-label" style="margin-bottom:0.75rem">Tier 1 — Primitive palette (reference only, not CSS variables)</div>
         <table class="ds-token-table">
-          <thead><tr><th>Name</th><th>Hex</th></tr></thead>
+          <thead><tr><th>Name</th><th>Hex</th><th>Note</th></tr></thead>
           <tbody>
-            <tr><td><span class="ds-token-dot" style="background:#0d0f12"></span>gray-950</td><td class="ds-token-hex">#0d0f12</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#141720"></span>gray-900</td><td class="ds-token-hex">#141720</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#1c2030"></span>gray-850</td><td class="ds-token-hex">#1c2030</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#252a38"></span>gray-800</td><td class="ds-token-hex">#252a38</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#e8eaf0"></span>gray-200</td><td class="ds-token-hex">#e8eaf0</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#8890a0"></span>gray-400</td><td class="ds-token-hex">#8890a0</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#5a6070"></span>gray-500</td><td class="ds-token-hex">#5a6070</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#4a90d9"></span>blue-500</td><td class="ds-token-hex">#4a90d9</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#d94a4a"></span>red-500</td><td class="ds-token-hex">#d94a4a</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#9b8ed4"></span>purple-400</td><td class="ds-token-hex">#9b8ed4</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#3dbf7a"></span>green-500</td><td class="ds-token-hex">#3dbf7a</td></tr>
-            <tr><td><span class="ds-token-dot" style="background:#e8a020"></span>amber-400</td><td class="ds-token-hex">#e8a020</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#ede8e0;border:1px solid #cdc7bc"></span>warm-floor</td><td class="ds-token-hex">#ede8e0</td><td>Page bg</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#f7f4ef;border:1px solid #cdc7bc"></span>warm-card</td><td class="ds-token-hex">#f7f4ef</td><td>Card surface</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#eee9e1;border:1px solid #cdc7bc"></span>warm-inset</td><td class="ds-token-hex">#eee9e1</td><td>Chart interiors</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#e8e2d8"></span>warm-sidebar</td><td class="ds-token-hex">#e8e2d8</td><td>Sidebar bg</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#d4cdc3"></span>warm-active</td><td class="ds-token-hex">#d4cdc3</td><td>Active nav bg</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#cdc7bc"></span>warm-rule</td><td class="ds-token-hex">#cdc7bc</td><td>Border default</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#a8a099"></span>warm-rule-dark</td><td class="ds-token-hex">#a8a099</td><td>Border strong</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#1a1510"></span>warm-ink</td><td class="ds-token-hex">#1a1510</td><td>Primary text</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#46403a"></span>warm-ink-2</td><td class="ds-token-hex">#46403a</td><td>Secondary text</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#625b52"></span>warm-ink-3</td><td class="ds-token-hex">#625b52</td><td>Tertiary text</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#2c5282"></span>blue-mid</td><td class="ds-token-hex">#2c5282</td><td>Accent / interactive</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#1e3a5f"></span>navy-deep</td><td class="ds-token-hex">#1e3a5f</td><td>Democrat</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#a83228"></span>red-deep</td><td class="ds-token-hex">#a83228</td><td>Republican / error</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#5a4a7a"></span>purple-deep</td><td class="ds-token-hex">#5a4a7a</td><td>Independent</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#1e6644"></span>green-deep</td><td class="ds-token-hex">#1e6644</td><td>Success</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#8a5f10"></span>amber-deep</td><td class="ds-token-hex">#8a5f10</td><td>Warning</td></tr>
+            <tr><td colspan="3" style="color:var(--muted);font-size:0.6rem;padding-top:0.75rem">Chart primitives (still referenced by --chart-* tokens, unchanged from previous palette):</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#4a90d9"></span>blue-500</td><td class="ds-token-hex">#4a90d9</td><td>Chart raised</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#d94a4a"></span>red-500</td><td class="ds-token-hex">#d94a4a</td><td>Chart spent</td></tr>
+            <tr><td><span class="ds-token-dot" style="background:#3dbf7a"></span>green-500</td><td class="ds-token-hex">#3dbf7a</td><td>Chart CoH</td></tr>
           </tbody>
         </table>
       </div>
@@ -290,20 +300,21 @@
         <table class="ds-token-table">
           <thead><tr><th>Token</th><th>Primitive</th><th>Hex</th><th>Usage</th></tr></thead>
           <tbody>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--bg)"></span>--bg</td><td>gray-950</td><td class="ds-token-hex">#0d0f12</td><td>Page background</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--surface)"></span>--surface</td><td>gray-900</td><td class="ds-token-hex">#141720</td><td>Cards, sidebar, panels</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--surface2)"></span>--surface2</td><td>gray-850</td><td class="ds-token-hex">#1c2030</td><td>Hover states, subtle elevation</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--border);border:1px solid var(--surface2)"></span>--border</td><td>gray-800</td><td class="ds-token-hex">#252a38</td><td>Dividers, outlines</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--text)"></span>--text</td><td>gray-200</td><td class="ds-token-hex">#e8eaf0</td><td>Primary text</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--subtle)"></span>--subtle</td><td>gray-400</td><td class="ds-token-hex">#8890a0</td><td>Secondary text, icons</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--muted)"></span>--muted</td><td>gray-500</td><td class="ds-token-hex">#5a6070</td><td>Tertiary / disabled text</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--dem)"></span>--dem</td><td>blue-500</td><td class="ds-token-hex">#4a90d9</td><td>Democrat party color</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--rep)"></span>--rep ⚠</td><td>red-500</td><td class="ds-token-hex">#d94a4a</td><td>Republican party color</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--ind)"></span>--ind</td><td>purple-400</td><td class="ds-token-hex">#9b8ed4</td><td>Independent party color</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--green)"></span>--green</td><td>green-500</td><td class="ds-token-hex">#3dbf7a</td><td>Success / financially healthy</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--amber)"></span>--amber</td><td>amber-400</td><td class="ds-token-hex">#e8a020</td><td>Warning / watch</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--red)"></span>--red ⚠</td><td>red-500</td><td class="ds-token-hex">#d94a4a</td><td>Error / stressed campaign</td></tr>
-            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--accent)"></span>--accent</td><td>blue-500</td><td class="ds-token-hex">#4a90d9</td><td>Alias for --dem (process-log)</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--bg);border:1px solid var(--border)"></span>--bg</td><td>warm-floor</td><td class="ds-token-hex">#ede8e0</td><td>Page background</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--surface);border:1px solid var(--border)"></span>--surface</td><td>warm-card</td><td class="ds-token-hex">#f7f4ef</td><td>Cards, panels</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--surface2);border:1px solid var(--border)"></span>--surface2</td><td>warm-inset</td><td class="ds-token-hex">#eee9e1</td><td>Chart interiors, inset elements</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--border)"></span>--border</td><td>warm-rule</td><td class="ds-token-hex">#cdc7bc</td><td>Dividers, outlines</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--border-strong)"></span>--border-strong</td><td>warm-rule-dark</td><td class="ds-token-hex">#a8a099</td><td>Strong borders, nav dots default</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--text)"></span>--text</td><td>warm-ink</td><td class="ds-token-hex">#1a1510</td><td>Primary text</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--subtle)"></span>--subtle</td><td>warm-ink-2</td><td class="ds-token-hex">#46403a</td><td>Secondary text, breadcrumbs</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--muted)"></span>--muted</td><td>warm-ink-3</td><td class="ds-token-hex">#625b52</td><td>Tertiary / label text</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--dem)"></span>--dem</td><td>navy-deep</td><td class="ds-token-hex">#1e3a5f</td><td>Democrat party color</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--rep)"></span>--rep ⚠</td><td>red-deep</td><td class="ds-token-hex">#a83228</td><td>Republican party color</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--ind)"></span>--ind</td><td>purple-deep</td><td class="ds-token-hex">#5a4a7a</td><td>Independent party color</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--green)"></span>--green</td><td>green-deep</td><td class="ds-token-hex">#1e6644</td><td>Success / financially healthy</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--amber)"></span>--amber</td><td>amber-deep</td><td class="ds-token-hex">#8a5f10</td><td>Warning / watch</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--red)"></span>--red ⚠</td><td>red-deep</td><td class="ds-token-hex">#a83228</td><td>Error / stressed campaign</td></tr>
+            <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--accent)"></span>--accent</td><td>blue-mid</td><td class="ds-token-hex">#2c5282</td><td>Interactive accent, active indicators</td></tr>
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-raised)"></span>--chart-raised</td><td>--dem @ 90%</td><td class="ds-token-hex">rgba(74,144,217,0.9)</td><td>Raised money line in chart</td></tr>
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-raised-solid)"></span>--chart-raised-solid</td><td>--dem @ 100%</td><td class="ds-token-hex">rgba(74,144,217,1)</td><td>Raised chart point fill</td></tr>
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-spent)"></span>--chart-spent</td><td>--rep @ 85%</td><td class="ds-token-hex">rgba(217,74,74,0.85)</td><td>Spent money line in chart</td></tr>
@@ -316,7 +327,7 @@
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-overlay-today)"></span>--chart-overlay-today</td><td>--subtle @ 18%</td><td class="ds-token-hex">rgba(136,144,160,0.18)</td><td>Today marker (active cycles)</td></tr>
           </tbody>
         </table>
-        <div class="callout">⚠ <strong>Known overlap:</strong> <code>--red</code> and <code>--rep</code> both resolve to <code>#d94a4a</code>. This is intentional — <code>--rep</code> is a partisan color; <code>--red</code> is a status color (stressed/error). If the status system diverges from the partisan palette in the future, they should split into separate primitives.</div>
+        <div class="callout">⚠ <strong>Known overlap:</strong> <code>--red</code> and <code>--rep</code> both resolve to <code>#a83228</code>. This is intentional — <code>--rep</code> is a partisan color; <code>--red</code> is a status color (stressed/error). If the status system diverges from the partisan palette in the future, they should split into separate primitives.</div>
       </div>
     </section>
 
@@ -327,29 +338,35 @@
       <div class="ds-swatch-group">
         <div class="ds-swatch-group-label">Backgrounds</div>
         <div class="ds-swatch-grid">
-          <div class="ds-swatch" data-token="--bg" data-hex="#0d0f12">
-            <div class="ds-swatch-color" style="background:var(--bg);border:1px solid var(--border)"></div>
+          <div class="ds-swatch" data-token="--bg" data-hex="#ede8e0">
+            <div class="ds-swatch-color" style="background:var(--bg)"></div>
             <div class="ds-swatch-token">--bg</div>
-            <div class="ds-swatch-hex">#0d0f12</div>
-            <div class="ds-swatch-desc">Page background</div>
+            <div class="ds-swatch-hex">#ede8e0</div>
+            <div class="ds-swatch-desc">Page background (floor)</div>
           </div>
-          <div class="ds-swatch" data-token="--surface" data-hex="#141720">
+          <div class="ds-swatch" data-token="--surface" data-hex="#f7f4ef">
             <div class="ds-swatch-color" style="background:var(--surface)"></div>
             <div class="ds-swatch-token">--surface</div>
-            <div class="ds-swatch-hex">#141720</div>
-            <div class="ds-swatch-desc">Cards, sidebar</div>
+            <div class="ds-swatch-hex">#f7f4ef</div>
+            <div class="ds-swatch-desc">Cards, panels</div>
           </div>
-          <div class="ds-swatch" data-token="--surface2" data-hex="#1c2030">
+          <div class="ds-swatch" data-token="--surface2" data-hex="#eee9e1">
             <div class="ds-swatch-color" style="background:var(--surface2)"></div>
             <div class="ds-swatch-token">--surface2</div>
-            <div class="ds-swatch-hex">#1c2030</div>
-            <div class="ds-swatch-desc">Hover, elevation</div>
+            <div class="ds-swatch-hex">#eee9e1</div>
+            <div class="ds-swatch-desc">Chart interiors, insets</div>
           </div>
-          <div class="ds-swatch" data-token="--border" data-hex="#252a38">
-            <div class="ds-swatch-color" style="background:var(--border);border:1px solid var(--surface2)"></div>
+          <div class="ds-swatch" data-token="--border" data-hex="#cdc7bc">
+            <div class="ds-swatch-color" style="background:var(--border)"></div>
             <div class="ds-swatch-token">--border</div>
-            <div class="ds-swatch-hex">#252a38</div>
+            <div class="ds-swatch-hex">#cdc7bc</div>
             <div class="ds-swatch-desc">Dividers, outlines</div>
+          </div>
+          <div class="ds-swatch" data-token="--sidebar-bg" data-hex="#e8e2d8">
+            <div class="ds-swatch-color" style="background:var(--sidebar-bg)"></div>
+            <div class="ds-swatch-token">--sidebar-bg</div>
+            <div class="ds-swatch-hex">#e8e2d8</div>
+            <div class="ds-swatch-desc">Sidebar background</div>
           </div>
         </div>
       </div>
@@ -357,23 +374,23 @@
       <div class="ds-swatch-group">
         <div class="ds-swatch-group-label">Text</div>
         <div class="ds-swatch-grid">
-          <div class="ds-swatch" data-token="--text" data-hex="#e8eaf0">
+          <div class="ds-swatch" data-token="--text" data-hex="#1a1510">
             <div class="ds-swatch-color" style="background:var(--text)"></div>
             <div class="ds-swatch-token">--text</div>
-            <div class="ds-swatch-hex">#e8eaf0</div>
-            <div class="ds-swatch-desc">Primary</div>
+            <div class="ds-swatch-hex">#1a1510</div>
+            <div class="ds-swatch-desc">Primary (~14:1)</div>
           </div>
-          <div class="ds-swatch" data-token="--subtle" data-hex="#8890a0">
+          <div class="ds-swatch" data-token="--subtle" data-hex="#46403a">
             <div class="ds-swatch-color" style="background:var(--subtle)"></div>
             <div class="ds-swatch-token">--subtle</div>
-            <div class="ds-swatch-hex">#8890a0</div>
-            <div class="ds-swatch-desc">Secondary</div>
+            <div class="ds-swatch-hex">#46403a</div>
+            <div class="ds-swatch-desc">Secondary (7.8:1)</div>
           </div>
-          <div class="ds-swatch" data-token="--muted" data-hex="#5a6070">
+          <div class="ds-swatch" data-token="--muted" data-hex="#625b52">
             <div class="ds-swatch-color" style="background:var(--muted)"></div>
             <div class="ds-swatch-token">--muted</div>
-            <div class="ds-swatch-hex">#5a6070</div>
-            <div class="ds-swatch-desc">Tertiary / disabled</div>
+            <div class="ds-swatch-hex">#625b52</div>
+            <div class="ds-swatch-desc">Tertiary (5.2:1)</div>
           </div>
         </div>
       </div>
@@ -381,22 +398,22 @@
       <div class="ds-swatch-group">
         <div class="ds-swatch-group-label">Partisan</div>
         <div class="ds-swatch-grid">
-          <div class="ds-swatch" data-token="--dem" data-hex="#4a90d9">
+          <div class="ds-swatch" data-token="--dem" data-hex="#1e3a5f">
             <div class="ds-swatch-color" style="background:var(--dem)"></div>
             <div class="ds-swatch-token">--dem</div>
-            <div class="ds-swatch-hex">#4a90d9</div>
+            <div class="ds-swatch-hex">#1e3a5f</div>
             <div class="ds-swatch-desc">Democrat</div>
           </div>
-          <div class="ds-swatch" data-token="--rep" data-hex="#d94a4a">
+          <div class="ds-swatch" data-token="--rep" data-hex="#a83228">
             <div class="ds-swatch-color" style="background:var(--rep)"></div>
             <div class="ds-swatch-token">--rep</div>
-            <div class="ds-swatch-hex">#d94a4a</div>
+            <div class="ds-swatch-hex">#a83228</div>
             <div class="ds-swatch-desc">Republican</div>
           </div>
-          <div class="ds-swatch" data-token="--ind" data-hex="#9b8ed4">
+          <div class="ds-swatch" data-token="--ind" data-hex="#5a4a7a">
             <div class="ds-swatch-color" style="background:var(--ind)"></div>
             <div class="ds-swatch-token">--ind</div>
-            <div class="ds-swatch-hex">#9b8ed4</div>
+            <div class="ds-swatch-hex">#5a4a7a</div>
             <div class="ds-swatch-desc">Independent</div>
           </div>
         </div>
@@ -405,22 +422,22 @@
       <div class="ds-swatch-group">
         <div class="ds-swatch-group-label">Status</div>
         <div class="ds-swatch-grid">
-          <div class="ds-swatch" data-token="--green" data-hex="#3dbf7a">
+          <div class="ds-swatch" data-token="--green" data-hex="#1e6644">
             <div class="ds-swatch-color" style="background:var(--green)"></div>
             <div class="ds-swatch-token">--green</div>
-            <div class="ds-swatch-hex">#3dbf7a</div>
+            <div class="ds-swatch-hex">#1e6644</div>
             <div class="ds-swatch-desc">Success / healthy</div>
           </div>
-          <div class="ds-swatch" data-token="--amber" data-hex="#e8a020">
+          <div class="ds-swatch" data-token="--amber" data-hex="#8a5f10">
             <div class="ds-swatch-color" style="background:var(--amber)"></div>
             <div class="ds-swatch-token">--amber</div>
-            <div class="ds-swatch-hex">#e8a020</div>
+            <div class="ds-swatch-hex">#8a5f10</div>
             <div class="ds-swatch-desc">Warning / watch</div>
           </div>
-          <div class="ds-swatch" data-token="--red" data-hex="#d94a4a">
+          <div class="ds-swatch" data-token="--red" data-hex="#a83228">
             <div class="ds-swatch-color" style="background:var(--red)"></div>
             <div class="ds-swatch-token">--red</div>
-            <div class="ds-swatch-hex">#d94a4a</div>
+            <div class="ds-swatch-hex">#a83228</div>
             <div class="ds-swatch-desc">Error / stressed</div>
           </div>
         </div>
@@ -474,33 +491,41 @@
       <h2 class="ds-section-title">Typography</h2>
 
       <div class="ds-type-group">
-        <div class="ds-type-group-label">Syne — Display &amp; Headings</div>
+        <div class="ds-type-group-label">Barlow Condensed — Display &amp; Headings (uppercase only)</div>
         <div class="ds-type-row">
-          <span style="font-family:'Syne',sans-serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1">Candidate Profile</span>
-          <span class="ds-type-meta">Syne 800 · clamp(1.4rem, 3vw, 2.2rem)<br>candidate name, page title</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:0;text-transform:uppercase;line-height:1">Candidate Profile</span>
+          <span class="ds-type-meta">Barlow Condensed 800 · clamp(1.6rem, 3vw, 2.4rem)<br>candidate name, page title</span>
         </div>
         <div class="ds-type-row">
-          <span style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;line-height:1">$1.24M</span>
-          <span class="ds-type-meta">Syne 700 · 1.5rem<br>stat value</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;letter-spacing:0;line-height:1">$1.24M</span>
+          <span class="ds-type-meta">Barlow Condensed 800 · 2rem<br>stat value</span>
         </div>
         <div class="ds-type-row">
-          <span style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-0.02em">Process Log</span>
-          <span class="ds-type-meta">Syne 700 · 1.1rem<br>entry title, sidebar logo</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0;text-transform:uppercase">Process Log</span>
+          <span class="ds-type-meta">Barlow Condensed 700 · 1.3rem<br>entry title, section titles</span>
         </div>
         <div class="ds-type-row">
-          <span style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:-0.02em">Committee Ecosystem</span>
-          <span class="ds-type-meta">Syne 700 · 0.9rem<br>modal title</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0;text-transform:uppercase">Committee Ecosystem</span>
+          <span class="ds-type-meta">Barlow Condensed 800 · 1rem<br>modal title, tab labels</span>
         </div>
       </div>
 
       <div class="ds-type-group">
-        <div class="ds-type-group-label">IBM Plex Mono — Data &amp; UI</div>
+        <div class="ds-type-group-label">DM Sans — Body &amp; Nav</div>
         <div class="ds-type-row">
-          <span style="font-size:0.75rem;font-weight:500;color:var(--subtle);line-height:1.7">A running record of how this project came to be — decisions made, pivots taken, and things learned along the way.</span>
-          <span class="ds-type-meta">IBM Plex Mono 500 · 0.75rem<br>body, summary</span>
+          <span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--muted);line-height:1.55">Raised-to-spent ratio of 3.84× with positive cash on hand.</span>
+          <span class="ds-type-meta">DM Sans · 0.82rem<br>status descriptions, body text</span>
         </div>
         <div class="ds-type-row">
-          <span style="font-size:0.72rem;font-weight:400;color:var(--subtle)">Raised-to-Spent Ratio</span>
+          <span style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:var(--sidebar-muted)">Candidates</span>
+          <span class="ds-type-meta">DM Sans · 0.8rem<br>nav items</span>
+        </div>
+      </div>
+
+      <div class="ds-type-group">
+        <div class="ds-type-group-label">IBM Plex Mono — Labels &amp; Data (uppercase)</div>
+        <div class="ds-type-row">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;font-weight:400;color:var(--subtle)">Raised-to-Spent Ratio</span>
           <span class="ds-type-meta">IBM Plex Mono 400 · 0.72rem<br>label, insight text</span>
         </div>
         <div class="ds-type-row">
@@ -627,9 +652,9 @@
             <div style="padding:0 0.5rem 0.5rem;margin-bottom:0.5rem;border-bottom:1px solid var(--border)">
               <div class="nav-label">Pages</div>
             </div>
-            <a class="nav-item active" href="#"><span class="nav-dot" style="background:var(--subtle)"></span>Candidates</a>
-            <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Committees</a>
-            <a class="nav-item" href="#"><span class="nav-dot" style="background:var(--muted)"></span>Races</a>
+            <a class="nav-item active" href="#"><span class="nav-dot"></span>Candidates</a>
+            <a class="nav-item" href="#"><span class="nav-dot"></span>Committees</a>
+            <a class="nav-item" href="#"><span class="nav-dot"></span>Races</a>
           </div>
         </div>
       </div>
@@ -644,7 +669,7 @@
         <div class="ds-component-demo">
           <div class="ds-note" style="margin-bottom:0.75rem">Rendered inline here; on live pages it is <code style="font-size:0.6rem">position:fixed</code> and sits above the sidebar/main layout.</div>
           <div class="global-banner">
-            <span class="global-banner-text">Early build, actively evolving. All data sourced from the <span>FEC public API</span>. Non-partisan by design.</span>
+            <span class="global-banner-text"><strong>Early build, actively evolving.</strong> All data sourced from the FEC public API. Non-partisan by design.</span>
           </div>
         </div>
       </div>
