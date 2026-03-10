@@ -103,10 +103,11 @@ for (const pageConfig of PAGES) {
     test('sidebar nav has all four main nav links', async ({ page }) => {
       const sidebar = page.locator('.sidebar');
       await expect(sidebar).toBeVisible();
-      await expect(sidebar.locator('a[href="candidates.html"]')).toHaveCount(1);
-      await expect(sidebar.locator('a[href="committees.html"]')).toHaveCount(1);
-      await expect(sidebar.locator('a[href="races.html"]')).toHaveCount(1);
-      await expect(sidebar.locator('a[href="search.html"]')).toHaveCount(1);
+      // Accept both relative (candidates.html) and absolute (/candidates) URL formats
+      await expect(sidebar.locator('a[href*="candidates"]')).toHaveCount(1);
+      await expect(sidebar.locator('a[href*="committees"]')).toHaveCount(1);
+      await expect(sidebar.locator('a[href*="races"]')).toHaveCount(1);
+      await expect(sidebar.locator('a[href*="search"]')).toHaveCount(1);
     });
 
     test('mobile header is present in DOM', async ({ page }) => {
@@ -116,7 +117,7 @@ for (const pageConfig of PAGES) {
     test('mobile search icon links to search.html', async ({ page }) => {
       const icon = page.locator('.mobile-search-icon');
       await expect(icon).toBeAttached();
-      await expect(icon).toHaveAttribute('href', 'search.html');
+      await expect(icon).toHaveAttribute('href', /search/);
     });
 
     test(`correct nav item is active: "${pageConfig.activeNavText}"`, async ({ page }) => {

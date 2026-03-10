@@ -175,12 +175,13 @@ test.describe('race.html', () => {
     expect(cardText?.match(/\$[\d,.]+/)).toBeTruthy();
   });
 
-  test('candidate card links to candidate.html with cycle hash', async ({ page }) => {
-    const link = page.locator('a.candidate-card[href*="candidate.html"]').first();
+  test('candidate card links to candidate page with cycle hash', async ({ page }) => {
+    // Accept both /candidate/{id}#year#summary (clean URL) and candidate.html?id=...#year
+    const link = page.locator('a.candidate-card[href*="candidate"]').first();
     await expect(link).toBeAttached();
     const href = await link.getAttribute('href');
     // Should include a year anchor like #2024#summary
-    expect(href).toMatch(/candidate\.html.+#\d{4}/);
+    expect(href).toMatch(/#\d{4}/);
   });
 
   test('no 422 errors (office sent as lowercase full word)', async ({ page }) => {

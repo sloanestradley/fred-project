@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Committee — ledger.fec</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -58,25 +58,25 @@
 
   <!-- Desktop sidebar -->
   <nav class="sidebar">
-    <div class="sidebar-logo"><a href="index.html">ledger<em>.fec</em></a></div>
+    <div class="sidebar-logo"><a href="/">ledger<em>.fec</em></a></div>
     <div class="nav-section">
       <div class="nav-label">Pages</div>
-      <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-      <a class="nav-item active" href="committees.html"><span class="nav-dot"></span>Committees</a>
-      <a class="nav-item" href="races.html"><span class="nav-dot"></span>Races</a>
-      <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
+      <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+      <a class="nav-item active" href="/committees"><span class="nav-dot"></span>Committees</a>
+      <a class="nav-item" href="/races"><span class="nav-dot"></span>Races</a>
+      <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
     </div>
     <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--sidebar-border)">
       <div class="nav-label">Documentation</div>
-      <a class="nav-item" href="process-log.html"><span class="nav-dot"></span>Process Log</a>
-      <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+      <a class="nav-item" href="/process-log.html"><span class="nav-dot"></span>Process Log</a>
+      <a class="nav-item" href="/design-system.html"><span class="nav-dot"></span>Design System</a>
     </div>
   </nav>
 
   <!-- Mobile header -->
   <header class="mobile-header" id="mobile-header">
-    <a class="mobile-logo" href="index.html">ledger<em>.fec</em></a>
-    <a href="search.html" class="mobile-search-icon" aria-label="Search">
+    <a class="mobile-logo" href="/">ledger<em>.fec</em></a>
+    <a href="/search" class="mobile-search-icon" aria-label="Search">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </a>
     <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
@@ -86,12 +86,12 @@
 
   <!-- Mobile nav -->
   <nav class="mobile-nav" id="mobile-nav">
-    <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-    <a class="nav-item active" href="committees.html"><span class="nav-dot"></span>Committees</a>
-    <a class="nav-item" href="races.html"><span class="nav-dot"></span>Races</a>
-    <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
-    <a class="nav-item" href="process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
-    <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+    <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+    <a class="nav-item active" href="/committees"><span class="nav-dot"></span>Committees</a>
+    <a class="nav-item" href="/races"><span class="nav-dot"></span>Races</a>
+    <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
+    <a class="nav-item" href="/process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
+    <a class="nav-item" href="/design-system.html"><span class="nav-dot"></span>Design System</a>
   </nav>
 
   <!-- Main -->
@@ -161,8 +161,8 @@
   <p class="global-banner-text"><strong>Early build, actively evolving.</strong> &nbsp;All data sourced from the FEC public API. &nbsp;Non-partisan by design.</p>
 </div>
 
-<script src="main.js"></script>
-<script src="utils.js"></script>
+<script src="/main.js"></script>
+<script src="/utils.js"></script>
 <script>
 var urlParams    = new URLSearchParams(window.location.search);
 var _pathId      = window.location.pathname.split('/').pop();
@@ -270,7 +270,7 @@ async function fetchAndRenderBackLink(candidateId) {
     if (!cand) return;
     var displayName = toTitleCase(cand.name);
     var backEl = document.getElementById('back-link-area');
-    backEl.innerHTML = '<a href="candidate.html?id=' + candidateId + '">← Candidate: ' + displayName + '</a>';
+    backEl.innerHTML = '<a href="/candidate/' + candidateId + '">← Candidate: ' + displayName + '</a>';
     backEl.style.display = 'block';
 
     // Also show in associated section
@@ -281,7 +281,7 @@ async function fetchAndRenderBackLink(candidateId) {
     var party   = cand.party || '';
     var pcls    = party === 'DEM' ? 'tag-dem' : (party === 'REP' ? 'tag-rep' : 'tag-ind');
     var plbl    = party === 'DEM' ? 'Democrat' : (party === 'REP' ? 'Republican' : party);
-    assocList.innerHTML = '<a class="candidate-card" href="candidate.html?id=' + candidateId + '">'
+    assocList.innerHTML = '<a class="candidate-card" href="/candidate/' + candidateId + '">'
       + '<div class="candidate-card-name">' + displayName + '</div>'
       + '<div class="candidate-card-meta">'
       + '<span class="tag ' + pcls + '">' + plbl + '</span>'

@@ -138,7 +138,7 @@ function buildCandidateCard(c) {
   var plbl  = partyLabel(party);
 
   // Link directly to the race's cycle year so the candidate page opens at the right cycle
-  var href = id ? 'candidate.html?id=' + id + '#' + yearParam + '#summary' : '#';
+  var href = id ? '/candidate/' + id + '#' + yearParam + '#summary' : '#';
 
   var statsHtml = '';
   if (c.total_receipts != null || c.total_disbursements != null) {
