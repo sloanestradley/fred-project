@@ -301,7 +301,7 @@ The full product brief (`project-brief.md`) has MVP scope, audience definition, 
 ## How to start a session
 
 ```bash
-cd ~/Vibecoding/fred-project
+cd ~/Vibecoding/fec-project
 claude
 ```
 
