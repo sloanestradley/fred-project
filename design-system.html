@@ -113,13 +113,13 @@
     .profile-header { padding:2.5rem 0 2rem; border-bottom:1px solid var(--border); }
     .breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em;
       text-transform:uppercase; margin-bottom:1.25rem; }
-    .candidate-row { display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:1.25rem; }
-    .avatar { width:60px; height:60px; border-radius:2px; background:var(--surface2);
-      border:1.5px solid var(--border-strong); display:flex; align-items:center; justify-content:center;
+    .candidate-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
+    .avatar { width:32px; height:32px; border-radius:2px; background:var(--text);
+      display:flex; align-items:center; justify-content:center;
       font-family:'Barlow Condensed',sans-serif; font-size:0.9rem;
-      color:var(--muted); letter-spacing:0; text-transform:uppercase; flex-shrink:0; }
+      color:var(--bg); letter-spacing:0; text-transform:uppercase; flex-shrink:0; }
     .candidate-name { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.6rem,3vw,2.4rem);
-      font-weight:800; line-height:1; letter-spacing:0; text-transform:uppercase; margin-bottom:0.6rem; }
+      font-weight:800; line-height:1; letter-spacing:0; text-transform:uppercase; min-width:0; }
     .meta-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
     .cycle-switcher { display:flex; align-items:center; gap:0.35rem; margin-top:1rem; flex-wrap:wrap; }
     .cycle-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase;
@@ -150,9 +150,10 @@
     .stat-sub.warn { color:var(--amber); }
 
     /* Raised tab grid */
-    .raised-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px;
-      background:var(--border); border:1px solid var(--border); margin-bottom:1.5rem; }
-    .raised-cell { background:var(--surface); padding:1.75rem; min-width:0; overflow:hidden; }
+    .raised-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;
+      margin-bottom:1.5rem; }
+    .raised-cell { background:var(--surface); border:1px solid var(--border);
+      padding:1.75rem; min-width:0; overflow:hidden; }
     .raised-cell-title { font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase;
       color:var(--subtle); margin-bottom:1.25rem; }
 
@@ -693,22 +694,20 @@
             <div class="breadcrumb">Candidates <span>/ Marie Gluesenkamp Perez</span></div>
             <div class="candidate-row">
               <div class="avatar">MGP</div>
-              <div style="min-width:0">
-                <div class="candidate-name">Marie Gluesenkamp Perez</div>
-                <div class="meta-row">
-                  <span class="tag tag-dem">Democrat</span>
-                  <span class="tag tag-neutral">House · WA-03</span>
-                  <span class="tag tag-neutral">Incumbent</span>
-                </div>
-                <div class="cycle-switcher">
-                  <span class="cycle-label">Cycle</span>
-                  <button class="cycle-btn active">2024</button>
-                  <button class="cycle-btn">2022</button>
-                </div>
-                <div>
-                  <button class="committees-link">Committees (4) →</button>
-                </div>
-              </div>
+              <div class="candidate-name">Marie Gluesenkamp Perez</div>
+            </div>
+            <div class="meta-row">
+              <span class="tag tag-dem">Democrat</span>
+              <span class="tag tag-neutral">House · WA-03</span>
+              <span class="tag tag-neutral">Incumbent</span>
+            </div>
+            <div class="cycle-switcher">
+              <span class="cycle-label">Cycle</span>
+              <button class="cycle-btn active">2024</button>
+              <button class="cycle-btn">2022</button>
+            </div>
+            <div>
+              <button class="committees-link">Committees (4) →</button>
             </div>
           </div>
         </div>

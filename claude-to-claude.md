@@ -514,3 +514,46 @@ The through-line: you're treating visual consistency as a first-class quality si
 - The banner is now globally consistent — good moment to evaluate whether 36px is the right height, or whether it should be tightened. Worth a visual check on the deployed site before moving on.
 - Spent tab remains the top unbuilt feature. Now that the infrastructure cleanup is done, is this session the right moment to start planning it, or are there more polish fixes to address first?
 - The process-log.html and design-system.html hadn't had a full manual test run since the broadsheet theme shipped. Worth doing a browser pass to confirm everything looks right before the next feature build.
+
+---
+2026-03-11
+
+## Process log draft
+Title: Three layout fixes that make the page feel designed, not assembled
+
+The candidate page has been accumulating small visual inconsistencies since the broadsheet theme shipped — things that are each minor in isolation but collectively undermine the impression that a designer touched the page. This session closed three of them. The Raised and Spent tab data panels had been sharing a single bordered container with a 1px dividing line, giving the appearance of one card with two zones rather than two independent views. Separating them into distinct cards with real gaps makes the data hierarchy immediately clearer. The profile avatar had a surface-light background and a muted border that made it recede — flipping it to the dark/light inverse treatment gives it weight and makes it read as a deliberate design choice. And moving the avatar inline with the candidate name rather than beside the whole right-column block ties the identity element directly to the name it belongs to.
+
+Changelog:
+– `.raised-grid` / `.raised-cell`: replaced the 1px gap + background-color border trick with genuine per-cell borders and a 1.5rem gap; applied in both candidate.html and design-system.html
+– Avatar: `background:var(--text); color:var(--bg)`, border removed, size reduced to 32×32px
+– Profile header HTML restructured: `.candidate-row` now holds only avatar + name; meta-row, cycle-switcher, and committees trigger moved to direct children of `.profile-header`
+– `.candidate-row` gap adjusted to 0.75rem; `align-items:center`
+– design-system.html CSS overrides and component preview HTML updated to match all three changes
+– 170/170 Track 1 tests passing throughout
+
+Field notes:
+The raised/spent card separation was the most revealing change. The 1px gap trick is common — it looks fine in isolation — but once both the donut and the map had their own breathing room and their own borders, the tabs stopped feeling like a developer laid them out and started feeling like something was considered. The avatar change is the kind of decision that looks obvious in retrospect: a dark chip next to a large display name has weight; a surface-colored box with a subtle border disappears. The 32px size is right — it's small enough to be subordinate to the name, large enough to be legible as an identity mark. The inline layout (avatar + name on the same row, everything else below) is what it should have always been.
+
+Stack tags: CSS architecture · Layout
+
+## How Sloane steered the work
+**"Separate them into two distinct cards"**
+The request was precise about what "done" looks like: own background, own border, own padding, matching the card treatment used elsewhere. That framing — "matching what's already in the design system" — is the right constraint. It meant the fix couldn't be cosmetic; it had to be structurally consistent with the rest of the page.
+
+**Avatar direction: dark, no border, inline with name**
+Three distinct decisions compressed into one instruction: color treatment, border removal, and layout position. Each one is a real design call. The dark/light inversion is a strong choice — it makes the avatar a deliberate element rather than a filler placeholder. Removing the border removes the hedging. Moving it inline with the name is the right IA decision: the avatar belongs to the name, not to the whole header block.
+
+**"32×32, non-destructive"**
+After seeing the 60px avatar inline with the display-size name, you immediately called the size adjustment. "Non-destructive" is the right framing — it signals awareness of the fragility of layout changes and a preference for surgical edits over wholesale rewrites. The resulting change was exactly that: two property values, nothing structural.
+
+**Calling the session before diving into race-title investigation**
+You surfaced the question about race-title formatting, let it get answered, and then recognized it as a thread for the next session rather than something to pull on now. That's good session hygiene — know when you're done.
+
+The through-line: you came in with a clear visual problem statement and specific design intent for each fix. None of these were open-ended explorations — each one was "here's what I see, here's what I want." That clarity made the session fast and the output clean.
+
+## What to bring to Claude Chat
+– Race title format investigation: the race.html title is assembled as `stateParam + districtStr + officeName(officeParam)` with `officeName()` mapping single-letter codes to display words. Worth discussing whether this format is right for all office types — especially President — and whether year should be in the title vs. only in the meta line.
+
+– Avatar at 32×32: now that it's live, worth a visual check on the deployed site. Is it legible at that size for 3-letter initials like "MGP"? Font size is still 0.9rem — may need to drop to 0.7rem or similar at this size.
+
+– Next session priority: the race-title investigation is parked. Is that actually the next build task, or is there something higher priority? Spent tab data freshness indicators and the remaining race.html ad hoc mode are both on the backlog.
