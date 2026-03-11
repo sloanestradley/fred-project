@@ -35,7 +35,7 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 - Netlify Functions for any server-side API proxying needed
 - No build step — files are served directly
 - **Clean URLs:** `_redirects` defines Netlify 200 rewrites for all pages. Profile pages with path-segment URLs (`/candidate/:id`, `/committee/:id`) **must use absolute paths** for every local resource and nav link — `href="/styles.css"`, `src="/main.js"`, `href="/candidates"`, etc. Relative paths break because the browser treats the path segment as a subdirectory (e.g. from `/candidate/H2WA03217`, relative `utils.js` resolves to `/candidate/utils.js`, which also matches the rewrite rule and returns HTML served as JS). Browse pages (`/candidates`, `/committees`, `/races`, `/race`, `/search`) use single-level paths so relative links still resolve to root — but any new page with a deeper path must follow the absolute-path rule.
-- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 170 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
+- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 174 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
 
 ---
 
@@ -43,7 +43,7 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 
 **Reference file:** `design-system.html` is the living design system reference. Read it (or at minimum the token table and component list) before building any new page or component.
 
-**Shared files:** `styles.css` contains the CSS reset, token `:root`, shared layout (sidebar, mobile nav, header), utility classes, and all shared component CSS. `main.js` contains Amplitude init + Session Replay, mobile scroll-aware header, and hamburger nav (all null-guarded). `utils.js` contains shared JS utilities: `BASE`, `API_KEY`, `apiFetch`, `fmt`, `fmtDate`, `toTitleCase`, `partyClass`, `partyLabel`, `committeeTypeLabel`. Every page links all three (main.js → utils.js → inline script block).
+**Shared files:** `styles.css` contains the CSS reset, token `:root`, shared layout (sidebar, mobile nav, header), utility classes, and all shared component CSS — including `.page-header` (layout-only: padding, border-bottom — no animation), `.page-header-reveal` (animation modifier: `opacity:0` fade-in; add this alongside `.page-header` on elements that JS reveals via `.visible`; profile pages use both, browse/static pages use `.page-header` only), `.page-header-title` (Barlow Condensed 800, clamp 1.6–2.4rem, uppercase — used as the page title on candidate, committee, and race pages), and `.breadcrumb` (breadcrumb typography and link styles; `text-transform:uppercase` applied — all items render uppercase including entity names). `main.js` contains Amplitude init + Session Replay, mobile scroll-aware header, and hamburger nav (all null-guarded). `utils.js` contains shared JS utilities: `BASE`, `API_KEY`, `apiFetch`, `fmt`, `fmtDate`, `toTitleCase`, `partyClass`, `partyLabel`, `committeeTypeLabel`, `formatRaceName` (returns e.g. `'House • WA-03'` from office/state/district — used by candidate breadcrumb, race title, and race breadcrumb). Every page links all three (main.js → utils.js → inline script block).
 
 **CSS consolidation principle:** Component CSS lives in `styles.css`. Inline `<style>` blocks in individual pages are for page-specific overrides only (layout grid, page-specific spacing, page-specific components). `design-system.html` imports the same `styles.css` as production — no component CSS is duplicated between pages.
 
@@ -149,6 +149,7 @@ The candidate page (`candidate.html`) is the main work in progress. It accepts a
 - **Local dev:** `python3 -m http.server 8080` from project root, then `localhost:8080/candidate.html?id=H2WA03217`
 
 ### What's working
+- Three-segment linked breadcrumb: Candidates → race (e.g. `House • WA-03`, links to `/race?...&year={activeCycle}`) → candidate name (plain text). `updateBreadcrumb()` is called after initial load and at the top of `loadCycle()` so the race link year stays in sync with the selected cycle.
 - Profile header with initials avatar, party tag, office/district tag, incumbency tag
 - Cycle switcher (buttons to toggle between cycles, re-fetches data)
 - URL anchor encodes cycle + tab: `candidate.html#2024#summary`
@@ -260,6 +261,7 @@ See `project-brief.md` for the full phased roadmap. Short version:
 - **Multi-cycle stat labels:** Stats row (Raised, Spent, COH) doesn't yet indicate when figures represent a multi-sub-cycle sum (e.g. "6-year total" vs. "cycle total"). Needs a label or caveat for Senate candidates.
 - **JFA committee gap:** Joint fundraising committees where a candidate is a participant (not the principal) have `candidate_ids: []` and `sponsor_candidate_ids: null` in the FEC API — they don't appear in either `/candidate/{id}/committees/` or `/committees/?sponsor_candidate_id=`. The only source of truth is the candidate's F2 filing document, which lists them as authorized committees. Surfacing these would require fetching the most recent F2 via `/filings/?candidate_id=&form_type=F2` and parsing committee references from the filing data. Not built yet; validate approach with John before implementing.
 - ~~**utils.js duplication:**~~ ✅ Resolved. Shared utilities extracted to `utils.js` — `BASE`, `API_KEY`, `apiFetch`, `fmt`, `fmtDate`, `toTitleCase`, `partyClass`, `partyLabel`, `committeeTypeLabel`. All pages load it between `main.js` and their own script block.
+- **`.layout` / global banner overlap on candidate.html:** In some rendering contexts the `.layout` grid appears to visually overlap the fixed global banner. Root cause not yet identified (body `padding-top:var(--banner-h)` appears correct; translateY animation removed). Deferred to a dedicated debugging session.
 
 ## Committee modal architecture
 
@@ -287,11 +289,11 @@ The nav has a browse/profile split that must be preserved as new pages are added
 - **Profile pages** (`candidate.html`, `committee.html`, `race.html`) are subsections — they activate their *parent* browse page's nav item (e.g. `candidate.html` keeps "Candidates" active)
 - **`ia.md`** is the canonical IA reference — page inventory, URL patterns, nav hierarchy, page relationships, phase roadmap. Read it before adding new pages or changing nav structure.
 
-Nav link targets (all pages must use these — no stubs):
-- Candidates → `candidates.html`
-- Committees → `committees.html`
-- Races → `races.html`
-- Search → `search.html`
+Nav link targets (all pages must use these — absolute paths, no stubs):
+- Candidates → `/candidates`
+- Committees → `/committees`
+- Races → `/races`
+- Search → `/search`
 
 The `.mobile-search-icon` (search icon SVG in `.mobile-header`) must appear on every page. It links to `search.html` and is `display:none` at desktop, `display:block` at ≤860px via `styles.css`.
 

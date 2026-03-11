@@ -333,12 +333,28 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   transition:color 0.15s; }
 .mobile-search-icon:hover { color:var(--text); }
 
+/* ── Page header — shared by candidate, committee, race profile pages ─────── */
+.page-header { padding:2.5rem 3rem 2rem; border-bottom:1px solid var(--border); }
+.page-header-reveal { opacity:0; transition:opacity 0.4s ease; }
+.page-header-reveal.visible { opacity:1; }
+
+.breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.08em;
+  text-transform:uppercase; margin-bottom:1.25rem; }
+.breadcrumb span { color:var(--subtle); }
+.breadcrumb a { color:var(--muted); text-decoration:none; }
+.breadcrumb a:hover { color:var(--accent); }
+
+.page-header-title { font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(1.6rem,3vw,2.4rem); font-weight:800; line-height:1;
+  letter-spacing:0; text-transform:uppercase; margin-bottom:0.5rem; }
+
 /* ── Responsive ── */
 @media (max-width:860px) {
   .layout { grid-template-columns:1fr; }
   .sidebar { display:none; }
   .mobile-header { display:flex; }
   .mobile-nav { display:block; }
+  .page-header { padding:1.5rem 1.25rem 1.25rem; }
   .committee-row { grid-template-columns:1fr; gap:0.2rem; }
   .committee-type,.committee-id { text-align:left; }
   .donors-table th:nth-child(3), .donors-table td:nth-child(3) { display:none; }

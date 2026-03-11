@@ -19,20 +19,13 @@
     /* Main */
     .main { overflow-x:hidden; min-width:0; }
 
-    /* Profile header */
-    .profile-header { padding:2.5rem 3rem 2rem; border-bottom:1px solid var(--border);
-      opacity:0; transform:translateY(10px); transition:opacity 0.4s ease,transform 0.4s ease; }
-    .profile-header.visible { opacity:1; transform:translateY(0); }
-    .breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em;
-      text-transform:uppercase; margin-bottom:1.25rem; }
-    .breadcrumb span { color:var(--subtle); }
+    /* Profile header — shared base via .page-header and .page-header-title in styles.css */
     .candidate-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
     .avatar { width:32px; height:32px; border-radius:2px; background:var(--text);
       display:flex; align-items:center; justify-content:center;
       font-family:'Barlow Condensed',sans-serif; font-size:0.9rem;
       color:var(--bg); letter-spacing:0; text-transform:uppercase; flex-shrink:0; }
-    .candidate-name { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.6rem,3vw,2.4rem);
-      font-weight:800; line-height:1; letter-spacing:0; text-transform:uppercase; min-width:0; }
+    .candidate-name { min-width:0; }
     .meta-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
     .cycle-switcher { display:flex; align-items:center; gap:0.35rem; margin-top:1rem; flex-wrap:wrap; }
     .cycle-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase;
@@ -44,7 +37,8 @@
     .cycle-btn.active { border-color:var(--text); color:var(--text); background:var(--surface2); }
 
     /* Tabs */
-    .tabs-bar { padding:0 3rem; }
+    .tabs-bar { padding:0 3rem; opacity:0; transition:opacity 0.4s ease; }
+    .tabs-bar.visible { opacity:1; }
 
     /* Content */
     .content { padding:2.5rem 3rem; opacity:0; transition:opacity 0.3s ease; min-width:0; }
@@ -53,7 +47,6 @@
     /* Responsive */
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
-      .profile-header { padding:1.5rem 1.25rem 1.25rem; }
       .tabs-bar { padding:0 1.25rem; }
       .content { padding:1.5rem 1.25rem; }
       .state-msg { padding:2rem 1.25rem; }
@@ -120,11 +113,11 @@
       <div class="loader"></div><span>Fetching candidate data from FEC…</span>
     </div>
 
-    <div class="profile-header" id="profile-header" style="display:none">
-      <div class="breadcrumb" id="breadcrumb">Candidates</div>
+    <div class="profile-header page-header page-header-reveal" id="profile-header" style="display:none">
+      <div class="breadcrumb" id="breadcrumb"><a href="/candidates">Candidates</a></div>
       <div class="candidate-row">
         <div class="avatar" id="avatar">—</div>
-        <div class="candidate-name" id="candidate-name">—</div>
+        <div class="candidate-name page-header-title" id="candidate-name">—</div>
       </div>
       <div class="meta-row" id="meta-row"></div>
       <div class="cycle-switcher" id="cycle-switcher">
@@ -1287,9 +1280,24 @@ async function renderSpentIfReady() {
   }
 }
 
+// ── Breadcrumb ───────────────────────────────────────
+function updateBreadcrumb() {
+  if (!CAND_NAME) return;
+  var raceName = formatRaceName(CAND_OFFICE, CAND_STATE, CAND_DIST);
+  var raceHref = '/race?state=' + encodeURIComponent(CAND_STATE)
+    + (CAND_OFFICE === 'H' && CAND_DIST ? '&district=' + encodeURIComponent(CAND_DIST) : '')
+    + '&office=' + encodeURIComponent(CAND_OFFICE)
+    + '&year=' + activeCycle;
+  document.getElementById('breadcrumb').innerHTML =
+    '<a href="/candidates">Candidates</a>'
+    + ' <span>/ <a href="' + raceHref + '">' + raceName + '</a>'
+    + ' / ' + CAND_NAME + '</span>';
+}
+
 // ── Load one cycle ──────────────────────────────────
 async function loadCycle(cycle) {
   activeCycle = cycle;
+  updateBreadcrumb();
 
   // Reset raised tab state for new cycle
   raisedDataPromise = null;
@@ -1509,11 +1517,6 @@ async function init() {
     document.getElementById('candidate-name').textContent = displayName;
     document.title = displayName + ' — ledger.fec';
 
-    // Breadcrumb
-    document.getElementById('breadcrumb').innerHTML =
-      'Candidates <span>/ '+(cand.office_full||'')+' / '+
-      (cand.state||'')+(cand.district?'-'+cand.district:'')+' — '+displayName+'</span>';
-
     // Tags
     document.getElementById('meta-row').innerHTML =
       '<span class="tag '+partyClass(cand.party)+'">'+partyLabel(cand.party)+'</span>'+
@@ -1532,6 +1535,7 @@ async function init() {
     if (ALL_CYCLES.indexOf(hashCycle) !== -1) defaultCycle = hashCycle;
     activeCycle = defaultCycle;
     CAND_NAME = displayName;
+    updateBreadcrumb();
     amplitude.track('Page Viewed', { page: 'candidate', candidate_id: CANDIDATE_ID, candidate_name: CAND_NAME, cycle: activeCycle });
 
     var sw = document.getElementById('cycle-switcher');
@@ -1551,6 +1555,7 @@ async function init() {
     document.getElementById('content').style.display      = 'block';
     requestAnimationFrame(function() {
       document.getElementById('profile-header').classList.add('visible');
+      document.getElementById('tabs-bar').classList.add('visible');
       document.getElementById('content').classList.add('visible');
     });
 

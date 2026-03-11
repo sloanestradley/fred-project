@@ -72,6 +72,16 @@ function partyLabel(p) {
   return p;
 }
 
+// ── Race utilities ───────────────────────────────────────────────────────────
+
+// Format a race name for display: 'House • WA-03', 'Senate • NY'
+function formatRaceName(office, state, district) {
+  var officeNames = { H: 'House', S: 'Senate', P: 'President' };
+  var officeName  = officeNames[office] || office || '';
+  var districtStr = (office === 'H' && district) ? '-' + district : '';
+  return officeName + ' \u2022 ' + (state || '') + districtStr;
+}
+
 // ── Committee utilities ──────────────────────────────────────────────────────
 
 function committeeTypeLabel(t) {

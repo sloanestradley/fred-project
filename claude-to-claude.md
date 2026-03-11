@@ -557,3 +557,55 @@ The through-line: you came in with a clear visual problem statement and specific
 – Avatar at 32×32: now that it's live, worth a visual check on the deployed site. Is it legible at that size for 3-letter initials like "MGP"? Font size is still 0.9rem — may need to drop to 0.7rem or similar at this size.
 
 – Next session priority: the race-title investigation is parked. Is that actually the next build task, or is there something higher priority? Spent tab data freshness indicators and the remaining race.html ad hoc mode are both on the backlog.
+
+---
+2026-03-11
+
+## Process log draft
+Title: Two tasks, one lesson: consistency is a system problem, not a file problem
+
+This session started as a navigation polish pass — adding a shared formatRaceName() utility, rebuilding the candidate page breadcrumb as a three-segment linked path (Candidates → race → name), redesigning the race page header with a year dropdown in place of a back-link, and simplifying the committee breadcrumb to show the committee name instead of a type label. Five interconnected changes across four files, done with plan mode after the first attempt at a direct edit was turned back.
+
+After those changes shipped, a closer look at all three profile pages revealed something more structural: each page had been building its header independently, in its own local style block, with no shared foundation. The result was a table full of inconsistencies — breadcrumbs with different text-transforms and letter-spacings, titles at different sizes, spacing that varied page by page. The fix was to extract the shared foundation to styles.css (new .page-header, .page-header-title, .breadcrumb classes), standardize everything to the same Barlow Condensed 800 clamp(1.6–2.4rem) uppercase title, and document the pattern in the design system. That extraction then surfaced three follow-up bugs: the committee breadcrumb rendering ALL CAPS (FEC API returns uppercase; toTitleCase() wasn't applied), stale local CSS in design-system.html overriding the new shared breadcrumb rule, and component demos becoming invisible because the opacity:0 animation was on the base .page-header class. The final fix split the animation into a .page-header-reveal modifier class — layout and animation now belong to separate rules.
+
+Changelog:
+– utils.js: added formatRaceName(office, state, district) returning e.g. "House • WA-03"
+– candidate.html: breadcrumb rebuilt as 3-segment linked path; updateBreadcrumb() extracts to function; race link year updates on cycle switch
+– race.html: header uses formatRaceName(); year dropdown selector (2018–2026) replaces "← All Races" back-link; all nav links fixed to absolute paths
+– committee.html: breadcrumb changed from "Committees / {type label}" to "Committees / {committee name}"; toTitleCase() applied to prevent ALL CAPS from FEC API
+– styles.css: added shared .page-header (layout), .page-header-reveal (animation), .page-header-title, .breadcrumb classes; removed translateY from animation (opacity-only fade); restored text-transform:uppercase on .breadcrumb
+– candidate.html, committee.html, race.html: local duplicate header CSS removed; shared classes applied; tabs-bar added to fade-in sequence on candidate page
+– design-system.html: Page Header component card added (stable); Candidate Header demo updated; stale local .breadcrumb CSS fixed
+– tests/pages.spec.js, tests/candidate.spec.js: 4 new tests for breadcrumb links and race year dropdown (174 total)
+– test-cases.md: header template consistency checks added; Page Header component card check; pre-deploy checklist updated for race.html; .layout banner overlap added to known issues
+
+Field notes:
+The header audit surfaced a pattern worth naming: when three pages build the same component independently, they will drift. Not immediately, not dramatically — one page gets text-transform removed for a specific reason, another inherits a different size from an earlier design pass, a third has slightly different letter-spacing. Each change made local sense. The table showing all three side-by-side is where the drift becomes visible. The extraction to styles.css isn't just a cleanup — it's making the implicit contract between pages explicit. The .page-header-reveal split is the same logic applied to behavior: layout and animation are different concerns, and separating them prevents the next page from accidentally inheriting an animation it doesn't need.
+
+Stack tags: CSS architecture · design system · navigation
+
+## How Sloane steered the work
+**"Please use plan mode before starting" — enforcing the process**
+The first edit attempt in this session was made without plan mode. Sloane rejected it immediately: "Please use plan mode before starting as there are several moving parts." Every multi-file change after that went through plan → approve → execute. That discipline is what kept five interconnected changes from becoming a debugging session.
+
+**Requesting the header consistency audit**
+After the breadcrumb changes shipped, Sloane looked at the three profile pages side by side and spotted divergence: "I'm seeing inconsistencies in text-transform in the breadcrumbs and page titles. Inconsistencies in text size. And possibly inconsistencies in spacing. Investigate why there are inconsistencies and come up with a scaleable plan to address." This was a systems question, not a targeted bug report. That framing led to the comparison table and the CSS extraction — the right solution rather than a series of local patches.
+
+**"Uppercase everywhere" on titles**
+When asked how to handle the race title (text-transform had been removed in the previous session for the new bullet format), Sloane called for uppercase everywhere. Conscious choice to reclaim consistency over the local accommodation — the bullet format reads fine in uppercase, and uniformity across all three headers matters more than optimizing for one edge case.
+
+**"Standardize to large" for committee title — accepts wrapping**
+The committee title was smaller to handle long names like "FRIENDS OF MARIE GLUESENKAMP PEREZ FOR CONGRESS." Sloane chose to standardize to the large size and accept wrapping. Right call: a slightly taller header is a smaller visual cost than a header that looks different from its siblings on every page.
+
+**"ALL breadcrumb items uppercase" — system-level, not just labels**
+When breadcrumb text was showing in mixed case, Sloane asked for uppercase across all pages and all items (including candidate names, committee names, race names). Unifies the breadcrumb as a data path rather than prose.
+
+**Knowing when to stop**
+When the banner overlap on candidate.html remained unresolved, Sloane called it: "this should be a separate debugging session." Good triage — the issue is cosmetic and isolated, logging it as a known issue is the right artifact.
+
+The through-line: Sloane is consistently enforcing process (plan mode), making system-level calls (consistency over local accommodation), and managing scope (knowing when to stop). These decisions compound — each one makes the next session faster to start.
+
+## What to bring to Claude Chat
+- The .layout / banner overlap on candidate.html — needs a fresh debugging session. Before starting, open DevTools on localhost:8080/candidate.html?id=H2WA03217, inspect the .layout element, check computed top offset and whether body padding-top:36px is being applied. Bring a screenshot of the Elements panel showing computed layout.
+- Breadcrumb uppercase on entity names — currently text-transform:uppercase renders candidate names, committee names, and race names fully uppercase in breadcrumbs (MARIE GLUESENKAMP PEREZ, FRIENDS OF MGP FOR CONGRESS). Is this the intended reading experience, or should only navigational segments be uppercase while the entity name stays mixed case?
+- Spent tab on candidate.html — still the only unbuilt tab. Now that headers, breadcrumbs, and browse infrastructure are stable, is this the next priority?

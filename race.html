@@ -13,20 +13,17 @@
   <style>
     .main { overflow-x:hidden; min-width:0; }
 
-    .race-header { padding:2.5rem 3rem 2rem; border-bottom:1px solid var(--border);
-      opacity:0; transform:translateY(10px); transition:opacity 0.4s ease, transform 0.4s ease; }
-    .race-header.visible { opacity:1; transform:translateY(0); }
-    .breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em;
-      text-transform:uppercase; margin-bottom:1.25rem; }
-    .breadcrumb span { color:var(--subtle); }
-    .race-title { font-family:'Barlow Condensed',sans-serif; font-size:clamp(1.6rem,3vw,2.4rem);
-      font-weight:800; text-transform:uppercase; letter-spacing:0; line-height:1; margin-bottom:0.5rem; }
+    /* Race header — shared base via .page-header and .page-header-title in styles.css */
+    .race-meta-row { display:flex; align-items:center; gap:0.5rem; margin-top:0.35rem; }
     .race-meta { font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:var(--muted); }
-    .back-link-area { margin-top:0.85rem; }
-    .back-link-area a { font-family:'IBM Plex Mono',monospace; font-size:0.68rem;
-      color:var(--subtle); text-decoration:underline; text-decoration-color:transparent;
-      text-underline-offset:2px; transition:color 0.15s, text-decoration-color 0.15s; }
-    .back-link-area a:hover { color:var(--accent); text-decoration-color:var(--accent); }
+    .year-select { font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+      color:var(--subtle); background:transparent; border:none;
+      border-bottom:1px solid var(--border); padding:0.1rem 0.25rem;
+      cursor:pointer; appearance:none; -webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23625b52'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 0.25rem center;
+      padding-right:1.1rem; }
+    .year-select:focus { outline:1px solid var(--accent); }
 
     .race-content { padding:2rem 3rem; opacity:0; transition:opacity 0.3s ease; }
     .race-content.visible { opacity:1; }
@@ -35,7 +32,6 @@
 
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
-      .race-header { padding:1.5rem 1.25rem 1.25rem; }
       .race-content { padding:1.5rem 1.25rem; }
       .state-msg { padding:2rem 1.25rem; }
     }
@@ -47,25 +43,25 @@
 
   <!-- Desktop sidebar -->
   <nav class="sidebar">
-    <div class="sidebar-logo"><a href="index.html">ledger<em>.fec</em></a></div>
+    <div class="sidebar-logo"><a href="/">ledger<em>.fec</em></a></div>
     <div class="nav-section">
       <div class="nav-label">Pages</div>
-      <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-      <a class="nav-item" href="committees.html"><span class="nav-dot"></span>Committees</a>
-      <a class="nav-item active" href="races.html"><span class="nav-dot"></span>Races</a>
-      <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
+      <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+      <a class="nav-item" href="/committees"><span class="nav-dot"></span>Committees</a>
+      <a class="nav-item active" href="/races"><span class="nav-dot"></span>Races</a>
+      <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
     </div>
     <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--sidebar-border)">
       <div class="nav-label">Documentation</div>
-      <a class="nav-item" href="process-log.html"><span class="nav-dot"></span>Process Log</a>
-      <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+      <a class="nav-item" href="/process-log.html"><span class="nav-dot"></span>Process Log</a>
+      <a class="nav-item" href="/design-system.html"><span class="nav-dot"></span>Design System</a>
     </div>
   </nav>
 
   <!-- Mobile header -->
   <header class="mobile-header" id="mobile-header">
-    <a class="mobile-logo" href="index.html">ledger<em>.fec</em></a>
-    <a href="search.html" class="mobile-search-icon" aria-label="Search">
+    <a class="mobile-logo" href="/">ledger<em>.fec</em></a>
+    <a href="/search" class="mobile-search-icon" aria-label="Search">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </a>
     <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
@@ -75,12 +71,12 @@
 
   <!-- Mobile nav -->
   <nav class="mobile-nav" id="mobile-nav">
-    <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-    <a class="nav-item" href="committees.html"><span class="nav-dot"></span>Committees</a>
-    <a class="nav-item active" href="races.html"><span class="nav-dot"></span>Races</a>
-    <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
-    <a class="nav-item" href="process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
-    <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+    <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+    <a class="nav-item" href="/committees"><span class="nav-dot"></span>Committees</a>
+    <a class="nav-item active" href="/races"><span class="nav-dot"></span>Races</a>
+    <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
+    <a class="nav-item" href="/process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
+    <a class="nav-item" href="/design-system.html"><span class="nav-dot"></span>Design System</a>
   </nav>
 
   <!-- Main -->
@@ -90,11 +86,13 @@
       <div class="loader"></div><span>Fetching race data from FEC…</span>
     </div>
 
-    <div class="race-header" id="race-header" style="display:none">
-      <div class="breadcrumb">Races <span id="breadcrumb-race"></span></div>
-      <div class="race-title" id="race-title">—</div>
-      <div class="race-meta" id="race-meta"></div>
-      <div class="back-link-area"><a href="races.html">← All Races</a></div>
+    <div class="race-header page-header page-header-reveal" id="race-header" style="display:none">
+      <div class="breadcrumb"><a href="/races">Races</a> <span>/ <span id="breadcrumb-race"></span></span></div>
+      <div class="race-title page-header-title" id="race-title">—</div>
+      <div class="race-meta-row">
+        <select id="year-select" class="year-select" aria-label="Election cycle year"></select>
+        <span class="race-meta" id="race-meta"></span>
+      </div>
     </div>
 
     <div class="race-content" id="race-content" style="display:none">
@@ -116,17 +114,30 @@
 var urlParams    = new URLSearchParams(window.location.search);
 var stateParam   = urlParams.get('state');
 var districtParam= urlParams.get('district');
-var yearParam    = urlParams.get('year');
+var yearParam    = urlParams.get('year') || '2026';
 var officeParam  = urlParams.get('office');
-
-function officeName(o) {
-  if (!o) return '';
-  return { H:'House', S:'Senate', P:'President' }[o] || o;
-}
 
 // /elections/ endpoint requires lowercase full words, not single-letter codes
 function officeApiParam(o) {
   return { H:'house', S:'senate', P:'president' }[o] || o.toLowerCase();
+}
+
+function buildYearSelector() {
+  var sel = document.getElementById('year-select');
+  // Update this list as new cycles begin
+  var cycles = [2018, 2020, 2022, 2024, 2026];
+  cycles.forEach(function(yr) {
+    var opt = document.createElement('option');
+    opt.value = yr;
+    opt.textContent = yr;
+    if (String(yr) === String(yearParam)) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', function() {
+    var url = new URL(window.location.href);
+    url.searchParams.set('year', sel.value);
+    window.location.href = url.toString();
+  });
 }
 
 function buildCandidateCard(c) {
@@ -163,14 +174,16 @@ function buildCandidateCard(c) {
 }
 
 async function init() {
+  buildYearSelector();
+
   amplitude.track('Page Viewed', {
     page: 'race', state: stateParam, year: yearParam, office: officeParam, district: districtParam
   });
 
-  if (!stateParam || !yearParam || !officeParam) {
+  if (!stateParam || !officeParam) {
     var el = document.getElementById('state-msg');
     el.className = 'state-msg error';
-    el.innerHTML = '⚠ No race specified. <a href="races.html" style="color:inherit">← Back to Races</a>';
+    el.innerHTML = '⚠ No race specified. <a href="/races" style="color:inherit">← Back to Races</a>';
     return;
   }
 
@@ -180,16 +193,15 @@ async function init() {
     var data    = await apiFetch('/elections/', queryParams);
     var results = data.results || [];
 
-    var districtStr = (officeParam === 'H' && districtParam) ? '-' + districtParam : '';
-    var raceLabel   = stateParam + districtStr + ' ' + officeName(officeParam) + ' · ' + yearParam;
+    var raceName = formatRaceName(officeParam, stateParam, districtParam);
 
-    document.getElementById('breadcrumb-race').textContent = '/ ' + raceLabel;
-    document.getElementById('race-title').textContent = stateParam + districtStr + ' ' + officeName(officeParam);
-    document.getElementById('race-meta').textContent  = yearParam + ' · '
-      + results.length + ' candidate' + (results.length !== 1 ? 's' : '');
+    document.getElementById('breadcrumb-race').textContent = raceName;
+    document.getElementById('race-title').textContent = raceName;
+    document.getElementById('race-meta').textContent  =
+      results.length + ' candidate' + (results.length !== 1 ? 's' : '');
     document.getElementById('race-candidates-label').textContent =
       'Candidates (' + results.length + ')';
-    document.title = stateParam + districtStr + ' ' + officeName(officeParam) + ' ' + yearParam + ' — ledger.fec';
+    document.title = raceName + ' — ledger.fec';
 
     var list = document.getElementById('race-list');
     list.innerHTML = results.length

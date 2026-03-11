@@ -5,7 +5,7 @@
 
 ## How to use this file
 
-**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 170 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
+**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 174 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
 
 **Smoke tests (Track 2):** Run `npm run test:smoke` before deploys. Hits the live FEC API — 5 key checks. Requires the dev server to be running.
 
@@ -63,6 +63,23 @@
 - [ ] `Cycle Switched` fires on cycle button click with `cycle`, `candidate_id`, `candidate_name`
 - [ ] `Committees Modal Opened` fires on clicking the committees trigger
 - [ ] `Committees Tab Switched` fires on clicking Active/History tabs inside modal
+
+### Breadcrumb
+- [ ] ✅ Breadcrumb shows "Candidates / House • WA-03 / Marie Gluesenkamp Perez" (mixed case, bullet separator)
+- [ ] ✅ "Candidates" is a link to /candidates
+- [ ] ✅ "House • WA-03" is a link to /race with correct state, office, district, and active cycle year (e.g. `/race?state=WA&district=03&office=H&year=2024`)
+- [ ] "Marie Gluesenkamp Perez" is plain text (no link — current page)
+- [ ] Switch to a different cycle — verify the race link year in the breadcrumb updates to match
+- [ ] All breadcrumb text renders uppercase (text-transform:uppercase via shared CSS)
+
+### Header template (shared with committee.html and race.html)
+- [ ] Header uses `.page-header` wrapper — same padding and border-bottom as committee and race headers
+- [ ] Candidate name uses `.page-header-title` — same Barlow Condensed 800, clamp(1.6rem,3vw,2.4rem), uppercase as other profile pages
+- [ ] Breadcrumb uses `.breadcrumb` shared class — same size, spacing, color as other profile pages
+
+### Header animation
+- [ ] Profile header, tab bar, and content area all fade in together on load (no element pops in before others)
+- [ ] No vertical jump or layout shift as the header fades in (opacity-only transition, no translateY)
 
 ### Profile header
 - [ ] Candidate name displays
@@ -154,6 +171,18 @@
 ### Amplitude events
 - [ ] `Page Viewed` fires with `page: 'committee'` and `committee_id` property
 
+### Breadcrumb
+- [ ] ✅ Breadcrumb shows "Committees / [Full Committee Name]" (not type label like "House Candidate Committee")
+- [ ] ✅ "Committees" is a link to /committees
+- [ ] Committee name is plain text (no link — current page)
+- [ ] Committee name in breadcrumb is title-case (not ALL CAPS from FEC API) — `toTitleCase()` applied in `renderHeader()`
+- [ ] All breadcrumb text renders uppercase (text-transform:uppercase via shared CSS)
+
+### Header template (shared with candidate.html and race.html)
+- [ ] Header uses `.page-header` wrapper — same padding and border-bottom as candidate and race headers
+- [ ] Committee name uses `.page-header-title` — same Barlow Condensed 800, clamp(1.6rem,3vw,2.4rem), uppercase as other profile pages (accepts wrapping for long names)
+- [ ] Header fades in on load (opacity transition via `.page-header-reveal`)
+
 ### Profile header
 - [ ] Committee name displays
 - [ ] Committee type tag visible
@@ -216,9 +245,25 @@
 - [ ] No 422 error in console (confirms office param is sent as lowercase full word: "house", not "H")
 - [ ] Check Network tab: the `/elections/` API call includes `office=house` (not `office=H`)
 
+### Breadcrumb
+- [ ] ✅ Breadcrumb shows "Races / House • WA-03" (no year in breadcrumb; mixed case with bullet separator)
+- [ ] ✅ "Races" is a link to /races
+- [ ] "House • WA-03" is plain text (no link — current page)
+- [ ] "← All Races" back-link is absent (removed; breadcrumb serves this purpose)
+- [ ] All breadcrumb text renders uppercase (text-transform:uppercase via shared CSS)
+
+### Header template (shared with candidate.html and committee.html)
+- [ ] Header uses `.page-header` wrapper — same padding and border-bottom as candidate and committee headers
+- [ ] Race title uses `.page-header-title` — same Barlow Condensed 800, clamp(1.6rem,3vw,2.4rem), uppercase
+- [ ] Header fades in on load (opacity transition via `.page-header-reveal`)
+
 ### Race header
-- [ ] Race title renders (state, office, district, year)
-- [ ] Back-link to races.html present and functional
+- [ ] Race title reads "House • WA-03" (not "WA-03 HOUSE" — mixed case with bullet separator)
+- [ ] Browser tab title reads "House • WA-03 — ledger.fec" (no year)
+- [ ] Year dropdown present below the title, showing 2024 selected (from URL param)
+- [ ] Candidate count shown in meta row (e.g. "3 candidates")
+- [ ] Changing year dropdown to 2022 reloads page with `year=2022` in URL
+- [ ] ✅ Year dropdown shows 2024 as selected value when URL param is `year=2024`
 
 ### Candidate cards
 - [ ] At least 1 candidate card renders (not a blank list)
@@ -325,6 +370,9 @@
 - [ ] Each card has a status badge (stable / candidate-only / log-only / planned / deprecated)
 - [ ] Live demos work: tab bar switches tabs, health banner cycles through Green/Amber/Red/Closed states, modal opens and closes
 - [ ] View page source: no `<style>` block in `<head>` containing component CSS (all CSS should be in styles.css)
+- [ ] Page Header component card present (`id="comp-page-header"`, status "stable") — documents `.page-header`, `.page-header-title`, `.breadcrumb`
+- [ ] Page Header and Candidate Header component demos are visible (not invisible — demos don't use `.page-header-reveal` so no JS required)
+- [ ] Breadcrumb demo text appears uppercase
 
 ---
 
@@ -339,13 +387,14 @@
 
 ## Pre-deploy checks — clean URL pages
 
-*Run before committing any changes to `candidate.html` or `committee.html`, or when adding a new profile page with a path-segment clean URL. Playwright cannot catch this class of bug.*
+*Run before committing any changes to `candidate.html`, `committee.html`, or `race.html`, or when adding a new profile page. Playwright cannot catch this class of bug.*
 
 - [ ] `styles.css` linked as `href="/styles.css"` (absolute), not `href="styles.css"` (relative)
 - [ ] `main.js` linked as `src="/main.js"` (absolute)
 - [ ] `utils.js` linked as `src="/utils.js"` (absolute)
 - [ ] All nav links use absolute paths: `/candidates`, `/committees`, `/races`, `/search`, `/`, `/process-log.html`, `/design-system.html`
 - [ ] Any outgoing links to other profile pages use clean URL format: `/candidate/{id}`, `/committee/{id}`
+- [ ] race.html: sidebar logo links to `/` (not `index.html`); all nav items use `/candidates`, `/committees`, etc.
 
 ---
 
@@ -372,6 +421,7 @@ Expected failures — not bugs to fix now. Remove a row when the issue is resolv
 | Issue | Page | Added |
 |-------|------|-------|
 | Spent tab not yet built | candidate.html | 2026-03-10 |
+| .layout div appears to overlap global banner visually — root cause TBD, separate debugging session | candidate.html | 2026-03-11 |
 | Filing history not yet built | committee.html | 2026-03-10 |
 | Associated candidates section not yet built | committee.html | 2026-03-10 |
 | Ad hoc mode is stub/planned only | races.html | 2026-03-10 |
@@ -391,3 +441,5 @@ Append a row after each test run. Never delete old rows.
 | 2026-03-10 | Clean URL debugging — relative path fix on profile pages | candidate.html, committee.html, race.html (automated + live) | apiFetch not defined on /candidate/:id; unstyled committee page; race nav submitting to wrong path; index redirect using relative URL | 170/170 Track 1 passing; live post-deploy checks in progress |
 | 2026-03-10 | Banner refactor + polish fixes | All pages (automated) | None | 170/170 Track 1 passing |
 | 2026-03-11 | Card separation (Raised/Spent tabs) + avatar restyle + avatar/name inline layout | candidate.html, design-system.html (automated) | None | 170/170 Track 1 passing |
+| 2026-03-11 | Breadcrumbs + formatRaceName + race year dropdown | candidate.html, race.html, committee.html, utils.js (automated) | None | 174/174 Track 1 passing |
+| 2026-03-11 | Header consistency refactor + breadcrumb uppercase + page-header-reveal architecture | candidate.html, committee.html, race.html, candidates.html, committees.html, design-system.html (automated) | None | 174/174 Track 1 passing |

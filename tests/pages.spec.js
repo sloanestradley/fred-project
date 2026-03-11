@@ -60,7 +60,7 @@ test.describe('committee.html', () => {
     expect(hasNonZeroDollar).toBe(true);
   });
 
-  test('back-link to committees.html is present', async ({ page }) => {
+  test('committees link is present (breadcrumb or nav)', async ({ page }) => {
     const backLink = page.locator('a[href*="committees"]').first();
     await expect(backLink).toBeAttached();
   });
@@ -162,9 +162,22 @@ test.describe('race.html', () => {
     expect(text).toMatch(/WA|House|03/i);
   });
 
-  test('back-link to races.html is present', async ({ page }) => {
-    const backLink = page.locator('a[href="races.html"]').first();
-    await expect(backLink).toBeAttached();
+  test('breadcrumb contains link to races page', async ({ page }) => {
+    const link = page.locator('.breadcrumb a[href*="races"]').first();
+    await expect(link).toBeAttached();
+  });
+
+  test('year selector dropdown is present with options', async ({ page }) => {
+    const sel = page.locator('#year-select');
+    await expect(sel).toBeVisible();
+    const options = sel.locator('option');
+    await expect(options).not.toHaveCount(0);
+  });
+
+  test('year selector defaults to URL year param', async ({ page }) => {
+    const sel = page.locator('#year-select');
+    const val = await sel.inputValue();
+    expect(val).toBe('2024');
   });
 
   test('candidate cards render with financial figures', async ({ page }) => {

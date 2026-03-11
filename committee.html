@@ -13,17 +13,8 @@
   <style>
     .main { overflow-x:hidden; min-width:0; }
 
-    /* Committee header */
-    .committee-header { padding:2.5rem 3rem 2rem; border-bottom:1px solid var(--border);
-      opacity:0; transform:translateY(10px); transition:opacity 0.4s ease, transform 0.4s ease; }
-    .committee-header.visible { opacity:1; transform:translateY(0); }
-    .breadcrumb { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em;
-      text-transform:uppercase; margin-bottom:1.25rem; }
-    .breadcrumb span { color:var(--subtle); }
-    .committee-name-display { font-family:'Barlow Condensed',sans-serif;
-      font-size:clamp(1.2rem,2.5vw,1.9rem); font-weight:800; line-height:1.05;
-      letter-spacing:0; text-transform:uppercase; margin-bottom:0.75rem; }
-    .meta-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+    /* Committee header — shared base via .page-header and .page-header-title in styles.css */
+    .meta-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
     .designation-label { font-family:'IBM Plex Mono',monospace; font-size:0.62rem;
       color:var(--muted); margin-left:0.25rem; }
     .back-link-area { margin-top:0.85rem; }
@@ -43,7 +34,6 @@
 
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
-      .committee-header { padding:1.5rem 1.25rem 1.25rem; }
       .committee-content { padding:1.5rem 1.25rem; }
       .state-msg { padding:2rem 1.25rem; }
       .stats-grid { grid-template-columns:repeat(2,1fr); }
@@ -101,9 +91,9 @@
     </div>
 
     <!-- Committee header — revealed after load -->
-    <div class="committee-header" id="committee-header" style="display:none">
-      <div class="breadcrumb">Committees <span id="breadcrumb-type"></span></div>
-      <div class="committee-name-display" id="committee-name">—</div>
+    <div class="committee-header page-header page-header-reveal" id="committee-header" style="display:none">
+      <div class="breadcrumb"><a href="/committees">Committees</a> <span>/ <span id="breadcrumb-name"></span></span></div>
+      <div class="committee-name-display page-header-title" id="committee-name">—</div>
       <div class="meta-row" id="meta-row"></div>
       <div class="back-link-area" id="back-link-area" style="display:none"></div>
     </div>
@@ -224,7 +214,7 @@ async function init() {
 
 function renderHeader(c) {
   // Breadcrumb
-  document.getElementById('breadcrumb-type').textContent = '/ ' + committeeTypeLabel(c.committee_type);
+  document.getElementById('breadcrumb-name').textContent = toTitleCase(c.name) || committeeTypeLabel(c.committee_type);
 
   // Name
   document.getElementById('committee-name').textContent = c.name || '—';
