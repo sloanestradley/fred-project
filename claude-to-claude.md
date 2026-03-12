@@ -758,3 +758,47 @@ The through-line: Sloane consistently elevated point fixes into systemic improve
 – Visual QA at 390px: check all pages on a real device or simulator to confirm the 1rem gutters feel right — especially process-log.html (which previously had 3rem on mobile) and design-system.html (which had overflow issues). The Playwright tests confirm no overflow, but can't judge visual balance.
 – The --page-gutter variable opens the door to a future responsive tier (e.g., tablet at ~600px with 2rem gutters). Worth discussing whether a middle breakpoint is needed or if the current desktop/mobile split is sufficient.
 – design-system.html should document the --page-gutter token and the page gutter pattern — it's now a layout convention but isn't visible in the living reference yet.
+
+---
+2026-03-12 10:30
+
+## Process log draft
+**Title:** Search grew up: typeahead, two groups, and a cleaner data model
+
+**Summary (Sloane's voice):**
+Search went from a single-purpose candidate lookup to a proper unified search surface — typeahead as you type, results grouped into candidates and committees, and clean URLs throughout. The session also surfaced a quiet win: the FEC's `/candidates/?q=` endpoint works perfectly for name search, so the existing `/candidates/search/` detour wasn't necessary. Simpler and more consistent.
+
+**Changelog:**
+- `utils.js` — added `formatCandidateName()` as a semantic alias for `toTitleCase()` (same logic, cleaner call sites)
+- `styles.css` — added Section P (typeahead dropdown components) and Section Q (two-group search results), moved `.search-bar-wrap { position:relative }` from inline to shared CSS
+- `search.html` — full rewrite: two-group typeahead dropdown with 300ms debounce, two-group results preview (candidates + committees), "View all →" links to `/candidates?q=` and `/committees?q=` when count > 5, clean URL pushState, all links using `/candidate/{id}` / `/committee/{id}` format
+- `tests/helpers/api-mock.js` — added `COMMITTEE_SEARCH_RESULTS` fixture; added `q` param branch to both `/candidates/` and `/committees/` route handlers
+- `tests/search.spec.js` — full rewrite: 21 tests across 6 describe blocks covering initial state, typeahead, two-group results, view-all links, auto-search, and no-results
+- `ia.md` — updated search.html description, resolved open IA question about committee search location, updated page relationships table
+- `TESTING.md` — updated test count (170 → 198), updated search.spec.js description
+- Test count: 186 → 198 (12 new search tests)
+
+**Field notes:**
+The pre-flight API check before writing a single line of implementation was worth it. The plan flagged a risk — the existing search used `/candidates/search/` while the prompt specified `/candidates/?q=`. Two different endpoints. Spending 30 seconds on a live curl before stubbing the mock meant the mock was correct from the start, not corrected after a test failure. The small habits matter.
+
+The typeahead being `<a>` tags instead of `<div>` tags was a quiet but important call. Native keyboard focus, native click, no JS click handler needed — the browser handles it. It's the difference between building UI that fights the platform and UI that uses it.
+
+## How Sloane steered the work
+**"Let's resolve #3 first" — finishing the gutter token story**
+Before touching search, Sloane pointed to the remaining open item from the previous session: documenting `--page-gutter` in design-system.html. A small thing, but deliberately completing it before moving on. The token exists in the code; the reference page should reflect it. No loose ends.
+
+**Session split as a first-class decision**
+Sloane presented a 5-part prompt but immediately flagged: "my first prompt may need to be split into two sessions to keep context." That's a product manager's instinct — scope awareness before implementation. The split (Parts 1–3 this session, Parts 4–5 next) came from reading the prompt, not from running out of time. The deliverable for Session 1 is coherent on its own: search is fully functional end-to-end.
+
+**"Assess what's here and tell me if you'd propose anything differently"**
+Before approving the plan, Sloane asked for an honest assessment of the approach — not just "can you do this?" but "is there a better way?" That opened the door to flagging the `formatCandidateName` / `toTitleCase` duplication risk and the endpoint uncertainty. The final implementation avoided both problems.
+
+**Functional before visual — explicit**
+Sloane was direct: "We'll start with functional and then move into more UI-related changes later." That framing shaped the entire session. The components work correctly; visual polish is deliberately queued for a separate pass.
+
+The through-line: Sloane is managing complexity at the session level, not just the feature level — controlling what ships together, in what order, and why.
+
+## What to bring to Claude Chat
+- Visual pass for new search components: typeahead and two-group results are functional but unstyled beyond basics. Any visual/UX details worth discussing before the polish session? (Row hover states, loading shimmer, candidate card vs. committee row visual balance, "View all" link prominence.)
+- Session 2 scope check: Parts 4–5 (candidates.html and committees.html `?q=` search mode with infinite scroll) — confirm this is still the right priority, or does something else jump the queue?
+- design-system.html component lifecycle: three new components shipped (typeahead, committee result row, two-group results layout) but not yet documented in design-system.html — visual pass or standalone cleanup session?

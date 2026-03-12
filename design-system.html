@@ -337,6 +337,8 @@
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-overlay-deadline)"></span>--chart-overlay-deadline</td><td>--muted @ 40%</td><td class="ds-token-hex">rgba(90,96,112,0.4)</td><td>Filing deadline vertical line</td></tr>
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-overlay-election)"></span>--chart-overlay-election</td><td>--amber @ 75%</td><td class="ds-token-hex">rgba(232,160,32,0.75)</td><td>Election date vertical line</td></tr>
             <tr><td class="ds-token-name"><span class="ds-token-dot" style="background:var(--chart-overlay-today)"></span>--chart-overlay-today</td><td>--subtle @ 18%</td><td class="ds-token-hex">rgba(136,144,160,0.18)</td><td>Today marker (active cycles)</td></tr>
+            <tr><td colspan="4" style="color:var(--muted);font-size:0.6rem;padding-top:0.75rem">Layout tokens:</td></tr>
+            <tr><td class="ds-token-name">--page-gutter</td><td>—</td><td class="ds-token-hex">3rem / 1rem</td><td>Horizontal content padding — desktop / mobile (≤860px). Use <code style="font-size:0.6rem">padding: &lt;v&gt; var(--page-gutter)</code> on all content sections.</td></tr>
           </tbody>
         </table>
         <div class="callout">⚠ <strong>Known overlap:</strong> <code>--red</code> and <code>--rep</code> both resolve to <code>#a83228</code>. This is intentional — <code>--rep</code> is a partisan color; <code>--red</code> is a status color (stressed/error). If the status system diverges from the partisan palette in the future, they should split into separate primitives.</div>
@@ -580,6 +582,9 @@
         <div class="ds-spacing-row"><span class="ds-spacing-label">2.5rem</span><div class="ds-spacing-bar" style="width:2.5rem"></div><span class="ds-spacing-px">40px</span></div>
         <div class="ds-spacing-row"><span class="ds-spacing-label">3rem</span><div class="ds-spacing-bar" style="width:3rem"></div><span class="ds-spacing-px">48px</span></div>
         <div class="ds-spacing-row"><span class="ds-spacing-label">3.5rem</span><div class="ds-spacing-bar" style="width:3.5rem"></div><span class="ds-spacing-px">56px</span></div>
+      </div>
+      <div class="callout" style="margin-top:1.25rem">
+        <strong>Page gutter pattern:</strong> All content sections use <code style="font-size:0.65rem;color:var(--dem)">var(--page-gutter)</code> for horizontal padding — <strong>3rem</strong> on desktop, <strong>1rem</strong> on mobile (≤860px). The mobile value is controlled in one place via <code style="font-size:0.65rem;color:var(--dem)">styles.css :root @media (max-width:860px)</code>. Usage: <code style="font-size:0.65rem;color:var(--dem)">padding: &lt;vertical&gt; var(--page-gutter)</code>. Component-internal padding (buttons, cards, modals) stays hardcoded.
       </div>
     </section>
 

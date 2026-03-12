@@ -184,6 +184,20 @@ const COMMITTEES_LIST = {
   pagination: { count: 1 },
 };
 
+// Committee search results (/committees/?q= search mode and typeahead)
+const COMMITTEE_SEARCH_RESULTS = {
+  results: [{
+    committee_id:   'C00775668',
+    name:           'MARIE FOR CONGRESS',
+    committee_type: 'H',
+    committee_type_full: 'House',
+    state:          'WA',
+    filing_frequency: 'Q',
+    treasurer_name: 'SMITH, JOHN',
+  }],
+  pagination: { count: 1, pages: 1, per_page: 5, page: 1 },
+};
+
 // Disbursements by category (for Spent tab)
 const DISBURSEMENTS = {
   results: [
@@ -271,11 +285,15 @@ function resolveFixture(path, params) {
   // candidates/search/
   if (/\/candidates\/search\//.test(path)) return SEARCH_RESULTS;
 
-  // candidates/ (browse) — with no search
-  if (/\/candidates\//.test(path)) return { results: [CANDIDATE.results[0]], pagination: { count: 1 } };
+  // candidates/ (browse or search — check q param)
+  if (/\/candidates\//.test(path)) {
+    if (params.get('q')) return SEARCH_RESULTS;
+    return { results: [CANDIDATE.results[0]], pagination: { count: 1 } };
+  }
 
-  // committees/ — leadership PAC lookup uses sponsor_candidate_id param
+  // committees/ — q param = search, sponsor_candidate_id = leadership PAC lookup, else browse
   if (/\/committees\//.test(path)) {
+    if (params.get('q')) return COMMITTEE_SEARCH_RESULTS;
     if (params.get('sponsor_candidate_id')) return LEADERSHIP_PACS;
     return COMMITTEES_LIST;
   }

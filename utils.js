@@ -54,6 +54,9 @@ function toTitleCase(name) {
   return first ? first + ' ' + last : last;
 }
 
+// Semantic alias for rendering candidate names at call sites
+function formatCandidateName(n) { return toTitleCase(n); }
+
 // ── Party utilities ──────────────────────────────────────────────────────────
 
 function partyClass(p) {

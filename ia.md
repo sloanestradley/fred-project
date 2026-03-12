@@ -9,7 +9,7 @@
 | File | Purpose | Clean URL (Netlify) | Status | Phase |
 |---|---|---|---|---|
 | `index.html` | Root redirect → search.html | `/` | Live (redirect) | 1 |
-| `search.html` | Name-based candidate search | `/search?q={query}` | Live | 2 |
+| `search.html` | Name-based candidate + committee search with typeahead | `/search?q={query}` | Live | 2 |
 | `candidates.html` | Browse candidates by state/office/party/cycle | `/candidates?state=WA&office=H&party=DEM&cycle=2026` | Scaffold | 2 |
 | `candidate.html` | Single candidate profile | `/candidate/{fec_candidate_id}#{cycle}#{tab}` | Live | 1 |
 | `committees.html` | Browse committees by type/state | `/committees?state=WA&type=P` | Scaffold | 3 |
@@ -61,7 +61,8 @@ Documentation
 | `candidates.html` | `candidate.html` | `candidate.html?id={candidate_id}` |
 | `committees.html` | `committee.html` | `committee.html?id={committee_id}` |
 | `races.html` → `race.html` | `candidate.html` | `candidate.html?id={id}#{year}#summary` |
-| `search.html` | `candidate.html` | `candidate.html?id={candidate_id}` |
+| `search.html` | `candidate.html` | `/candidate/{candidate_id}` |
+| `search.html` | `committee.html` | `/committee/{committee_id}` |
 
 ### Profile → Profile
 
@@ -138,6 +139,6 @@ Phase assignments follow `project-brief.md`. Pages listed here by first-built ph
 ## Open IA Questions
 
 - **Homepage:** `index.html` currently redirects to `search.html`. A proper homepage may be warranted in Phase 4 — would surface trending races, recent filings, or editorial picks.
-- **Committees nav item:** Currently links to `committees.html` (browse). If committee search (by name) is added in Phase 2, should it live in `search.html` (with a type toggle) or in `committees.html`?
+- ~~**Committees nav item:** Committee search lives in `search.html` as a two-group preview (candidates + committees). Results link to `/candidates?q=` and `/committees?q=` for full-list views. Resolved 2026-03-12.~~
 - **Ad hoc race URLs:** When the ad hoc comparison builder is built (Phase 3), candidate IDs will be comma-separated in `?candidates=`. The URL may become long — consider whether to use short-lived server-side IDs or accept long URLs.
 - **Candidate ID in URL:** No slug or human-readable alias — FEC IDs are canonical. This is intentional: FEC IDs are stable and unambiguous; slugs would require a lookup layer.

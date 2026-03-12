@@ -5,7 +5,7 @@
 
 ## How to use this file
 
-**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 177 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
+**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 198 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
 
 **Smoke tests (Track 2):** Run `npm run test:smoke` before deploys. Hits the live FEC API — 5 key checks. Requires the dev server to be running.
 
@@ -146,17 +146,35 @@
 ### Amplitude events
 - [ ] `Page Viewed` fires with `page: 'search'`
 - [ ] `Candidate Searched` fires on search submit with `query` property
-- [ ] `Candidate Result Clicked` fires on result click with `candidate_id`, `candidate_name`, `query`, `result_position`
+- [ ] `Candidate Result Clicked` fires on candidate card click with `candidate_id`, `candidate_name`, `query`, `result_position`
+- [ ] `Committee Result Clicked` fires on committee row click with `committee_id`, `query`, `result_position`
 
-### Search behavior
-- [ ] Search input is focused / prominent on page load
-- [ ] Typing a candidate name and pressing Enter returns results
-- [ ] Results show candidate name, office, state, party
-- [ ] Clicking a result navigates to `candidate.html?id=...`
-- [ ] `localhost:8080/search.html?q=pelosi` auto-fires a search on load and shows results
-- [ ] Empty search with no results shows a no-results state (not blank, not an error)
+### Typeahead
+- [ ] Typing 1 character → no dropdown appears (wait 400ms to confirm)
+- [ ] Typing 2+ characters → dropdown appears within ~350ms
+- [ ] Dropdown shows "Candidates" and "Committees" group labels
+- [ ] Each candidate row: `First Last (CANDIDATE_ID)` on left, `House`/`Senate`/`President` on right
+- [ ] Each committee row: `Committee Name (COMMITTEE_ID)` on left, colored status dot + `Active`/`Terminated` on right (green dot = active, grey = terminated)
+- [ ] "No candidates found" shown when API returns 0 candidates for that group
+- [ ] "No committees found" shown when API returns 0 committees for that group
+- [ ] Pressing Escape closes the dropdown
+- [ ] Clicking outside the dropdown closes it
+- [ ] Clicking a candidate row navigates to `/candidate/{id}` (clean URL)
+- [ ] Clicking a committee row navigates to `/committee/{id}` (clean URL)
+- [ ] Pressing Enter while typeahead is open: closes dropdown, runs full search, shows two-group results
+
+### Two-group results
+- [ ] Submitting search shows a "Candidates" group and a "Committees" group
+- [ ] Candidate cards link to `/candidate/{id}` (clean URL, no `?id=`)
+- [ ] Committee rows link to `/committee/{id}` (clean URL)
+- [ ] Candidate card shows name (First Last), party tag, office · state (e.g. `House · WA · 03`)
+- [ ] Committee row shows name, committee type, Active/Terminated status tag
+- [ ] If total candidates > 5: "View all N →" link appears and links to `/candidates?q={query}`
+- [ ] If total committees > 5: "View all N →" link appears and links to `/committees?q={query}`
+- [ ] "View all" links absent when count ≤ 5
+- [ ] If both groups return 0 results: no-results state shown (not blank)
+- [ ] `localhost:8080/search.html?q=pelosi` auto-fires search on load and shows two-group results
 - [ ] Loading state visible while fetch is in flight
-- [ ] API error shows an error state (not a blank page or crash)
 
 ---
 
@@ -445,3 +463,4 @@ Append a row after each test run. Never delete old rows.
 | 2026-03-11 | Mock/live field shape audit — fix 7 fixture gaps across 9 endpoints | tests/helpers/api-mock.js (automated) | schedule_a/by_state used wrong field names (state vs contributor_state); coverage_end_date missing timestamp; total_receipts_ytd should be string; leadership_pac should be null; organization_type_full should be null — all fixed | 175/175 Track 1 passing |
 | 2026-03-11 | Add Raised tab smoke tests — geography heatmap SVG + contributor table row coverage | candidate.html (automated) | None | 177/177 Track 1 passing |
 | 2026-03-11 | Audit local apiFetch duplicates in race.html + committee.html | race.html, committee.html (automated) | No local definitions found — already removed in utils.js extraction session | 177/177 Track 1 passing |
+| 2026-03-12 | Search overhaul (Session 1) — typeahead dropdown, two-group results preview, formatCandidateName, committee search fixture | search.html, utils.js, styles.css, api-mock.js, search.spec.js (automated) | None | 198/198 Track 1 passing |

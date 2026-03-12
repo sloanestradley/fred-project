@@ -2,13 +2,15 @@
  * search.spec.js — Structural tests for search.html.
  *
  * Uses mocked FEC API and Amplitude.
- * Tests cover: initial hero state, search input, auto-search via ?q= param,
- * results rendering, no-results state, and Amplitude events.
+ * Tests cover: initial hero state, typeahead dropdown, two-group results
+ * preview, no-results state, and Amplitude events.
  */
 
 import { test, expect } from '@playwright/test';
 import { mockAmplitude, findTrackEvent } from './helpers/amp-mock.js';
 import { mockFecApi } from './helpers/api-mock.js';
+
+// ── Initial state ─────────────────────────────────────────────────────────────
 
 test.describe('search.html — initial state (no query)', () => {
   test.beforeEach(async ({ page }) => {
@@ -37,79 +39,200 @@ test.describe('search.html — initial state (no query)', () => {
   });
 });
 
-test.describe('search.html — search interaction', () => {
-  test('typing and pressing Enter returns results', async ({ page }) => {
+// ── Typeahead dropdown ────────────────────────────────────────────────────────
+
+test.describe('search.html — typeahead dropdown', () => {
+  test.beforeEach(async ({ page }) => {
     await mockAmplitude(page);
     await mockFecApi(page);
     await page.goto('/search.html');
-    await page.locator('.search-input').fill('gluesenkamp');
-    await page.locator('.search-input').press('Enter');
-    await expect(page.locator('.results-list')).toBeVisible({ timeout: 5000 });
   });
 
-  test('result card links to candidate.html?id=...', async ({ page }) => {
-    await mockAmplitude(page);
-    await mockFecApi(page);
-    await page.goto('/search.html');
-    await page.locator('.search-input').fill('gluesenkamp');
-    await page.locator('.search-input').press('Enter');
-    await page.waitForSelector('.results-list', { timeout: 5000 });
-    const link = page.locator('.results-list a[href*="candidate.html"]').first();
+  test('fewer than 2 chars does not show typeahead', async ({ page }) => {
+    await page.locator('.search-input').fill('g');
+    await page.waitForTimeout(400);
+    await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
+  });
+
+  test('2+ chars shows typeahead dropdown', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await expect(page.locator('#typeahead-dropdown')).toBeVisible({ timeout: 2000 });
+  });
+
+  test('dropdown shows Candidates group label', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    const labels = await page.locator('.typeahead-group-label').allTextContents();
+    const upper = labels.map(t => t.toUpperCase());
+    expect(upper.some(t => t.includes('CANDIDATES'))).toBe(true);
+  });
+
+  test('dropdown shows Committees group label', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    const labels = await page.locator('.typeahead-group-label').allTextContents();
+    const upper = labels.map(t => t.toUpperCase());
+    expect(upper.some(t => t.includes('COMMITTEES'))).toBe(true);
+  });
+
+  test('candidate row links to /candidate/{id}', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    const link = page.locator('.typeahead-row[href*="/candidate/"]').first();
     await expect(link).toBeVisible();
     const href = await link.getAttribute('href');
-    expect(href).toContain('candidate.html?id=');
+    expect(href).toMatch(/\/candidate\/[A-Z0-9]+/);
   });
 
-  test('?q= param auto-fires search on load', async ({ page }) => {
-    await mockAmplitude(page);
-    await mockFecApi(page);
-    await page.goto('/search.html?q=gluesenkamp');
-    await expect(page.locator('.results-list')).toBeVisible({ timeout: 5000 });
+  test('committee row links to /committee/{id}', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    const link = page.locator('.typeahead-row[href*="/committee/"]').first();
+    await expect(link).toBeVisible();
+    const href = await link.getAttribute('href');
+    expect(href).toMatch(/\/committee\/[A-Z0-9]+/);
   });
 
-  test('Candidate Searched fires on form submit', async ({ page }) => {
+  test('Escape key closes the dropdown', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    await page.locator('.search-input').press('Escape');
+    await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
+  });
+
+  test('Enter key closes dropdown and runs search', async ({ page }) => {
+    await page.locator('.search-input').fill('gluesenkamp');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    await page.locator('.search-input').press('Enter');
+    await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
+    await expect(page.locator('#candidates-list')).toBeVisible({ timeout: 5000 });
+  });
+
+  test('clicking outside closes the dropdown', async ({ page }) => {
+    await page.locator('.search-input').fill('gl');
+    await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
+    await page.mouse.click(10, 400);
+    await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
+  });
+});
+
+// ── Two-group results ─────────────────────────────────────────────────────────
+
+test.describe('search.html — two-group results', () => {
+  test.beforeEach(async ({ page }) => {
     await mockAmplitude(page);
     await mockFecApi(page);
     await page.goto('/search.html');
     await page.locator('.search-input').fill('gluesenkamp');
     await page.locator('.search-input').press('Enter');
-    await page.waitForSelector('.results-list', { timeout: 5000 });
+    await page.waitForSelector('#candidates-list', { timeout: 5000 });
+  });
+
+  test('Candidates group is visible after submit', async ({ page }) => {
+    await expect(page.locator('#group-candidates')).toBeVisible();
+  });
+
+  test('Committees group is visible after submit', async ({ page }) => {
+    await expect(page.locator('#group-committees')).toBeVisible();
+  });
+
+  test('candidate results link to /candidate/{id}', async ({ page }) => {
+    const link = page.locator('#candidates-list a[href*="/candidate/"]').first();
+    await expect(link).toBeVisible();
+    const href = await link.getAttribute('href');
+    expect(href).toMatch(/\/candidate\/[A-Z0-9]+/);
+  });
+
+  test('committee results link to /committee/{id}', async ({ page }) => {
+    const link = page.locator('#committees-list a[href*="/committee/"]').first();
+    await expect(link).toBeVisible();
+    const href = await link.getAttribute('href');
+    expect(href).toMatch(/\/committee\/[A-Z0-9]+/);
+  });
+
+  test('Amplitude Candidate Searched fires on form submit', async ({ page }) => {
     const event = await findTrackEvent(page, 'Candidate Searched');
     expect(event).toBeDefined();
     expect(event.args[1]).toMatchObject({ query: expect.any(String) });
   });
+});
 
-  test('result card has correct onclick wiring and Candidate Result Clicked fires', async ({ page }) => {
+// ── View all links ────────────────────────────────────────────────────────────
+
+test.describe('search.html — View all links', () => {
+  test('"View all candidates" link contains /candidates?q= when count > 5', async ({ page }) => {
     await mockAmplitude(page);
     await mockFecApi(page);
+    // Override to return count > 5 for candidate search
+    await page.route('**/api.open.fec.gov/v1/candidates/**', (route) => {
+      const url = route.request().url();
+      if (url.includes('q=')) {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            results: [{ candidate_id: 'H2WA03217', name: 'GLUESENKAMP PEREZ, MARIE',
+              party: 'DEM', office: 'H', state: 'WA', district: '03' }],
+            pagination: { count: 10, pages: 2, per_page: 5, page: 1 },
+          }),
+        });
+      } else { route.continue(); }
+    });
     await page.goto('/search.html');
     await page.locator('.search-input').fill('gluesenkamp');
     await page.locator('.search-input').press('Enter');
-    await page.waitForSelector('.results-list a[href*="candidate.html"]', { timeout: 5000 });
+    await page.waitForSelector('#candidates-list', { timeout: 5000 });
+    const viewAll = page.locator('#candidates-view-all');
+    await expect(viewAll).toBeVisible();
+    const href = await viewAll.getAttribute('href');
+    expect(href).toContain('/candidates?q=');
+  });
 
-    // Structural check: result card link has onclick attribute calling trackClick
-    const onclick = await page.locator('.results-list a[href*="candidate.html"]').first().getAttribute('onclick');
-    expect(onclick).toContain('trackClick');
-
-    // Behavioral check: call trackClick() directly — it's a top-level function that calls
-    // amplitude.track('Candidate Result Clicked', ...). Calling it directly bypasses navigation.
-    const fired = await page.evaluate(() => {
-      const qBefore = window.amplitude._q.length;
-      if (typeof window.trackClick === 'function') {
-        window.trackClick(null, 'TEST_ID', 'Test Name', 0);
-      }
-      const newItems = window.amplitude._q.slice(qBefore);
-      const found = newItems.find(e => e.name === 'track' && e.args?.[0] === 'Candidate Result Clicked');
-      return found ? found.args[0] : null;
+  test('"View all committees" link contains /committees?q= when count > 5', async ({ page }) => {
+    await mockAmplitude(page);
+    await mockFecApi(page);
+    // Override to return count > 5 for committee search
+    await page.route('**/api.open.fec.gov/v1/committees/**', (route) => {
+      const url = route.request().url();
+      if (url.includes('q=')) {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            results: [{ committee_id: 'C00775668', name: 'MARIE FOR CONGRESS',
+              committee_type: 'H', filing_frequency: 'Q' }],
+            pagination: { count: 10, pages: 2, per_page: 5, page: 1 },
+          }),
+        });
+      } else { route.continue(); }
     });
-    expect(fired).toBe('Candidate Result Clicked');
+    await page.goto('/search.html');
+    await page.locator('.search-input').fill('gluesenkamp');
+    await page.locator('.search-input').press('Enter');
+    await page.waitForSelector('#committees-list', { timeout: 5000 });
+    const viewAll = page.locator('#committees-view-all');
+    await expect(viewAll).toBeVisible();
+    const href = await viewAll.getAttribute('href');
+    expect(href).toContain('/committees?q=');
   });
 });
+
+// ── Auto-search from ?q= param ────────────────────────────────────────────────
+
+test.describe('search.html — ?q= auto-search', () => {
+  test('?q= param auto-fires search on load', async ({ page }) => {
+    await mockAmplitude(page);
+    await mockFecApi(page);
+    await page.goto('/search.html?q=gluesenkamp');
+    await expect(page.locator('#candidates-list')).toBeVisible({ timeout: 5000 });
+  });
+});
+
+// ── No-results state ──────────────────────────────────────────────────────────
 
 test.describe('search.html — empty / error states', () => {
   test('query with no results shows no-results state', async ({ page }) => {
     await mockAmplitude(page);
-    // Return empty results for any FEC search
     await page.route('**/api.open.fec.gov/**', route =>
       route.fulfill({
         status: 200,
