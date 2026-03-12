@@ -13,14 +13,45 @@
 var BASE    = 'https://api.open.fec.gov/v1';
 var API_KEY = 'Y7CL6AyMB9NPbwuuMWHduJ6LVu6OWsv49TDZcXZT';
 
-// ── API fetch ────────────────────────────────────────────────────────────────
+// ── API fetch (concurrency-limited) ──────────────────────────────────────────
 
-async function apiFetch(path, params) {
+var MAX_CONCURRENT = 4;
+var _inFlight = 0;
+var _queue = [];
+
+function _drain() {
+  while (_inFlight < MAX_CONCURRENT && _queue.length > 0) {
+    var item = _queue.shift();
+    _execute(item.path, item.params, item.resolve, item.reject);
+  }
+}
+
+function _execute(path, params, resolve, reject) {
+  _inFlight++;
   var p  = Object.assign({ api_key: API_KEY }, params || {});
   var qs = Object.keys(p).map(function(k) { return k + '=' + encodeURIComponent(p[k]); }).join('&');
-  var res = await fetch(BASE + path + '?' + qs);
-  if (!res.ok) throw new Error('FEC ' + res.status + ' — ' + path);
-  return res.json();
+  fetch(BASE + path + '?' + qs).then(function(res) {
+    if (!res.ok) throw new Error('FEC ' + res.status + ' — ' + path);
+    return res.json();
+  }).then(function(data) {
+    _inFlight--;
+    _drain();
+    resolve(data);
+  }).catch(function(err) {
+    _inFlight--;
+    _drain();
+    reject(err);
+  });
+}
+
+function apiFetch(path, params) {
+  return new Promise(function(resolve, reject) {
+    if (_inFlight < MAX_CONCURRENT) {
+      _execute(path, params, resolve, reject);
+    } else {
+      _queue.push({ path: path, params: params, resolve: resolve, reject: reject });
+    }
+  });
 }
 
 // ── Formatting ───────────────────────────────────────────────────────────────

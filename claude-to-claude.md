@@ -842,3 +842,47 @@ The through-line: Sloane is managing complexity at the session level, not just t
 - Visual pass for new search components: typeahead and two-group results are functional but unstyled beyond basics. Any visual/UX details worth discussing before the polish session? (Row hover states, loading shimmer, candidate card vs. committee row visual balance, "View all" link prominence.)
 - Session 2 scope check: Parts 4–5 (candidates.html and committees.html `?q=` search mode with infinite scroll) — confirm this is still the right priority, or does something else jump the queue?
 - design-system.html component lifecycle: three new components shipped (typeahead, committee result row, two-group results layout) but not yet documented in design-system.html — visual pass or standalone cleanup session?
+
+---
+2026-03-12 [Session 3]
+
+## Process log draft
+
+**Title: One control surface to browse them all**
+
+Two pages that required a form submit to show any results at all — candidates and committees — got rebuilt from the ground up this session. Results now load the moment you arrive. Search and filter live side by side in the same bar. A chip row tracks what's active and lets you remove filters one by one or all at once. The URL stays in sync with every change, so the browser back button and shared links work correctly. And a quiet fix under the hood — a concurrency queue on apiFetch — prevents rate-limit 429s when a page fires 15+ API requests at once.
+
+**Changelog:**
+- candidates.html: full overhaul — unified doFetch() replaces separate browse()/search(); auto-load on page visit; inline search field + 300ms typeahead; state typeahead-select combo (text input filters a size="6" listbox via :focus-within); filter chips row; URL pushState sync; error state with retry; clean /candidate/{id} links in all modes
+- committees.html: identical architecture — auto-load, typeahead, chips, URL sync, error state, clean /committee/{id} links, treasurer always shown
+- utils.js: apiFetch now routes through a MAX_CONCURRENT=4 request queue — all requests still fire, paced to avoid 429s; no call-site changes
+- tests/pages.spec.js: +13 new tests; removed 2 stale "filter bar hidden" tests
+- tests/shared.spec.js: needsApiMock: true for candidates and committees
+- tests/helpers/api-mock.js: office_full and treasurer_name added to fixtures
+
+**Field notes:**
+The most revealing moment was realizing the "two-mode mental model" wasn't just a UX problem — it was a code smell. Two nearly-identical async functions, two card builders with slightly different HTML, two scroll listeners with different guards. Collapsing into one doFetch() eliminated a whole class of bugs. The state combo (:focus-within keeps the dropdown open while either the input or listbox has focus) is the trickiest piece but works cleanly. The apiFetch queue was a fast, clean fix: 20 lines, zero call-site changes.
+
+---
+
+## How Sloane steered the work
+
+**"Unified surface" as the design north star — your framing, not a refactor**
+The plan specified collapsing browse and search into a single always-useful control surface explicitly. That framing drove every implementation choice: auto-load, chips that don't hide the search field, URL sync so context is never lost. This wasn't a technical cleanup; it was a UX position.
+
+**The concurrency fix as a defensive quality move**
+You surfaced the apiFetch rate-limit problem as a targeted, scoped change — one file, no call-site changes, existing tests confirm nothing broke. That discipline kept the session focused and the diff reviewable.
+
+**Scope discipline throughout**
+Both features were specified with clear scope boundaries: don't touch other pages, confirm with tests. That made it possible to ship both cleanly in one session without scope creep.
+
+The through-line: you're shipping features that feel finished — not scaffolded. The browse pages now behave the way a user expects a search-and-filter surface to behave, with no documentation required.
+
+---
+
+## What to bring to Claude Chat
+
+- **State combo UX** — the text-input + hidden listbox works technically but is unconventional. Worth evaluating whether a plain select with better styling would be more reliable and accessible.
+- **Filter persistence on back-navigation** — should filters set on candidates.html carry forward when navigating to a candidate and hitting back? Currently they do via pushState, but the UX hasn't been thought through intentionally.
+- **Committee page completeness** — filing history and associated candidates on committee.html are the main remaining Phase 3 scaffolds. Worth deciding priority vs. race page ad hoc mode before the next session.
+- **apiFetch queue tuning** — MAX_CONCURRENT=4 was chosen conservatively. Worth monitoring in production whether 4 is right once real traffic hits.

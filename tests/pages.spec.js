@@ -222,6 +222,7 @@ test.describe('race.html', () => {
 test.describe('candidates.html', () => {
   test.beforeEach(async ({ page }) => {
     await mockAmplitude(page);
+    await mockFecApi(page);
     await page.goto('/candidates.html');
   });
 
@@ -243,22 +244,41 @@ test.describe('candidates.html', () => {
     expect(count).toBeGreaterThanOrEqual(1);
   });
 
-  test('submitting filters fetches results (mocked)', async ({ page }) => {
-    await mockFecApi(page);
-    // Select a state and submit
-    const selects = page.locator('select');
-    const count = await selects.count();
-    if (count > 0) {
-      await selects.first().selectOption({ index: 1 }).catch(() => {});
-    }
-    const submitBtn = page.locator('button[type="submit"], .filter-btn, .go-btn').first();
-    if (await submitBtn.count() > 0) {
-      await submitBtn.click();
-      await page.waitForLoadState('networkidle');
-    }
-    // Page should not crash
-    const bodyText = await page.evaluate(() => document.body.textContent || '');
-    expect(bodyText.length).toBeGreaterThan(0);
+  test('search input is visible in filter bar', async ({ page }) => {
+    const searchInput = page.locator('#f-search');
+    await expect(searchInput).toBeVisible();
+  });
+
+  test('results auto-load on page load (no params)', async ({ page }) => {
+    const cards = page.locator('.candidate-card');
+    await expect(cards).not.toHaveCount(0, { timeout: 8000 });
+  });
+
+  test('candidate cards use clean /candidate/{id} URL', async ({ page }) => {
+    const link = page.locator('a.candidate-card').first();
+    await expect(link).toBeVisible({ timeout: 8000 });
+    const href = await link.getAttribute('href');
+    expect(href).toMatch(/^\/candidate\//);
+  });
+
+  test('filter chips appear when a filter is active', async ({ page }) => {
+    await page.locator('#f-office').selectOption('H');
+    await page.waitForSelector('.filter-chip', { timeout: 5000 });
+    const chips = page.locator('.filter-chip');
+    await expect(chips).not.toHaveCount(0);
+  });
+
+  test('URL updates after filter change', async ({ page }) => {
+    await page.locator('#f-office').selectOption('H');
+    await page.waitForFunction(() => window.location.search.includes('office=H'), { timeout: 5000 });
+    expect(page.url()).toContain('office=H');
+  });
+
+  test('error state renders when API fails', async ({ page }) => {
+    await page.route('**/api.open.fec.gov/**', route => route.fulfill({ status: 500, body: 'error' }));
+    await page.reload();
+    await page.waitForSelector('#state-error', { state: 'visible', timeout: 8000 });
+    await expect(page.locator('.retry-btn')).toBeVisible();
   });
 });
 
@@ -267,6 +287,7 @@ test.describe('candidates.html', () => {
 test.describe('committees.html', () => {
   test.beforeEach(async ({ page }) => {
     await mockAmplitude(page);
+    await mockFecApi(page);
     await page.goto('/committees.html');
   });
 
@@ -287,6 +308,42 @@ test.describe('committees.html', () => {
     const count = await selects.count();
     expect(count).toBeGreaterThanOrEqual(1);
   });
+
+  test('search input is visible in filter bar', async ({ page }) => {
+    await expect(page.locator('#f-search')).toBeVisible();
+  });
+
+  test('results auto-load on page load (no params)', async ({ page }) => {
+    await page.waitForSelector('.committee-row', { timeout: 8000 });
+    const rows = page.locator('.committee-row');
+    await expect(rows).not.toHaveCount(0);
+  });
+
+  test('committee rows use clean /committee/{id} URL', async ({ page }) => {
+    await page.waitForSelector('.committee-name-link', { timeout: 8000 });
+    const link = page.locator('.committee-name-link').first();
+    const href = await link.getAttribute('href');
+    expect(href).toMatch(/^\/committee\//);
+  });
+
+  test('filter chips appear when a filter is active', async ({ page }) => {
+    await page.locator('#f-type').selectOption('P');
+    await page.waitForSelector('.filter-chip', { timeout: 5000 });
+    await expect(page.locator('.filter-chip')).not.toHaveCount(0);
+  });
+
+  test('URL updates after filter change', async ({ page }) => {
+    await page.locator('#f-type').selectOption('P');
+    await page.waitForFunction(() => window.location.search.includes('type=P'), { timeout: 5000 });
+    expect(page.url()).toContain('type=P');
+  });
+
+  test('error state renders when API fails', async ({ page }) => {
+    await page.route('**/api.open.fec.gov/**', route => route.fulfill({ status: 500, body: 'error' }));
+    await page.reload();
+    await page.waitForSelector('#state-error', { state: 'visible', timeout: 8000 });
+    await expect(page.locator('.retry-btn')).toBeVisible();
+  });
 });
 
 // ── candidates.html — search mode (?q=) ──────────────────────────────────────
@@ -299,9 +356,15 @@ test.describe('candidates.html — search mode (?q=)', () => {
     await page.waitForSelector('#state-results', { state: 'visible', timeout: 8000 });
   });
 
-  test('filter bar is hidden in search mode', async ({ page }) => {
+  test('filter bar is visible (not hidden) when q param is present', async ({ page }) => {
     const filterBar = page.locator('.filter-bar-wrap');
-    await expect(filterBar).not.toBeVisible();
+    await expect(filterBar).toBeVisible();
+  });
+
+  test('search input is populated with the query', async ({ page }) => {
+    const input = page.locator('#f-search');
+    const val = await input.inputValue();
+    expect(val).toBe('marie');
   });
 
   test('search results render at least one candidate card', async ({ page }) => {
@@ -340,9 +403,15 @@ test.describe('committees.html — search mode (?q=)', () => {
     await page.waitForSelector('#state-results', { state: 'visible', timeout: 8000 });
   });
 
-  test('filter bar is hidden in search mode', async ({ page }) => {
+  test('filter bar is visible (not hidden) when q param is present', async ({ page }) => {
     const filterBar = page.locator('.filter-bar-wrap');
-    await expect(filterBar).not.toBeVisible();
+    await expect(filterBar).toBeVisible();
+  });
+
+  test('search input is populated with the query', async ({ page }) => {
+    const input = page.locator('#f-search');
+    const val = await input.inputValue();
+    expect(val).toBe('marie');
   });
 
   test('search results render at least one committee row', async ({ page }) => {
@@ -545,9 +614,9 @@ test.describe('no horizontal overflow at 390px', () => {
   const ALL_PAGES = [
     { url: '/search.html', needsMock: false },
     { url: '/candidate.html?id=H2WA03217', needsMock: true },
-    { url: '/candidates.html', needsMock: false },
+    { url: '/candidates.html', needsMock: true },
     { url: '/committee.html?id=C00775668', needsMock: true },
-    { url: '/committees.html', needsMock: false },
+    { url: '/committees.html', needsMock: true },
     { url: '/race.html?office=H&state=WA&district=03&year=2024', needsMock: true },
     { url: '/races.html', needsMock: false },
     { url: '/process-log.html', needsMock: false },

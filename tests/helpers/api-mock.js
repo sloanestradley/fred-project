@@ -18,6 +18,7 @@ const CANDIDATE = {
     party: 'DEM',
     party_full: 'DEMOCRATIC PARTY',
     office: 'H',
+    office_full: 'House',
     state: 'WA',
     district: '03',
     election_years: [2022, 2024],
@@ -180,6 +181,7 @@ const COMMITTEES_LIST = {
     committee_type_full: 'House',
     state:          'WA',
     filing_frequency: 'Q',
+    treasurer_name: 'SMITH, JOHN',
   }],
   pagination: { count: 1 },
 };

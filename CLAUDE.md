@@ -35,7 +35,8 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 - Netlify Functions for any server-side API proxying needed
 - No build step — files are served directly
 - **Clean URLs:** `_redirects` defines Netlify 200 rewrites for all pages. Profile pages with path-segment URLs (`/candidate/:id`, `/committee/:id`) **must use absolute paths** for every local resource and nav link — `href="/styles.css"`, `src="/main.js"`, `href="/candidates"`, etc. Relative paths break because the browser treats the path segment as a subdirectory (e.g. from `/candidate/H2WA03217`, relative `utils.js` resolves to `/candidate/utils.js`, which also matches the rewrite rule and returns HTML served as JS). Browse pages (`/candidates`, `/committees`, `/races`, `/race`, `/search`) use single-level paths so relative links still resolve to root — but any new page with a deeper path must follow the absolute-path rule.
-- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 198 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
+- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 222 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
+- **apiFetch concurrency queue:** `utils.js` implements a `MAX_CONCURRENT = 4` request queue to avoid 429 rate-limit errors when pages fire many parallel API calls (candidate page fires 15–20 on load). All calls still execute — they just pace to ≤4 in-flight at a time. No call-site changes needed; `apiFetch(path, params)` signature is identical.
 
 ---
 
@@ -43,7 +44,7 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 
 **Reference file:** `design-system.html` is the living design system reference. Read it (or at minimum the token table and component list) before building any new page or component.
 
-**Shared files:** `styles.css` contains the CSS reset, token `:root`, shared layout (sidebar, mobile nav, header), utility classes, and all shared component CSS — including `.page-header` (layout-only: padding, border-bottom — no animation), `.page-header-reveal` (animation modifier: `opacity:0` fade-in; add this alongside `.page-header` on elements that JS reveals via `.visible`; profile pages use both, browse/static pages use `.page-header` only), `.page-header-title` (Barlow Condensed 800, clamp 1.6–2.4rem, uppercase — used as the page title on candidate, committee, and race pages), and `.breadcrumb` (breadcrumb typography and link styles; `text-transform:uppercase` applied — all items render uppercase including entity names). `main.js` contains Amplitude init + Session Replay, mobile scroll-aware header, and hamburger nav (all null-guarded). `utils.js` contains shared JS utilities: `BASE`, `API_KEY`, `apiFetch`, `fmt`, `fmtDate`, `toTitleCase`, `formatCandidateName` (semantic alias for `toTitleCase` — use this when rendering candidate names at call sites), `partyClass`, `partyLabel`, `committeeTypeLabel`, `formatRaceName` (returns e.g. `'House • WA-03'` from office/state/district — used by candidate breadcrumb, race title, and race breadcrumb). Every page links all three (main.js → utils.js → inline script block).
+**Shared files:** `styles.css` contains the CSS reset, token `:root`, shared layout (sidebar, mobile nav, header), utility classes, and all shared component CSS — including `.page-header` (layout-only: padding, border-bottom — no animation), `.page-header-reveal` (animation modifier: `opacity:0` fade-in; add this alongside `.page-header` on elements that JS reveals via `.visible`; profile pages use both, browse/static pages use `.page-header` only), `.page-header-title` (Barlow Condensed 800, clamp 1.6–2.4rem, uppercase — used as the page title on candidate, committee, and race pages), and `.breadcrumb` (breadcrumb typography and link styles; `text-transform:uppercase` applied — all items render uppercase including entity names). `main.js` contains Amplitude init + Session Replay, mobile scroll-aware header, and hamburger nav (all null-guarded). `utils.js` contains shared JS utilities: `BASE`, `API_KEY`, `apiFetch` (concurrency-limited to MAX_CONCURRENT=4 — see tech stack note), `fmt`, `fmtDate`, `toTitleCase`, `formatCandidateName` (semantic alias for `toTitleCase` — use this when rendering candidate names at call sites), `partyClass`, `partyLabel`, `committeeTypeLabel`, `formatRaceName` (returns e.g. `'House • WA-03'` from office/state/district — used by candidate breadcrumb, race title, and race breadcrumb). Every page links all three (main.js → utils.js → inline script block).
 
 **CSS consolidation principle:** Component CSS lives in `styles.css`. Inline `<style>` blocks in individual pages are for page-specific overrides only (layout grid, page-specific spacing, page-specific components). `design-system.html` imports the same `styles.css` as production — no component CSS is duplicated between pages.
 
@@ -115,9 +116,9 @@ Typography: Barlow Condensed 700–900 for display/headings (uppercase), DM Sans
 ```
 index.html        — Root redirect → search.html (entry point)
 search.html       — Candidate name search (live)
-candidates.html   — Browse candidates by state/office/party/cycle (scaffold) + search mode (?q=) live
+candidates.html   — Unified browse+search (live): auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state
 candidate.html    — Single candidate profile (live, primary active file)
-committees.html   — Browse committees by type/state (scaffold) + search mode (?q=) live
+committees.html   — Unified browse+search (live): auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state
 committee.html    — Single committee profile (scaffold)
 races.html        — Race mode selector — curated form + ad hoc stub (scaffold)
 race.html         — Single race view — all candidates in a contest (scaffold)
@@ -249,12 +250,12 @@ See `project-brief.md` for the full phased roadmap. Short version:
 
 **Phase 2 (complete):** Search and navigation.
 - ~~search.html~~ ✅ live — name search, result cards, Amplitude events
-- ~~candidates.html~~ ✅ scaffold + search mode — browse by state/office/party/cycle; ?q= triggers search mode with infinite scroll
+- ~~candidates.html~~ ✅ unified browse+search — auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state, clean URLs in all modes
 - ~~index.html~~ ✅ live — redirect to search.html
 
 **Phase 3 (scaffold):** Committee and race pages.
 - ~~committee.html~~ ✅ scaffold — header with financials, back-link to candidate
-- ~~committees.html~~ ✅ scaffold + search mode — browse by state/type; ?q= triggers search mode with infinite scroll and treasurer name in results
+- ~~committees.html~~ ✅ unified browse+search — auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state, treasurer always shown
 - ~~races.html~~ ✅ scaffold — mode selector (curated form live; ad hoc stub)
 - ~~race.html~~ ✅ scaffold — single race view, candidate cards with financials, cycle-anchored links
 - Remaining: filing history on committee.html, associated candidates on committee.html, ad hoc mode on races.html
@@ -288,6 +289,22 @@ Key committee fields:
 - `filing_frequency` — `'T'` = terminated, `'Q'` = quarterly (active)
 - `leadership_pac` — boolean; most reliable leadership PAC signal
 - `sponsor_candidate_ids` — array on committee record; leadership PACs carry the candidate's ID here
+
+## Unified browse+search architecture (candidates.html / committees.html)
+
+Both browse pages use a single unified state machine — no separate browse/search modes. Key patterns:
+
+- **Auto-load on page visit** — `doFetch(false)` fires in `init()` regardless of URL params. No "click to browse" gate.
+- **Unified `doFetch(isLoadMore)`** — single code path. Uses `activeQ` (string) and `activeFilters` (object) to build params. If `activeQ` is set, fires `Candidates/Committees Searched`; otherwise fires `Candidates/Committees Browsed`.
+- **State vars:** `activeQ` (search query), `activeFilters` (state/office/party/cycle for candidates; state/type for committees), `currentPage`, `totalPages`, `loading`, `lastFetch` (fn ref for retry).
+- **URL sync** — `updateURL()` calls `pushState` after every fetch. `init()` restores from URL params on load.
+- **Filter chips** — `renderChips()` rebuilds chip row after every fetch. `clearFilter(key)` and `clearAllFilters()` reset state and re-fetch.
+- **State combo** — text input filters a `size="6"` listbox; `:focus-within` shows/hides the listbox. On selection, `f-state` fires `change`, populates `f-state-filter`, and calls `doFetch`.
+- **Typeahead** — 300ms debounced, 6 results. Results link directly to `/candidate/{id}` or `/committee/{id}` — clicking does NOT trigger a search, it navigates.
+- **Search field submit** — sets `activeQ` and calls `doFetch(false)`. Enter key or button click.
+- **All result links are clean URLs** — `/candidate/{id}` and `/committee/{id}` in all modes (browse and search).
+- **Error state** — `#state-error` shown on API failure; `.retry-btn` calls `lastFetch()`.
+- **`needsApiMock: true`** in `shared.spec.js` for both pages — they make API calls on load.
 
 ## Navigation and IA architecture
 

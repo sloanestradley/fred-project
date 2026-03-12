@@ -58,10 +58,8 @@ Documentation
 
 | Browse page | Profile page | Link pattern |
 |---|---|---|
-| `candidates.html` (browse mode) | `candidate.html` | `candidate.html?id={candidate_id}` |
-| `candidates.html` (search mode) | `candidate.html` | `/candidate/{candidate_id}` (clean URL) |
-| `committees.html` (browse mode) | `committee.html` | `committee.html?id={committee_id}` |
-| `committees.html` (search mode) | `committee.html` | `/committee/{committee_id}` (clean URL) |
+| `candidates.html` (any mode) | `candidate.html` | `/candidate/{candidate_id}` (clean URL — unified since 2026-03-12) |
+| `committees.html` (any mode) | `committee.html` | `/committee/{committee_id}` (clean URL — unified since 2026-03-12) |
 | `races.html` → `race.html` | `candidate.html` | `candidate.html?id={id}#{year}#summary` |
 | `search.html` | `candidate.html` | `/candidate/{candidate_id}` |
 | `search.html` | `committee.html` | `/committee/{committee_id}` |
@@ -100,8 +98,8 @@ Clean URLs (Netlify-deployed) are canonical. Use `.html` equivalents on localhos
 | `committee.html` | `/committee/{id}` | `id` (path segment) | — | No ID → error state |
 | `race.html` | `/race` | `state`, `year`, `office` | `district` (required for House) | No params → error state |
 | `races.html` | `/races` | — | — | Mode selector only; no data params |
-| `candidates.html` | `/candidates` | — | `state`, `office`, `party`, `cycle`, `q` | `?q=` triggers search mode (hides filter bar, shows paginated results with infinite scroll, links to `/candidate/{id}`); browse params trigger browse mode |
-| `committees.html` | `/committees` | — | `state`, `type`, `q` | `?q=` triggers search mode (hides filter bar, shows paginated results with treasurer name, infinite scroll, links to `/committee/{id}`); browse params trigger browse mode |
+| `candidates.html` | `/candidates` | — | `state`, `office`, `party`, `cycle`, `q` | All params are unified — filter bar always visible, results auto-load on page visit. `?q=` populates the inline search field and pre-fires search. All result cards link to `/candidate/{id}`. Filter chips + URL sync on every change. |
+| `committees.html` | `/committees` | — | `state`, `type`, `q` | Same unified control surface as candidates. Filter bar always visible; `?q=` populates search field. All rows link to `/committee/{id}`. Treasurer always shown. |
 | `search.html` | `/search` | — | `q` | If `q` present, auto-fires search on load |
 
 **FEC candidate_id format:** `H2WA03217` — office (H/S/P) + cycle digits + state + district + sequence

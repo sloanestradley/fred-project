@@ -5,7 +5,7 @@
 
 ## How to use this file
 
-**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 198 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
+**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 222 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
 
 **Smoke tests (Track 2):** Run `npm run test:smoke` before deploys. Hits the live FEC API — 5 key checks. Requires the dev server to be running.
 
@@ -300,31 +300,48 @@
 - [ ] "Candidates" nav item is active
 
 ### Amplitude events
-- [ ] `Page Viewed` fires with `page: 'candidates'`
-- [ ] `Candidates Browsed` fires on filter submit with filter properties
-- [ ] `Candidate Result Clicked` fires on result click with `candidate_id`, `from_page: 'candidates'`, `result_position`
-- [ ] ✅ `Candidates Searched` fires on `?q=` load with `query` property
+- [ ] ✅ `Page Viewed` fires with `page: 'candidates'`
+- [ ] `Candidates Browsed` fires on auto-load and filter changes with filter properties
+- [ ] ✅ `Candidates Searched` fires when `activeQ` is set (search field submitted or `?q=` param) with `query` property
+- [ ] ✅ `Candidate Result Clicked` fires on result click with `candidate_id`, `from_page: 'candidates'`, `result_position`
 - [ ] ✅ `Candidate Result Clicked` fires on search result click with `from_page: 'candidates_search'`
 
-### Filters and results (browse mode)
-- [ ] State dropdown populates
-- [ ] Office dropdown populates (House, Senate, President)
-- [ ] Party dropdown populates
-- [ ] Cycle field present
-- [ ] Submitting filters returns candidate results
-- [ ] Result cards show name, office, state, party
-- [ ] Clicking a result navigates to `candidate.html?id=...`
+### Unified control surface
+- [ ] ✅ Results auto-load immediately on page visit (no "click Browse" gate)
+- [ ] ✅ Search input visible in filter bar alongside dropdowns
+- [ ] State combo: typing in state input filters listbox options
+- [ ] State combo: selecting from listbox populates text input and triggers fetch
+- [ ] Office dropdown: selecting President disables state filter
+- [ ] Party dropdown populates; changing selection re-fetches
+- [ ] Cycle dropdown populates 2026–2002; changing selection re-fetches
+- [ ] ✅ Filter chips row appears when any filter is active; shows chip per active filter
+- [ ] Clicking chip `×` clears that filter and re-fetches
+- [ ] "Clear all" chip appears when 2+ filters active; clears everything and re-fetches
+- [ ] ✅ URL updates (pushState) after every filter change — `?office=H`, `?state=WA`, etc.
+- [ ] Opening `?state=WA&office=H` pre-fills controls and auto-fetches with those filters
+- [ ] ✅ Error state (`#state-error`) renders and retry button visible when API fails
+
+### Results
+- [ ] ✅ Candidate cards render on load (not blank)
+- [ ] ✅ Candidate card links to `/candidate/{id}` (clean URL — all modes, not just search)
+- [ ] Cards show name (title case), party tag, office · state · district
+- [ ] Results header shows count (e.g. "1 candidate")
 - [ ] No-results state renders if filters return nothing (not blank/crash)
 
-### Search mode (`?q=` present)
+### Typeahead (search field)
+- [ ] Typing 1 character → no dropdown
+- [ ] Typing 2+ characters → typeahead dropdown appears within ~350ms
+- [ ] Clicking a typeahead result navigates directly to `/candidate/{id}`
+- [ ] Clicking outside the dropdown closes it
+
+### Search via `?q=` param
 **Test URL:** `localhost:8080/candidates.html?q=marie`
-- [ ] ✅ Filter bar is hidden (`.filter-bar-wrap` not visible)
+- [ ] ✅ Filter bar remains visible (no longer hidden in search mode)
+- [ ] ✅ Search input is populated with query value
 - [ ] ✅ Candidate cards render with results
-- [ ] ✅ Candidate name displayed (title case)
 - [ ] ✅ Candidate card links to `/candidate/{id}` (clean URL)
 - [ ] Results header shows count and query (e.g. "1 candidate for "marie"")
-- [ ] Infinite scroll: scrolling near bottom triggers fetch for next page (test with a broad query like `a`)
-- [ ] Empty state renders if query returns no candidates
+- [ ] Infinite scroll: scrolling near bottom triggers fetch for next page (test with broad query like `a`)
 
 ---
 
@@ -336,29 +353,44 @@
 - [ ] "Committees" nav item is active
 
 ### Amplitude events
-- [ ] `Page Viewed` fires with `page: 'committees'`
-- [ ] `Committees Browsed` fires on filter submit with filter properties
-- [ ] `Committee Result Clicked` fires on result click with `committee_id`, `from_page: 'committees'`, `result_position`
-- [ ] ✅ `Committees Searched` fires on `?q=` load with `query` property
+- [ ] ✅ `Page Viewed` fires with `page: 'committees'`
+- [ ] `Committees Browsed` fires on auto-load and filter changes with filter properties
+- [ ] ✅ `Committees Searched` fires when `activeQ` is set with `query` property
+- [ ] ✅ `Committee Result Clicked` fires on result click with `committee_id`, `from_page: 'committees'`, `result_position`
 - [ ] ✅ `Committee Result Clicked` fires on search result click with `from_page: 'committees_search'`
 
-### Filters and results (browse mode)
-- [ ] State dropdown populates
-- [ ] Committee type dropdown populates
-- [ ] Submitting filters returns committee results
-- [ ] Result rows show committee name and type
-- [ ] Clicking a result navigates to `committee.html?id=...`
-- [ ] No-results state renders if filters return nothing (not blank/crash)
+### Unified control surface
+- [ ] ✅ Results auto-load immediately on page visit
+- [ ] ✅ Search input visible in filter bar alongside dropdowns
+- [ ] State combo: typing filters listbox; selecting from listbox triggers fetch
+- [ ] Committee type dropdown populates; changing selection re-fetches
+- [ ] ✅ Filter chips row appears when any filter is active
+- [ ] Clicking chip `×` clears that filter and re-fetches
+- [ ] ✅ URL updates after filter change — `?type=P`, `?state=WA`, etc.
+- [ ] Opening `?state=WA&type=P` pre-fills controls and auto-fetches
+- [ ] ✅ Error state (`#state-error`) and retry button visible when API fails
 
-### Search mode (`?q=` present)
+### Results
+- [ ] ✅ Committee rows render on load
+- [ ] ✅ Committee row links to `/committee/{id}` (clean URL — all modes)
+- [ ] Treasurer name always shown in each row (not only in search mode)
+- [ ] Rows show committee name, type, Active/Terminated status
+- [ ] No-results state renders if filters return nothing
+
+### Typeahead (search field)
+- [ ] Typing 2+ characters → typeahead shows committee results with type label
+- [ ] Clicking a typeahead result navigates to `/committee/{id}`
+- [ ] Clicking outside closes dropdown
+
+### Search via `?q=` param
 **Test URL:** `localhost:8080/committees.html?q=marie`
-- [ ] ✅ Filter bar is hidden (`.filter-bar-wrap` not visible)
+- [ ] ✅ Filter bar remains visible (no longer hidden in search mode)
+- [ ] ✅ Search input is populated with query value
 - [ ] ✅ Committee rows render with results
-- [ ] ✅ Committee name displayed and linked to `/committee/{id}` (clean URL)
+- [ ] ✅ Committee row links to `/committee/{id}` (clean URL)
 - [ ] ✅ Treasurer name visible in each search result row
 - [ ] Results header shows count and query (e.g. "1 committee for "marie"")
 - [ ] Infinite scroll: scrolling near bottom triggers fetch for next page
-- [ ] Empty state renders if query returns no committees
 
 ---
 
@@ -489,3 +521,4 @@ Append a row after each test run. Never delete old rows.
 | 2026-03-11 | Audit local apiFetch duplicates in race.html + committee.html | race.html, committee.html (automated) | No local definitions found — already removed in utils.js extraction session | 177/177 Track 1 passing |
 | 2026-03-12 | Search overhaul (Session 1) — typeahead dropdown, two-group results preview, formatCandidateName, committee search fixture | search.html, utils.js, styles.css, api-mock.js, search.spec.js (automated) | None | 198/198 Track 1 passing |
 | 2026-03-12 | Search overhaul (Session 2) — ?q= search mode on candidates.html and committees.html (filter bar hide, infinite scroll, clean URL links, treasurer in committee search rows) | candidates.html, committees.html, pages.spec.js (automated) | None | 209/209 Track 1 passing |
+| 2026-03-12 | Unified browse+search control surface — auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state, clean URLs in all modes; apiFetch concurrency queue (MAX_CONCURRENT=4) | candidates.html, committees.html, utils.js, pages.spec.js, shared.spec.js, api-mock.js (automated) | None | 222/222 Track 1 passing |

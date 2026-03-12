@@ -32,7 +32,7 @@ const PAGES = [
     name: 'candidates.html',
     url: '/candidates.html',
     activeNavText: 'Candidates',
-    needsApiMock: false,
+    needsApiMock: true,
   },
   {
     name: 'candidate.html',
@@ -44,7 +44,7 @@ const PAGES = [
     name: 'committees.html',
     url: '/committees.html',
     activeNavText: 'Committees',
-    needsApiMock: false,
+    needsApiMock: true,
   },
   {
     name: 'committee.html',

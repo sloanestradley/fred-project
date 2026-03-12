@@ -24,7 +24,7 @@
     /* Filter bar */
     .filter-bar-wrap { padding:1.5rem var(--page-gutter); border-bottom:1px solid var(--border);
       background:var(--surface); }
-    .filter-bar { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end; max-width:700px; }
+    .filter-bar { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end; max-width:860px; }
     .form-field { display:flex; flex-direction:column; gap:0.3rem; }
     .form-label { font-family:'IBM Plex Mono',monospace; font-size:0.58rem;
       text-transform:uppercase; letter-spacing:0; color:var(--muted); }
@@ -32,33 +32,81 @@
       font-size:0.8rem; background:var(--bg); border:1px solid var(--border-strong);
       color:var(--text); outline:none; transition:border-color 0.15s; border-radius:0; }
     .form-select:focus, .form-input:focus { border-color:var(--accent); }
-    .form-input.narrow { width:72px; }
     .form-select.wide { min-width:200px; }
-    .form-go-btn { padding:0.45rem 1.1rem; background:var(--text); color:var(--bg);
+    .form-input:disabled, .form-select:disabled { opacity:0.45; cursor:not-allowed; }
+
+    /* Search combo */
+    .search-combo { position:relative; display:flex; }
+    .search-combo .form-input { flex:1; min-width:160px; border-right:none; }
+    .form-search-btn { padding:0.45rem 0.8rem; background:var(--text); color:var(--bg);
       border:1px solid var(--text); font-family:'Barlow Condensed',sans-serif;
-      font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0;
-      cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
-    .form-go-btn:hover { opacity:0.85; }
+      font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0;
+      cursor:pointer; transition:opacity 0.15s; white-space:nowrap; flex-shrink:0; }
+    .form-search-btn:hover { opacity:0.85; }
+
+    /* Typeahead dropdown */
+    .typeahead-dd { position:absolute; top:100%; left:0; right:0; z-index:100;
+      background:var(--surface); border:1px solid var(--border-strong);
+      border-top:none; max-height:240px; overflow-y:auto; display:none; }
+    .typeahead-dd.open { display:block; }
+    .typeahead-item { display:block; padding:0.5rem 0.7rem; font-size:0.78rem;
+      color:var(--text); text-decoration:none; cursor:pointer;
+      border-bottom:1px solid var(--border); }
+    .typeahead-item:last-child { border-bottom:none; }
+    .typeahead-item:hover { background:var(--accent-dim); }
+    .typeahead-meta { font-family:'IBM Plex Mono',monospace; font-size:0.6rem;
+      color:var(--muted); margin-left:0.4rem; }
+
+    /* State combo */
+    .state-combo { position:relative; }
+    .state-combo .form-input { width:120px; }
+    .state-select-wrap { position:absolute; top:100%; left:0; min-width:200px; z-index:50;
+      display:none; background:var(--bg); border:1px solid var(--border-strong); border-top:none; }
+    .state-combo:focus-within .state-select-wrap { display:block; }
+    .state-listbox { width:100%; max-height:200px; overflow-y:auto; background:var(--bg);
+      font-family:'DM Sans',sans-serif; font-size:0.78rem; color:var(--text);
+      border:none; outline:none; cursor:pointer; }
+
+    /* Filter chips */
+    .filter-chips-wrap { padding:0.55rem var(--page-gutter); border-bottom:1px solid var(--border);
+      background:var(--surface); display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; }
+    .filter-chip { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.5rem;
+      background:var(--bg); border:1px solid var(--border-strong);
+      font-family:'IBM Plex Mono',monospace; font-size:0.62rem; color:var(--subtle); }
+    .chip-x { background:none; border:none; cursor:pointer; font-size:0.85rem;
+      color:var(--muted); padding:0 0.1rem; line-height:1; display:flex; align-items:center; }
+    .chip-x:hover { color:var(--text); }
+    .chip-clear-all { background:none; border:1px solid var(--border-strong); cursor:pointer;
+      font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--muted);
+      padding:0.2rem 0.5rem; text-transform:uppercase; letter-spacing:0; }
+    .chip-clear-all:hover { color:var(--text); border-color:var(--text); }
 
     /* Results area */
     .results-area { padding:2rem var(--page-gutter); }
     .results-header { font-family:'IBM Plex Mono',monospace; font-size:0.6rem;
       text-transform:uppercase; letter-spacing:0; color:var(--muted);
       margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border); }
-    .results-list { }
+    /* Override committee-row grid for unified 4-column layout (name + type + treasurer + status) */
+    #results-list .committee-row { grid-template-columns:1fr auto auto auto; }
 
-    /* Empty / no results */
-    .empty-prompt { padding:3rem var(--page-gutter); color:var(--muted); font-size:0.8rem; }
-    .empty-prompt strong { display:block; font-family:'Barlow Condensed',sans-serif;
+    /* No results / error */
+    .no-results { padding:2.5rem var(--page-gutter); color:var(--muted); font-size:0.8rem; }
+    .error-prompt { padding:3rem var(--page-gutter); color:var(--muted); font-size:0.8rem; }
+    .error-prompt strong { display:block; font-family:'Barlow Condensed',sans-serif;
       font-size:1.2rem; font-weight:700; text-transform:uppercase; letter-spacing:0;
       color:var(--subtle); margin-bottom:0.4rem; }
-    .no-results { padding:2.5rem var(--page-gutter); color:var(--muted); font-size:0.8rem; }
+    .retry-btn { margin-top:0.75rem; padding:0.4rem 0.9rem; background:none;
+      border:1px solid var(--border-strong); font-family:'Barlow Condensed',sans-serif;
+      font-size:0.8rem; font-weight:700; text-transform:uppercase; cursor:pointer;
+      color:var(--subtle); transition:border-color 0.15s, color 0.15s; }
+    .retry-btn:hover { border-color:var(--text); color:var(--text); }
 
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
       .filter-bar-wrap { padding:var(--page-gutter); }
       .results-area { padding:1.5rem var(--page-gutter); }
-      .empty-prompt, .no-results { padding:2rem var(--page-gutter); }
+      .no-results, .error-prompt { padding:2rem var(--page-gutter); }
+      #results-list .committee-row { grid-template-columns:1fr; gap:0.2rem; }
     }
     @media (max-width:480px) { .filter-bar { flex-direction:column; align-items:flex-start; } }
   </style>
@@ -69,25 +117,25 @@
 
   <!-- Desktop sidebar -->
   <nav class="sidebar">
-    <div class="sidebar-logo"><a href="index.html">ledger<em>.fec</em></a></div>
+    <div class="sidebar-logo"><a href="/">ledger<em>.fec</em></a></div>
     <div class="nav-section">
       <div class="nav-label">Pages</div>
-      <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-      <a class="nav-item active" href="committees.html"><span class="nav-dot"></span>Committees</a>
-      <a class="nav-item" href="races.html"><span class="nav-dot"></span>Races</a>
-      <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
+      <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+      <a class="nav-item active" href="/committees"><span class="nav-dot"></span>Committees</a>
+      <a class="nav-item" href="/races"><span class="nav-dot"></span>Races</a>
+      <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
     </div>
     <div class="nav-section" style="margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--sidebar-border)">
       <div class="nav-label">Documentation</div>
-      <a class="nav-item" href="process-log.html"><span class="nav-dot"></span>Process Log</a>
-      <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+      <a class="nav-item" href="/process-log"><span class="nav-dot"></span>Process Log</a>
+      <a class="nav-item" href="/design-system"><span class="nav-dot"></span>Design System</a>
     </div>
   </nav>
 
   <!-- Mobile header -->
   <header class="mobile-header" id="mobile-header">
-    <a class="mobile-logo" href="index.html">ledger<em>.fec</em></a>
-    <a href="search.html" class="mobile-search-icon" aria-label="Search">
+    <a class="mobile-logo" href="/">ledger<em>.fec</em></a>
+    <a href="/search" class="mobile-search-icon" aria-label="Search">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </a>
     <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
@@ -97,12 +145,12 @@
 
   <!-- Mobile nav -->
   <nav class="mobile-nav" id="mobile-nav">
-    <a class="nav-item" href="candidates.html"><span class="nav-dot"></span>Candidates</a>
-    <a class="nav-item active" href="committees.html"><span class="nav-dot"></span>Committees</a>
-    <a class="nav-item" href="races.html"><span class="nav-dot"></span>Races</a>
-    <a class="nav-item" href="search.html"><span class="nav-dot"></span>Search</a>
-    <a class="nav-item" href="process-log.html" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
-    <a class="nav-item" href="design-system.html"><span class="nav-dot"></span>Design System</a>
+    <a class="nav-item" href="/candidates"><span class="nav-dot"></span>Candidates</a>
+    <a class="nav-item active" href="/committees"><span class="nav-dot"></span>Committees</a>
+    <a class="nav-item" href="/races"><span class="nav-dot"></span>Races</a>
+    <a class="nav-item" href="/search"><span class="nav-dot"></span>Search</a>
+    <a class="nav-item" href="/process-log" style="border-top:1px solid var(--sidebar-border);padding-top:0.85rem"><span class="nav-dot"></span>Process Log</a>
+    <a class="nav-item" href="/design-system"><span class="nav-dot"></span>Design System</a>
   </nav>
 
   <!-- Main -->
@@ -111,20 +159,92 @@
     <div class="page-header">
       <div class="page-eyebrow">Committees</div>
       <div class="page-title">Browse Committees</div>
-      <p class="page-desc">Filter FEC-registered committees by type and state. Click any committee to view its profile.</p>
+      <p class="page-desc">Search by name or filter by state and committee type. Results load automatically.</p>
     </div>
 
     <!-- Filter bar -->
     <div class="filter-bar-wrap">
-      <form class="filter-bar" id="filter-form" onsubmit="handleSubmit(event)">
+      <form class="filter-bar" id="filter-form" onsubmit="return false">
+
+        <!-- Search field -->
         <div class="form-field">
-          <label class="form-label" for="f-state">State</label>
-          <input class="form-input narrow" type="text" id="f-state" placeholder="e.g. WA" maxlength="2"/>
+          <label class="form-label" for="f-search">Search</label>
+          <div class="search-combo">
+            <input class="form-input" type="text" id="f-search" placeholder="Committee name…" autocomplete="off"/>
+            <button type="button" class="form-search-btn" id="search-btn">Search</button>
+            <div id="search-typeahead" class="typeahead-dd"></div>
+          </div>
         </div>
+
+        <!-- State combo -->
+        <div class="form-field">
+          <label class="form-label" for="f-state-filter">State</label>
+          <div class="state-combo" id="state-combo">
+            <input class="form-input" type="text" id="f-state-filter" placeholder="All states" autocomplete="off"/>
+            <div class="state-select-wrap">
+              <select id="f-state" size="6" class="state-listbox">
+                <option value="">All states</option>
+                <option value="AK">AK — Alaska</option>
+                <option value="AL">AL — Alabama</option>
+                <option value="AR">AR — Arkansas</option>
+                <option value="AZ">AZ — Arizona</option>
+                <option value="CA">CA — California</option>
+                <option value="CO">CO — Colorado</option>
+                <option value="CT">CT — Connecticut</option>
+                <option value="DC">DC — D.C.</option>
+                <option value="DE">DE — Delaware</option>
+                <option value="FL">FL — Florida</option>
+                <option value="GA">GA — Georgia</option>
+                <option value="HI">HI — Hawaii</option>
+                <option value="IA">IA — Iowa</option>
+                <option value="ID">ID — Idaho</option>
+                <option value="IL">IL — Illinois</option>
+                <option value="IN">IN — Indiana</option>
+                <option value="KS">KS — Kansas</option>
+                <option value="KY">KY — Kentucky</option>
+                <option value="LA">LA — Louisiana</option>
+                <option value="MA">MA — Massachusetts</option>
+                <option value="MD">MD — Maryland</option>
+                <option value="ME">ME — Maine</option>
+                <option value="MI">MI — Michigan</option>
+                <option value="MN">MN — Minnesota</option>
+                <option value="MO">MO — Missouri</option>
+                <option value="MS">MS — Mississippi</option>
+                <option value="MT">MT — Montana</option>
+                <option value="NC">NC — North Carolina</option>
+                <option value="ND">ND — North Dakota</option>
+                <option value="NE">NE — Nebraska</option>
+                <option value="NH">NH — New Hampshire</option>
+                <option value="NJ">NJ — New Jersey</option>
+                <option value="NM">NM — New Mexico</option>
+                <option value="NV">NV — Nevada</option>
+                <option value="NY">NY — New York</option>
+                <option value="OH">OH — Ohio</option>
+                <option value="OK">OK — Oklahoma</option>
+                <option value="OR">OR — Oregon</option>
+                <option value="PA">PA — Pennsylvania</option>
+                <option value="RI">RI — Rhode Island</option>
+                <option value="SC">SC — South Carolina</option>
+                <option value="SD">SD — South Dakota</option>
+                <option value="TN">TN — Tennessee</option>
+                <option value="TX">TX — Texas</option>
+                <option value="UT">UT — Utah</option>
+                <option value="VA">VA — Virginia</option>
+                <option value="VT">VT — Vermont</option>
+                <option value="WA">WA — Washington</option>
+                <option value="WI">WI — Wisconsin</option>
+                <option value="WV">WV — West Virginia</option>
+                <option value="WY">WY — Wyoming</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Committee type -->
         <div class="form-field">
           <label class="form-label" for="f-type">Committee Type</label>
           <select class="form-select wide" id="f-type">
-            <option value="">All</option>
+            <option value="">All types</option>
             <option value="P">Principal Campaign Committee</option>
             <option value="J">Joint Fundraising Committee</option>
             <option value="D">Leadership PAC</option>
@@ -133,17 +253,12 @@
             <option value="Y">Party Committee</option>
           </select>
         </div>
-        <button type="submit" class="form-go-btn">Browse →</button>
+
       </form>
     </div>
 
-    <!-- State: empty -->
-    <div id="state-empty">
-      <div class="empty-prompt">
-        <strong>Filter to explore</strong>
-        Select state, committee type, or both, then click Browse to load results.
-      </div>
-    </div>
+    <!-- Filter chips -->
+    <div id="filter-chips" class="filter-chips-wrap" style="display:none"></div>
 
     <!-- State: loading -->
     <div id="state-loading" style="display:none">
@@ -163,6 +278,15 @@
       <div class="no-results">No committees found matching those filters. Try broadening your search.</div>
     </div>
 
+    <!-- State: error -->
+    <div id="state-error" style="display:none">
+      <div class="error-prompt">
+        <strong>Couldn't load committees</strong>
+        There was a problem fetching data from the FEC API.
+        <div><button class="retry-btn">Retry</button></div>
+      </div>
+    </div>
+
   </div><!-- /.main -->
 </div><!-- /.layout -->
 
@@ -174,39 +298,27 @@
 <script src="utils.js"></script>
 <script>
 
+// ── State ────────────────────────────────────────────────────────────────────
+
+var activeQ       = '';
+var activeFilters = { state: '', type: '' };
+var currentPage   = 1;
+var totalPages    = 1;
+var loading       = false;
+var lastFetch     = null;
+
+// ── UI state ─────────────────────────────────────────────────────────────────
+
 function showState(name) {
-  document.getElementById('state-empty').style.display      = name === 'empty'      ? 'block' : 'none';
   document.getElementById('state-loading').style.display    = name === 'loading'    ? 'block' : 'none';
   document.getElementById('state-results').style.display    = name === 'results'    ? 'block' : 'none';
   document.getElementById('state-no-results').style.display = name === 'no-results' ? 'block' : 'none';
+  document.getElementById('state-error').style.display      = name === 'error'      ? 'block' : 'none';
 }
 
-function buildRow(c, i) {
-  var isTerminated = c.filing_frequency === 'T';
-  var statusCls    = isTerminated ? 'tag-terminated' : 'tag-active';
-  var statusLbl    = isTerminated ? 'Terminated' : 'Active';
+// ── Row builder ───────────────────────────────────────────────────────────────
 
-  return '<div class="committee-row">'
-    + '<div class="committee-name">'
-    +   '<a href="committee.html?id=' + c.committee_id + '" class="committee-name-link"'
-    +   ' onclick="amplitude.track(\'Committee Result Clicked\',{committee_id:'
-    +   JSON.stringify(c.committee_id) + ',from_page:\'committees\',result_position:' + i + '})">'
-    +   (c.name || '—') + '</a>'
-    + '</div>'
-    + '<div class="committee-type">' + committeeTypeLabel(c.committee_type) + '</div>'
-    + '<div class="committee-id"><span class="tag ' + statusCls + '" style="font-size:0.52rem">'
-    +   statusLbl + '</span></div>'
-    + '</div>';
-}
-
-// ── Search mode (activated when ?q= is in URL) ────────────────────────────────
-
-var searchQuery      = null;
-var searchPage       = 1;
-var searchTotalPages = 1;
-var searchLoading    = false;
-
-function buildSearchRow(c, i) {
+function buildRow(c, i, fromPage) {
   var isTerminated = c.filing_frequency === 'T';
   var statusCls    = isTerminated ? 'tag-terminated' : 'tag-active';
   var statusLbl    = isTerminated ? 'Terminated' : 'Active';
@@ -215,7 +327,8 @@ function buildSearchRow(c, i) {
     + '<div class="committee-name">'
     +   '<a href="/committee/' + c.committee_id + '" class="committee-name-link"'
     +   ' onclick="amplitude.track(\'Committee Result Clicked\',{committee_id:'
-    +   JSON.stringify(c.committee_id) + ',from_page:\'committees_search\',result_position:' + i + '})">'
+    +   JSON.stringify(c.committee_id) + ',from_page:' + JSON.stringify(fromPage || 'committees')
+    +   ',result_position:' + i + '})">'
     +   (c.name || '—') + '</a>'
     + '</div>'
     + '<div class="committee-type">' + committeeTypeLabel(c.committee_type) + '</div>'
@@ -226,103 +339,249 @@ function buildSearchRow(c, i) {
     + '</div>';
 }
 
-async function search(query, page) {
-  if (searchLoading) return;
-  searchLoading = true;
-  if (page === 1) {
-    showState('loading');
-    amplitude.track('Committees Searched', { query: query });
+// ── Unified fetch ─────────────────────────────────────────────────────────────
+
+async function doFetch(isLoadMore) {
+  if (loading) return;
+  loading = true;
+  lastFetch = function() { doFetch(false); };
+  if (!isLoadMore) { currentPage = 1; showState('loading'); }
+
+  var params = { per_page: 50, page: currentPage };
+  if (activeQ) {
+    params.q    = activeQ;
+    params.sort = '-receipts';
+  } else {
+    params.sort = 'name';
   }
+  if (activeFilters.state) params.state          = activeFilters.state;
+  if (activeFilters.type)  params.committee_type  = activeFilters.type;
+
   try {
-    var data    = await apiFetch('/committees/', { q: query, per_page: 50, sort: '-receipts', page: page });
-    var results = data.results || [];
+    var data       = await apiFetch('/committees/', params);
+    var results    = data.results    || [];
     var pagination = data.pagination || {};
-    searchTotalPages = pagination.pages || 1;
-    searchPage = page + 1;
-    if (page === 1 && !results.length) { showState('no-results'); searchLoading = false; return; }
-    var rows = results.map(buildSearchRow).join('');
-    if (page === 1) {
-      document.getElementById('results-list').innerHTML = rows;
+    totalPages  = pagination.pages || 1;
+    currentPage++;
+
+    if (!isLoadMore) {
+      if (activeQ) {
+        amplitude.track('Committees Searched', { query: activeQ });
+      } else {
+        amplitude.track('Committees Browsed', { state: activeFilters.state, type: activeFilters.type });
+      }
+    }
+
+    if (!isLoadMore && !results.length) { showState('no-results'); loading = false; renderChips(); return; }
+
+    var fromPage = activeQ ? 'committees_search' : 'committees';
+    var offset   = isLoadMore ? (currentPage - 2) * 50 : 0;
+    var rows     = results.map(function(c, i) { return buildRow(c, offset + i, fromPage); }).join('');
+
+    if (!isLoadMore) {
       var total = pagination.count || results.length;
       document.getElementById('results-header').textContent =
-        total + ' committee' + (total !== 1 ? 's' : '') + ' for \u201c' + query + '\u201d';
+        total + ' committee' + (total !== 1 ? 's' : '')
+        + (activeQ ? ' for \u201c' + activeQ + '\u201d' : '');
+      document.getElementById('results-list').innerHTML = rows;
       showState('results');
     } else {
       document.getElementById('results-list').insertAdjacentHTML('beforeend', rows);
     }
+
+    updateURL();
+    renderChips();
   } catch(err) {
-    if (page === 1) showState('empty');
-    console.error('committees search error:', err);
+    if (!isLoadMore) showState('error');
+    console.error('committees fetch error:', err);
   }
-  searchLoading = false;
+  loading = false;
 }
 
-window.addEventListener('scroll', function() {
-  if (!searchQuery || searchLoading || searchPage > searchTotalPages) return;
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-    search(searchQuery, searchPage);
+// ── URL sync ──────────────────────────────────────────────────────────────────
+
+function updateURL() {
+  var u = new URL(window.location.href);
+  u.search = '';
+  if (activeQ)             u.searchParams.set('q',     activeQ);
+  if (activeFilters.state) u.searchParams.set('state', activeFilters.state);
+  if (activeFilters.type)  u.searchParams.set('type',  activeFilters.type);
+  window.history.pushState({}, '', u.toString());
+}
+
+// ── Filter chips ──────────────────────────────────────────────────────────────
+
+var TYPE_LABELS = {
+  P: 'Principal CC', J: 'Joint Fundraising', D: 'Leadership PAC',
+  O: 'Super PAC', Q: 'PAC — Qualified', Y: 'Party Committee'
+};
+
+function renderChips() {
+  var chips = [];
+  if (activeQ)             chips.push({ key: 'q',     label: '\u201c' + activeQ + '\u201d' });
+  if (activeFilters.state) chips.push({ key: 'state', label: 'State: ' + activeFilters.state });
+  if (activeFilters.type)  chips.push({ key: 'type',  label: TYPE_LABELS[activeFilters.type] || activeFilters.type });
+
+  var wrap = document.getElementById('filter-chips');
+  if (!chips.length) { wrap.style.display = 'none'; return; }
+
+  var html = chips.map(function(chip) {
+    return '<span class="filter-chip">' + chip.label
+      + '<button class="chip-x" onclick="clearFilter(\'' + chip.key + '\')" aria-label="Remove filter">\u00d7</button>'
+      + '</span>';
+  }).join('');
+  if (chips.length >= 2) {
+    html += '<button class="chip-clear-all" onclick="clearAllFilters()">Clear all</button>';
+  }
+  wrap.innerHTML = html;
+  wrap.style.display = 'flex';
+}
+
+function clearFilter(key) {
+  if (key === 'q') {
+    activeQ = '';
+    document.getElementById('f-search').value = '';
+  } else if (key === 'state') {
+    activeFilters.state = '';
+    document.getElementById('f-state-filter').value = '';
+    document.getElementById('f-state').value = '';
+    Array.from(document.getElementById('f-state').options).forEach(function(opt) { opt.style.display = ''; });
+  } else {
+    activeFilters[key] = '';
+    document.getElementById('f-' + key).value = '';
+  }
+  doFetch(false);
+}
+
+function clearAllFilters() {
+  activeQ = '';
+  activeFilters = { state: '', type: '' };
+  document.getElementById('f-search').value = '';
+  document.getElementById('f-state-filter').value = '';
+  document.getElementById('f-state').value = '';
+  document.getElementById('f-type').value = '';
+  Array.from(document.getElementById('f-state').options).forEach(function(opt) { opt.style.display = ''; });
+  doFetch(false);
+}
+
+// ── Search field ──────────────────────────────────────────────────────────────
+
+function submitSearch() {
+  activeQ = document.getElementById('f-search').value.trim();
+  closeTypeahead();
+  doFetch(false);
+}
+
+document.getElementById('f-search').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { submitSearch(); }
+});
+document.getElementById('search-btn').addEventListener('click', submitSearch);
+
+// ── Typeahead ─────────────────────────────────────────────────────────────────
+
+var typeaheadTimer = null;
+
+document.getElementById('f-search').addEventListener('input', function() {
+  clearTimeout(typeaheadTimer);
+  var val = this.value.trim();
+  if (val.length < 2) { closeTypeahead(); return; }
+  typeaheadTimer = setTimeout(function() { fetchTypeahead(val); }, 300);
+});
+
+async function fetchTypeahead(q) {
+  try {
+    var data = await apiFetch('/committees/', { q: q, per_page: 6, sort: '-receipts' });
+    renderTypeahead(data.results || []);
+  } catch(e) { closeTypeahead(); }
+}
+
+function renderTypeahead(results) {
+  var dd = document.getElementById('search-typeahead');
+  if (!results.length) { closeTypeahead(); return; }
+  dd.innerHTML = results.map(function(c) {
+    var meta = [c.state, committeeTypeLabel(c.committee_type)].filter(Boolean).join(' · ');
+    return '<a class="typeahead-item" href="/committee/' + c.committee_id + '">'
+      + (c.name || '—')
+      + (meta ? '<span class="typeahead-meta">' + meta + '</span>' : '')
+      + '</a>';
+  }).join('');
+  dd.classList.add('open');
+}
+
+function closeTypeahead() {
+  document.getElementById('search-typeahead').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-combo')) closeTypeahead();
+});
+
+// ── State combo ───────────────────────────────────────────────────────────────
+
+document.getElementById('f-state-filter').addEventListener('input', function() {
+  var val = this.value.toLowerCase();
+  Array.from(document.getElementById('f-state').options).forEach(function(opt) {
+    opt.style.display = (!val || opt.text.toLowerCase().includes(val)) ? '' : 'none';
+  });
+  if (!val && activeFilters.state) {
+    activeFilters.state = '';
+    document.getElementById('f-state').value = '';
+    doFetch(false);
   }
 });
 
-// ── Browse mode ────────────────────────────────────────────────────────────────
+document.getElementById('f-state').addEventListener('change', function() {
+  var code = this.value;
+  document.getElementById('f-state-filter').value = code;
+  activeFilters.state = code;
+  this.blur();
+  document.getElementById('f-state-filter').blur();
+  Array.from(this.options).forEach(function(opt) { opt.style.display = ''; });
+  doFetch(false);
+});
 
-async function browse(filters) {
-  showState('loading');
-  amplitude.track('Committees Browsed', filters);
+// ── Committee type select ─────────────────────────────────────────────────────
 
-  var params = { per_page: 20, sort: '-receipts' };
-  if (filters.state) params.state = filters.state;
-  if (filters.type)  params.committee_type = filters.type;
+document.getElementById('f-type').addEventListener('change', function() {
+  activeFilters.type = this.value;
+  doFetch(false);
+});
 
-  try {
-    var data    = await apiFetch('/committees/', params);
-    var results = data.results || [];
-    if (!results.length) { showState('no-results'); return; }
+// ── Infinite scroll ───────────────────────────────────────────────────────────
 
-    document.getElementById('results-header').textContent =
-      results.length + ' committee' + (results.length !== 1 ? 's' : '') + ' — sorted by receipts';
-    document.getElementById('results-list').innerHTML = results.map(buildRow).join('');
-    showState('results');
-  } catch(err) {
-    showState('empty');
-    console.error('committees browse error:', err);
+window.addEventListener('scroll', function() {
+  if (loading || currentPage > totalPages) return;
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+    doFetch(true);
   }
-}
+});
 
-function handleSubmit(e) {
-  e.preventDefault();
-  var state = document.getElementById('f-state').value.trim().toUpperCase();
-  var type  = document.getElementById('f-type').value;
-  if (!state && !type) {
-    alert('Please select at least one filter before browsing.');
-    return;
-  }
-  browse({ state: state || null, type: type || null });
-}
+// ── Init ──────────────────────────────────────────────────────────────────────
 
 (function init() {
   amplitude.track('Page Viewed', { page: 'committees' });
 
   var p = new URLSearchParams(window.location.search);
-  var q = p.get('q');
 
-  if (q) {
-    // Search mode: hide filter bar, run search
-    document.querySelector('.filter-bar-wrap').style.display = 'none';
-    searchQuery = q;
-    search(q, 1);
-    return;
+  if (p.get('q')) {
+    activeQ = p.get('q');
+    document.getElementById('f-search').value = activeQ;
+  }
+  if (p.get('state')) {
+    activeFilters.state = p.get('state');
+    document.getElementById('f-state-filter').value = activeFilters.state;
+    document.getElementById('f-state').value = activeFilters.state;
+  }
+  if (p.get('type')) {
+    activeFilters.type = p.get('type');
+    document.getElementById('f-type').value = activeFilters.type;
   }
 
-  // Browse mode: pre-fill and auto-browse if URL params present
-  var hasFilters = false;
-  if (p.get('state')) { document.getElementById('f-state').value = p.get('state'); hasFilters = true; }
-  if (p.get('type'))  { document.getElementById('f-type').value  = p.get('type');  hasFilters = true; }
-  if (hasFilters) {
-    browse({ state: p.get('state'), type: p.get('type') });
-  } else {
-    showState('empty');
-  }
+  document.querySelector('.retry-btn').addEventListener('click', function() {
+    if (lastFetch) lastFetch();
+  });
+
+  doFetch(false);
 })();
 </script>
 
