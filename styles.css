@@ -40,6 +40,7 @@
   --sidebar-w: 220px;
   --header-h:  52px;
   --banner-h:  36px;
+  --page-gutter: 3rem;
 
   /* Chart palette — opacified layer on semantic tokens */
   --chart-raised:           rgba(74,144,217,0.9);
@@ -98,7 +99,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* ── Mobile header ── */
 .mobile-header { display:none; position:fixed; top:var(--banner-h); left:0; right:0;
   height:var(--header-h); background:var(--sidebar-bg); border-bottom:1px solid var(--sidebar-border);
-  z-index:100; align-items:center; padding:0 1.25rem; gap:1rem; transition:transform 0.3s ease; }
+  z-index:100; align-items:center; padding:0 1rem; gap:1rem; transition:transform 0.3s ease; }
 .mobile-header.hidden { transform:translateY(-100%); }
 .mobile-logo { font-family:'Barlow Condensed',sans-serif; font-size:1.2rem; font-weight:900;
   letter-spacing:0; text-transform:uppercase; color:var(--sidebar-text); text-decoration:none; flex:1; }
@@ -114,7 +115,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* ── Mobile nav ── */
 .mobile-nav { display:none; position:fixed; top:calc(var(--banner-h) + var(--header-h));
   left:0; right:0; bottom:0; background:var(--sidebar-bg); z-index:99;
-  padding:1.5rem 1.25rem; overflow-y:auto;
+  padding:1.5rem 1rem; overflow-y:auto;
   transform:translateX(-100%); transition:transform 0.25s ease; }
 .mobile-nav.open { transform:translateX(0); }
 .mobile-nav .nav-item { font-size:1rem; padding:0.85rem 0.75rem;
@@ -142,7 +143,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 
 /* ── A: Tab bar ── */
 .tabs-bar { border-bottom:1px solid var(--border);
-  display:flex; overflow-x:auto; scrollbar-width:none; }
+  display:flex; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
 .tabs-bar::-webkit-scrollbar { display:none; }
 .tab { font-family:'Barlow Condensed',sans-serif; padding:0.9rem 1.25rem; font-size:0.9rem; letter-spacing:0;
   text-transform:uppercase; color:var(--muted); cursor:pointer;
@@ -334,7 +335,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 .mobile-search-icon:hover { color:var(--text); }
 
 /* ── Page header — shared by candidate, committee, race profile pages ─────── */
-.page-header { padding:2.5rem 3rem 2rem; border-bottom:1px solid var(--border); }
+.page-header { padding:2.5rem var(--page-gutter) 2rem; border-bottom:1px solid var(--border); }
 .page-header-reveal { opacity:0; transition:opacity 0.4s ease; }
 .page-header-reveal.visible { opacity:1; }
 
@@ -354,7 +355,9 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   .sidebar { display:none; }
   .mobile-header { display:flex; }
   .mobile-nav { display:block; }
-  .page-header { padding:1.5rem 1.25rem 1.25rem; }
+  :root { --page-gutter: 1rem; }
+  .page-header { padding:1.5rem var(--page-gutter) 1.25rem; }
+  .global-banner-text { padding:0 var(--page-gutter); }
   .committee-row { grid-template-columns:1fr; gap:0.2rem; }
   .committee-type,.committee-id { text-align:left; }
   .donors-table th:nth-child(3), .donors-table td:nth-child(3) { display:none; }

@@ -35,7 +35,7 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 - Netlify Functions for any server-side API proxying needed
 - No build step — files are served directly
 - **Clean URLs:** `_redirects` defines Netlify 200 rewrites for all pages. Profile pages with path-segment URLs (`/candidate/:id`, `/committee/:id`) **must use absolute paths** for every local resource and nav link — `href="/styles.css"`, `src="/main.js"`, `href="/candidates"`, etc. Relative paths break because the browser treats the path segment as a subdirectory (e.g. from `/candidate/H2WA03217`, relative `utils.js` resolves to `/candidate/utils.js`, which also matches the rewrite rule and returns HTML served as JS). Browse pages (`/candidates`, `/committees`, `/races`, `/race`, `/search`) use single-level paths so relative links still resolve to root — but any new page with a deeper path must follow the absolute-path rule.
-- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 177 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
+- **Testing:** Playwright (`@playwright/test`) — `npx playwright test` runs 186 structural tests (mocked API); `npm run test:smoke` runs 5 live-API smoke tests. See `TESTING.md`.
 
 ---
 
@@ -54,6 +54,8 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 - **Tier 1 — Primitives:** Raw hex values. Not CSS vars. Documented in `design-system.html` only. Do not use directly in components.
 - **Tier 2 — Semantic tokens:** CSS vars in `styles.css :root`. Named by meaning, not appearance (`--bg`, `--surface`, `--dem`, `--green`). New tokens always go here first. Add to `styles.css :root` and document in `design-system.html`.
 - **Tier 3 — Component tokens:** Not yet built. Would be things like `--tag-dem-bg`. Document as `planned` in `design-system.html` before building.
+
+**Page gutter pattern:** All content sections use `var(--page-gutter)` for horizontal padding — not hardcoded `3rem`/`1rem`. This means mobile padding is controlled in one place (the `:root` override in `styles.css`'s `@media (max-width:860px)` block). When adding a new page or content section, use `padding: <vertical> var(--page-gutter)` and you get correct desktop/mobile gutters for free. Component-internal padding (buttons, cards, modals) should remain hardcoded.
 
 **Known intentional overlap:** `--red` and `--rep` both resolve to `#d94a4a`. `--rep` = Republican partisan color; `--red` = status color (stressed/error). Do not merge them. If the status system ever diverges from the partisan palette, split them at that point.
 
@@ -92,6 +94,9 @@ Light "broadsheet" theme. Key CSS variables:
 --red: #a83228       (stressed)
 --accent: #2c5282    (interactive accent, active indicators)
 --accent-dim: rgba(44,82,130,0.1)  (accent tint)
+
+Layout tokens:
+--page-gutter: 3rem       (horizontal content padding — 1rem at mobile ≤860px)
 
 Sidebar-scoped tokens (avoid using outside sidebar):
 --sidebar-bg: #e8e2d8

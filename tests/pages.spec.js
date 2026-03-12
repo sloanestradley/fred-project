@@ -450,3 +450,31 @@ test.describe('mobile layout — sidebar hidden, header visible', () => {
     });
   }
 });
+
+// ── No horizontal overflow at mobile ─────────────────────────────────────────
+
+test.describe('no horizontal overflow at 390px', () => {
+  const ALL_PAGES = [
+    { url: '/search.html', needsMock: false },
+    { url: '/candidate.html?id=H2WA03217', needsMock: true },
+    { url: '/candidates.html', needsMock: false },
+    { url: '/committee.html?id=C00775668', needsMock: true },
+    { url: '/committees.html', needsMock: false },
+    { url: '/race.html?office=H&state=WA&district=03&year=2024', needsMock: true },
+    { url: '/races.html', needsMock: false },
+    { url: '/process-log.html', needsMock: false },
+    { url: '/design-system.html', needsMock: false },
+  ];
+
+  for (const { url, needsMock } of ALL_PAGES) {
+    test(`${url} has no horizontal overflow`, async ({ page }) => {
+      await mockAmplitude(page);
+      if (needsMock) await mockFecApi(page);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(url);
+      await page.waitForLoadState('networkidle');
+      const scrollWidth = await page.evaluate(() => document.body.scrollWidth);
+      expect(scrollWidth).toBeLessThanOrEqual(390);
+    });
+  }
+});

@@ -37,19 +37,18 @@
     .cycle-btn.active { border-color:var(--text); color:var(--text); background:var(--surface2); }
 
     /* Tabs */
-    .tabs-bar { padding:0 3rem; opacity:0; transition:opacity 0.4s ease; }
+    .tabs-bar { padding:0 var(--page-gutter); opacity:0; transition:opacity 0.4s ease; }
     .tabs-bar.visible { opacity:1; }
 
     /* Content */
-    .content { padding:2.5rem 3rem; opacity:0; transition:opacity 0.3s ease; min-width:0; }
+    .content { padding:2.5rem var(--page-gutter); opacity:0; transition:opacity 0.3s ease; min-width:0; }
     .content.visible { opacity:1; }
 
     /* Responsive */
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
-      .tabs-bar { padding:0 1.25rem; }
-      .content { padding:1.5rem 1.25rem; }
-      .state-msg { padding:2rem 1.25rem; }
+      .content { padding:1.5rem var(--page-gutter); }
+      .state-msg { padding:2rem var(--page-gutter); }
     }
     @media (max-width:480px) { .stat-value { font-size:1.2rem; } }
 

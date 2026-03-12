@@ -717,3 +717,44 @@ The through-line: Sloane treats documentation as a first-class artifact, not an 
 - Phase 3 remaining work: filing history on committee.html, associated candidates on committee.html, and ad hoc mode on races.html — which of these is the next priority?
 - The Spent tab timeline (spend-over-time chart) is still in architectural debt. Worth discussing whether it belongs on the near-term roadmap now that the Raised chart pattern is stable.
 - Any new domain questions for John before building out committee or race features further?
+
+---
+2026-03-11 — The invisible 4px and the variable that ate 30 lines of CSS
+
+## Process log draft
+Title: The invisible 4px and the variable that ate 30 lines of CSS
+
+Three small CSS bugs turned into a systems-level refactor. A vertical scrollbar on the tab bar, inconsistent mobile gutters, and a design system page that overflowed on mobile all pointed to the same root cause: horizontal padding was hardcoded in eight places with no single source of truth. Fixing the bugs was easy. The real win was introducing --page-gutter — one CSS variable that now controls content margins across every page, desktop and mobile.
+
+Changelog:
+– Fixed vertical scrollbar on .tabs-bar by adding overflow-y:hidden (the -1px margin trick on .tab was leaking)
+– Standardized mobile content padding from 1.25rem to 1rem across all pages
+– Added mobile padding to .global-banner-text so text no longer touches screen edges
+– Introduced --page-gutter CSS variable (3rem desktop, 1rem mobile) — replaced ~30 hardcoded padding declarations across styles.css and 8 HTML files
+– Fixed design-system.html horizontal overflow on mobile: added overflow-x:hidden to .main, overflow-x:auto to token tables and component demos
+– Added 9 Playwright tests: no-horizontal-overflow at 390px for every page (186 total tests)
+
+Field notes:
+The session started with a 1-line CSS fix and ended with a design system refactor — not because we planned it that way, but because each fix revealed the same underlying pattern. The tab scrollbar fix was isolated. The mobile padding fix touched every page and made the duplication obvious. Sloane spotted the opportunity mid-session: "Is there a better route where we handle this centrally?" That question turned a bug fix into infrastructure. The --page-gutter variable is a small thing, but it's the kind of small thing that prevents the next 10 bugs from happening. The horizontal overflow tests are the same — they guard a class of problem, not a single instance.
+
+Stack tags: CSS custom properties · responsive design · Playwright
+
+## How Sloane steered the work
+**Spotting the abstraction opportunity**
+After the mobile padding fix landed, Sloane asked whether there was a better route — handling padding centrally rather than per-page. This is the designer's instinct for systems over instances. The fix was already done and working; the question was about whether the fix was the right *shape*. That question created the --page-gutter variable.
+
+**Pushing for the full audit**
+After the refactor, Sloane asked to audit for any remaining spots. This is the "finish the job" instinct — not leaving half the codebase on the old pattern. The audit came back clean, which is its own kind of value: now we know the migration is complete, not just "mostly done."
+
+**Asking about test cases**
+Rather than moving on after the CSS work, Sloane asked whether tests were needed. The horizontal overflow tests that came out of that question are arguably the most durable artifact of the session — they'll catch layout regressions on every page going forward.
+
+**Asking about CLAUDE.md updates**
+Closing the loop on documentation. The --page-gutter pattern is now documented so future sessions use it by default instead of hardcoding padding.
+
+The through-line: Sloane consistently elevated point fixes into systemic improvements — asking not just "does it work?" but "is this the right pattern going forward?"
+
+## What to bring to Claude Chat
+– Visual QA at 390px: check all pages on a real device or simulator to confirm the 1rem gutters feel right — especially process-log.html (which previously had 3rem on mobile) and design-system.html (which had overflow issues). The Playwright tests confirm no overflow, but can't judge visual balance.
+– The --page-gutter variable opens the door to a future responsive tier (e.g., tablet at ~600px with 2rem gutters). Worth discussing whether a middle breakpoint is needed or if the current desktop/mobile split is sufficient.
+– design-system.html should document the --page-gutter token and the page gutter pattern — it's now a layout convention but isn't visible in the living reference yet.

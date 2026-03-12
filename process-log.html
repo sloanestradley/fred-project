@@ -14,7 +14,7 @@
     /* ── Main ── */
     .main {
       max-width: 820px;
-      padding: 3rem;
+      padding: var(--page-gutter);
     }
 
     /* ── Page header ── */
@@ -296,7 +296,7 @@
 
     /* Responsive */
     @media (max-width: 860px) {
-      .main { padding: 1.5rem; padding-top: calc(var(--header-h) + 1.5rem); }
+      .main { padding: 1.5rem var(--page-gutter); padding-top: calc(var(--header-h) + 1.5rem); }
     }
   </style>
 </head>

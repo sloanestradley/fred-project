@@ -14,7 +14,7 @@
     .main { overflow-x:hidden; min-width:0; }
 
     /* ── Mode selector ── */
-    .mode-selector { padding:2.5rem 3rem; }
+    .mode-selector { padding:2.5rem var(--page-gutter); }
     .mode-selector-title { font-family:'Barlow Condensed',sans-serif; font-size:0.75rem;
       font-weight:600; letter-spacing:0; text-transform:uppercase; color:var(--muted);
       margin-bottom:1.5rem; }
@@ -54,9 +54,9 @@
 
     @media (max-width:860px) {
       .main { padding-top:calc(var(--banner-h) + var(--header-h)); }
-      .mode-selector { padding:1.5rem 1.25rem; }
+      .mode-selector { padding:1.5rem var(--page-gutter); }
       .mode-cards { grid-template-columns:1fr; }
-      .state-msg { padding:2rem 1.25rem; }
+      .state-msg { padding:2rem var(--page-gutter); }
     }
     @media (max-width:480px) { .form-row { flex-direction:column; } }
   </style>
