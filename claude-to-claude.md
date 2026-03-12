@@ -683,3 +683,37 @@ The through-line: Sloane consistently treats process discipline as part of the w
 ## What to bring to Claude Chat
 – Next priority alignment: audit is done, tests are clean, party tag fix and mock corrections are ready to deploy. CLAUDE.md lists Spent tab timeline, committee filing history, and ad hoc race mode as remaining Phase 3 work. Which is next?
 – Mock test coverage gap: no Playwright tests assert on the geography heatmap or the contributor breakdown table — the by_state fixture was wrong for months without detection. Worth deciding whether to add light assertions on those sections (e.g. heatmap SVG renders, top-states table has rows) before Phase 4 adds more endpoints.
+
+---
+2026-03-11 End of session
+
+## Process log draft
+Title: Housekeeping as craft — tests, cleanup, and dead issues
+
+This session was infrastructure, not features — but the kind that makes the next session faster and more confident. We added smoke-level Playwright coverage for the two Raised tab sections that were previously untested (the geography heatmap and contributor table), confirmed that the local apiFetch duplicates in race.html and committee.html had already been resolved, and cleared three stale items from the known-issues list that no longer reflected reality.
+
+Changelog:
+- Added two new tests to candidate.spec.js: geography heatmap SVG renders inside #map-container; top committee contributors table has at least one data row after Raised tab activates (177 tests total, up from 175)
+- Confirmed race.html and committee.html have no local apiFetch definitions — already cleaned up in the utils.js extraction session
+- Removed stale "Spent tab not yet built" known issue from test-cases.md (Spent tab shipped in Phase 1)
+- Removed .layout / global banner overlap from known issues in both test-cases.md and CLAUDE.md — no longer reproducible, likely a caching artifact
+- Updated test counts in CLAUDE.md and test-cases.md header: 175 → 177
+
+Field notes:
+The banner overlap being gone without a fix is a good outcome with an unsatisfying explanation. "Caching artifact" is probably right — these kinds of ghosts show up when a stale asset gets served during development and then vanish once the browser fully refreshes. The right call is to close the issue and move on; leaving it open as a "dedicated debugging session" item would have added noise to every future session for a problem that may never reappear. Closing known issues when they stop being observable is maintenance discipline, not corner-cutting.
+
+Stack tags: Testing / Playwright
+
+## How Sloane steered the work
+Closing the ghost issue
+The banner overlap had been logged as a dedicated debugging session item. Rather than assuming it still needed investigation, Sloane confirmed it was no longer visible and called it resolved. That's a judgment call — a different instinct would have been to try to reproduce it first. Closing it clears real cognitive load from future sessions.
+
+Asking about stale documentation proactively
+After the cleanup task, Sloane asked "any further updates to CLAUDE.md or test-cases.md?" rather than moving straight to deploy. That check caught two things: the test count drift (175 → 177) and the stale "Spent tab not yet built" known issue. Both are small, but stale docs compound — a future Claude reading that known-issues entry would have flagged a non-problem.
+
+The through-line: Sloane treats documentation as a first-class artifact, not an afterthought. The instinct to pause and audit before deploying is what keeps the brief trustworthy as a session-start document.
+
+## What to bring to Claude Chat
+- Phase 3 remaining work: filing history on committee.html, associated candidates on committee.html, and ad hoc mode on races.html — which of these is the next priority?
+- The Spent tab timeline (spend-over-time chart) is still in architectural debt. Worth discussing whether it belongs on the near-term roadmap now that the Raised chart pattern is stable.
+- Any new domain questions for John before building out committee or race features further?

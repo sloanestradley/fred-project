@@ -187,6 +187,34 @@ test.describe('candidate.html — tab navigation', () => {
   });
 });
 
+// ── Raised tab: geography heatmap + contributor table ────────────────────────
+
+test.describe('candidate.html — Raised tab sections', () => {
+  test.beforeEach(async ({ page }) => {
+    await setup(page);
+    await page.waitForSelector('#tabs-bar', { timeout: 8000 });
+    await page.locator('.tabs-bar .tab').filter({ hasText: 'Raised' }).click();
+    // Wait for raised-content to become visible (data loaded + rendered)
+    await page.waitForFunction(
+      () => {
+        const el = document.getElementById('raised-content');
+        return el && el.style.display !== 'none';
+      },
+      { timeout: 12000 }
+    );
+  });
+
+  test('geography heatmap SVG renders inside map-container', async ({ page }) => {
+    const svg = page.locator('#map-container svg');
+    await expect(svg).toBeVisible();
+  });
+
+  test('top committee contributors table has at least one data row', async ({ page }) => {
+    const rows = page.locator('#donors-tbody tr');
+    await expect(rows).not.toHaveCount(0);
+  });
+});
+
 // ── Committees modal ──────────────────────────────────────────────────────────
 
 test.describe('candidate.html — committees modal', () => {

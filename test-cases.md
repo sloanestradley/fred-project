@@ -5,7 +5,7 @@
 
 ## How to use this file
 
-**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 175 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
+**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 177 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
 
 **Smoke tests (Track 2):** Run `npm run test:smoke` before deploys. Hits the live FEC API — 5 key checks. Requires the dev server to be running.
 
@@ -420,8 +420,6 @@ Expected failures — not bugs to fix now. Remove a row when the issue is resolv
 
 | Issue | Page | Added |
 |-------|------|-------|
-| Spent tab not yet built | candidate.html | 2026-03-10 |
-| .layout div appears to overlap global banner visually — root cause TBD, separate debugging session | candidate.html | 2026-03-11 |
 | Filing history not yet built | committee.html | 2026-03-10 |
 | Associated candidates section not yet built | committee.html | 2026-03-10 |
 | Ad hoc mode is stub/planned only | races.html | 2026-03-10 |
@@ -445,3 +443,5 @@ Append a row after each test run. Never delete old rows.
 | 2026-03-11 | Header consistency refactor + breadcrumb uppercase + page-header-reveal architecture | candidate.html, committee.html, race.html, candidates.html, committees.html, design-system.html (automated) | None | 174/174 Track 1 passing |
 | 2026-03-11 | Party tag on race candidate cards — fix party_full vs party field mismatch | race.html, styles.css, utils.js (automated) | None | 174/174 Track 1 passing |
 | 2026-03-11 | Mock/live field shape audit — fix 7 fixture gaps across 9 endpoints | tests/helpers/api-mock.js (automated) | schedule_a/by_state used wrong field names (state vs contributor_state); coverage_end_date missing timestamp; total_receipts_ytd should be string; leadership_pac should be null; organization_type_full should be null — all fixed | 175/175 Track 1 passing |
+| 2026-03-11 | Add Raised tab smoke tests — geography heatmap SVG + contributor table row coverage | candidate.html (automated) | None | 177/177 Track 1 passing |
+| 2026-03-11 | Audit local apiFetch duplicates in race.html + committee.html | race.html, committee.html (automated) | No local definitions found — already removed in utils.js extraction session | 177/177 Track 1 passing |
