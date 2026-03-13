@@ -347,13 +347,28 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   font-size:clamp(1.6rem,3vw,2.4rem); font-weight:800; line-height:1;
   letter-spacing:0; text-transform:uppercase; margin-bottom:0.5rem; }
 
-/* ── P: Typeahead dropdown ── */
-.search-bar-wrap { position:relative; }
+/* ── P: Form controls ── */
+.form-select, .form-input { padding:0.45rem 0.6rem; font-family:'DM Sans',sans-serif;
+  font-size:0.8rem; background:var(--bg); border:1px solid var(--border-strong);
+  color:var(--text); outline:none; transition:border-color 0.15s; border-radius:0; }
+.form-select:focus, .form-input:focus { border-color:var(--accent); }
+.form-input:disabled, .form-select:disabled { opacity:0.45; cursor:not-allowed; }
+.form-search-btn { padding:0.45rem 0.8rem; background:var(--text); color:var(--bg);
+  border:1px solid var(--text); font-family:'Barlow Condensed',sans-serif;
+  font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0;
+  cursor:pointer; transition:opacity 0.15s; white-space:nowrap; flex-shrink:0; }
+.form-search-btn:hover { opacity:0.85; }
+
+/* ── Q: Typeahead dropdown ── */
+.search-bar-wrap { position:static; }
+.search-bar { position:relative; }
 .typeahead-dropdown {
   position:absolute; top:calc(100% + 1px); left:0; max-width:600px; width:100%;
   background:var(--surface); border:1px solid var(--border-strong);
-  border-top:none; z-index:150;
+  border-top:none; z-index:150; display:none;
+  max-height:240px; overflow-y:auto;
   box-shadow:0 4px 12px rgba(26,21,16,0.12); }
+.typeahead-dropdown.open { display:block; }
 .typeahead-group-label {
   font-family:'IBM Plex Mono',monospace; font-size:0.58rem;
   text-transform:uppercase; letter-spacing:0; color:var(--muted);

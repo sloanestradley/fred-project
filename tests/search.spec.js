@@ -19,7 +19,7 @@ test.describe('search.html — initial state (no query)', () => {
   });
 
   test('search input is present', async ({ page }) => {
-    await expect(page.locator('.search-input')).toBeVisible();
+    await expect(page.locator('#search-input')).toBeVisible();
   });
 
   test('search hero / empty state is visible without a query', async ({ page }) => {
@@ -49,18 +49,18 @@ test.describe('search.html — typeahead dropdown', () => {
   });
 
   test('fewer than 2 chars does not show typeahead', async ({ page }) => {
-    await page.locator('.search-input').fill('g');
+    await page.locator('#search-input').fill('g');
     await page.waitForTimeout(400);
     await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
   });
 
   test('2+ chars shows typeahead dropdown', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await expect(page.locator('#typeahead-dropdown')).toBeVisible({ timeout: 2000 });
   });
 
   test('dropdown shows Candidates group label', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
     const labels = await page.locator('.typeahead-group-label').allTextContents();
     const upper = labels.map(t => t.toUpperCase());
@@ -68,7 +68,7 @@ test.describe('search.html — typeahead dropdown', () => {
   });
 
   test('dropdown shows Committees group label', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
     const labels = await page.locator('.typeahead-group-label').allTextContents();
     const upper = labels.map(t => t.toUpperCase());
@@ -76,7 +76,7 @@ test.describe('search.html — typeahead dropdown', () => {
   });
 
   test('candidate row links to /candidate/{id}', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
     const link = page.locator('.typeahead-row[href*="/candidate/"]').first();
     await expect(link).toBeVisible();
@@ -85,7 +85,7 @@ test.describe('search.html — typeahead dropdown', () => {
   });
 
   test('committee row links to /committee/{id}', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
     const link = page.locator('.typeahead-row[href*="/committee/"]').first();
     await expect(link).toBeVisible();
@@ -94,22 +94,22 @@ test.describe('search.html — typeahead dropdown', () => {
   });
 
   test('Escape key closes the dropdown', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
-    await page.locator('.search-input').press('Escape');
+    await page.locator('#search-input').press('Escape');
     await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
   });
 
   test('Enter key closes dropdown and runs search', async ({ page }) => {
-    await page.locator('.search-input').fill('gluesenkamp');
+    await page.locator('#search-input').fill('gluesenkamp');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
-    await page.locator('.search-input').press('Enter');
+    await page.locator('#search-input').press('Enter');
     await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
     await expect(page.locator('#candidates-list')).toBeVisible({ timeout: 5000 });
   });
 
   test('clicking outside closes the dropdown', async ({ page }) => {
-    await page.locator('.search-input').fill('gl');
+    await page.locator('#search-input').fill('gl');
     await page.locator('#typeahead-dropdown').waitFor({ state: 'visible', timeout: 2000 });
     await page.mouse.click(10, 400);
     await expect(page.locator('#typeahead-dropdown')).not.toBeVisible();
@@ -123,8 +123,8 @@ test.describe('search.html — two-group results', () => {
     await mockAmplitude(page);
     await mockFecApi(page);
     await page.goto('/search.html');
-    await page.locator('.search-input').fill('gluesenkamp');
-    await page.locator('.search-input').press('Enter');
+    await page.locator('#search-input').fill('gluesenkamp');
+    await page.locator('#search-input').press('Enter');
     await page.waitForSelector('#candidates-list', { timeout: 5000 });
   });
 
@@ -179,8 +179,8 @@ test.describe('search.html — View all links', () => {
       } else { route.continue(); }
     });
     await page.goto('/search.html');
-    await page.locator('.search-input').fill('gluesenkamp');
-    await page.locator('.search-input').press('Enter');
+    await page.locator('#search-input').fill('gluesenkamp');
+    await page.locator('#search-input').press('Enter');
     await page.waitForSelector('#candidates-list', { timeout: 5000 });
     const viewAll = page.locator('#candidates-view-all');
     await expect(viewAll).toBeVisible();
@@ -207,8 +207,8 @@ test.describe('search.html — View all links', () => {
       } else { route.continue(); }
     });
     await page.goto('/search.html');
-    await page.locator('.search-input').fill('gluesenkamp');
-    await page.locator('.search-input').press('Enter');
+    await page.locator('#search-input').fill('gluesenkamp');
+    await page.locator('#search-input').press('Enter');
     await page.waitForSelector('#committees-list', { timeout: 5000 });
     const viewAll = page.locator('#committees-view-all');
     await expect(viewAll).toBeVisible();

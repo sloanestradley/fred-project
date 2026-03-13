@@ -280,6 +280,18 @@ test.describe('candidates.html', () => {
     await page.waitForSelector('#state-error', { state: 'visible', timeout: 8000 });
     await expect(page.locator('.retry-btn')).toBeVisible();
   });
+
+  test('#load-more-spinner exists in DOM (hidden initially)', async ({ page }) => {
+    const el = page.locator('#load-more-spinner');
+    await expect(el).toBeAttached();
+    await expect(el).toBeHidden();
+  });
+
+  test('#end-of-results exists in DOM (hidden initially)', async ({ page }) => {
+    const el = page.locator('#end-of-results');
+    await expect(el).toBeAttached();
+    await expect(el).toBeHidden();
+  });
 });
 
 // ── committees.html ───────────────────────────────────────────────────────────
@@ -343,6 +355,18 @@ test.describe('committees.html', () => {
     await page.reload();
     await page.waitForSelector('#state-error', { state: 'visible', timeout: 8000 });
     await expect(page.locator('.retry-btn')).toBeVisible();
+  });
+
+  test('#load-more-spinner exists in DOM (hidden initially)', async ({ page }) => {
+    const el = page.locator('#load-more-spinner');
+    await expect(el).toBeAttached();
+    await expect(el).toBeHidden();
+  });
+
+  test('#end-of-results exists in DOM (hidden initially)', async ({ page }) => {
+    const el = page.locator('#end-of-results');
+    await expect(el).toBeAttached();
+    await expect(el).toBeHidden();
   });
 });
 

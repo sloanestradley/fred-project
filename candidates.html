@@ -28,33 +28,9 @@
     .form-field { display:flex; flex-direction:column; gap:0.3rem; }
     .form-label { font-family:'IBM Plex Mono',monospace; font-size:0.58rem;
       text-transform:uppercase; letter-spacing:0; color:var(--muted); }
-    .form-select, .form-input { padding:0.45rem 0.6rem; font-family:'DM Sans',sans-serif;
-      font-size:0.8rem; background:var(--bg); border:1px solid var(--border-strong);
-      color:var(--text); outline:none; transition:border-color 0.15s; border-radius:0; }
-    .form-select:focus, .form-input:focus { border-color:var(--accent); }
-    .form-input:disabled, .form-select:disabled { opacity:0.45; cursor:not-allowed; }
-
     /* Search combo */
     .search-combo { position:relative; display:flex; }
     .search-combo .form-input { flex:1; min-width:160px; border-right:none; }
-    .form-search-btn { padding:0.45rem 0.8rem; background:var(--text); color:var(--bg);
-      border:1px solid var(--text); font-family:'Barlow Condensed',sans-serif;
-      font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0;
-      cursor:pointer; transition:opacity 0.15s; white-space:nowrap; flex-shrink:0; }
-    .form-search-btn:hover { opacity:0.85; }
-
-    /* Typeahead dropdown */
-    .typeahead-dd { position:absolute; top:100%; left:0; right:0; z-index:100;
-      background:var(--surface); border:1px solid var(--border-strong);
-      border-top:none; max-height:240px; overflow-y:auto; display:none; }
-    .typeahead-dd.open { display:block; }
-    .typeahead-item { display:block; padding:0.5rem 0.7rem; font-size:0.78rem;
-      color:var(--text); text-decoration:none; cursor:pointer;
-      border-bottom:1px solid var(--border); }
-    .typeahead-item:last-child { border-bottom:none; }
-    .typeahead-item:hover { background:var(--accent-dim); }
-    .typeahead-meta { font-family:'IBM Plex Mono',monospace; font-size:0.6rem;
-      color:var(--muted); margin-left:0.4rem; }
 
     /* State combo */
     .state-combo { position:relative; }
@@ -170,7 +146,7 @@
           <div class="search-combo">
             <input class="form-input" type="text" id="f-search" placeholder="Candidate name…" autocomplete="off"/>
             <button type="button" class="form-search-btn" id="search-btn">Search</button>
-            <div id="search-typeahead" class="typeahead-dd"></div>
+            <div id="search-typeahead" class="typeahead-dropdown"></div>
           </div>
         </div>
 
@@ -297,6 +273,12 @@
       <div class="results-area">
         <div class="results-header" id="results-header"></div>
         <div class="results-list" id="results-list"></div>
+        <div id="load-more-spinner" class="state-msg" style="display:none;padding:1.5rem var(--page-gutter);justify-content:center">
+          <div class="loader"></div>
+        </div>
+        <div id="end-of-results" style="display:none;padding:1.25rem var(--page-gutter);font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0;border-top:1px solid var(--border);text-align:center">
+          End of results
+        </div>
       </div>
     </div>
 
@@ -372,7 +354,15 @@ async function doFetch(isLoadMore) {
   if (loading) return;
   loading = true;
   lastFetch = function() { doFetch(false); };
-  if (!isLoadMore) { currentPage = 1; showState('loading'); }
+  if (isLoadMore) {
+    document.getElementById('load-more-spinner').style.display = 'block';
+    document.getElementById('end-of-results').style.display = 'none';
+  } else {
+    currentPage = 1;
+    document.getElementById('load-more-spinner').style.display = 'none';
+    document.getElementById('end-of-results').style.display = 'none';
+    showState('loading');
+  }
 
   var params = { per_page: 50, page: currentPage };
   if (activeQ) {
@@ -416,12 +406,17 @@ async function doFetch(isLoadMore) {
       showState('results');
     } else {
       document.getElementById('results-list').insertAdjacentHTML('beforeend', cards);
+      document.getElementById('load-more-spinner').style.display = 'none';
+      if (currentPage > totalPages) {
+        document.getElementById('end-of-results').style.display = 'block';
+      }
     }
 
     updateURL();
     renderChips();
   } catch(err) {
     if (!isLoadMore) showState('error');
+    document.getElementById('load-more-spinner').style.display = 'none';
     console.error('candidates fetch error:', err);
   }
   loading = false;
@@ -538,10 +533,11 @@ function renderTypeahead(results) {
   var dd = document.getElementById('search-typeahead');
   if (!results.length) { closeTypeahead(); return; }
   dd.innerHTML = results.map(function(c) {
-    var meta = [c.state, c.office_full || c.office].filter(Boolean).join(' · ');
-    return '<a class="typeahead-item" href="/candidate/' + c.candidate_id + '">'
-      + formatCandidateName(c.name)
-      + (meta ? '<span class="typeahead-meta">' + meta + '</span>' : '')
+    var right = c.office_full || c.office || '';
+    return '<a class="typeahead-row" href="/candidate/' + c.candidate_id + '">'
+      + '<span class="typeahead-row-left">' + formatCandidateName(c.name)
+      + ' <span class="typeahead-row-id">(' + c.candidate_id + ')</span></span>'
+      + (right ? '<span class="typeahead-row-right">' + right + '</span>' : '')
       + '</a>';
   }).join('');
   dd.classList.add('open');

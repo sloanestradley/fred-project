@@ -48,6 +48,12 @@ This is also a portfolio piece for a staff-level product designer (Sloane). It n
 
 **CSS consolidation principle:** Component CSS lives in `styles.css`. Inline `<style>` blocks in individual pages are for page-specific overrides only (layout grid, page-specific spacing, page-specific components). `design-system.html` imports the same `styles.css` as production — no component CSS is duplicated between pages.
 
+**Shared form controls:** `.form-input`, `.form-select`, `.form-search-btn` (and their focus/disabled variants) are defined in `styles.css` and used across search.html, candidates.html, and committees.html. Page-specific extensions stay inline: `.search-combo .form-input` (flex + border-right), `.state-combo .form-input` (fixed width), `.form-select.wide` (committees only), `.search-bar .form-input` (search.html flex + border-right).
+
+**Typeahead container:** `.typeahead-dropdown` is the canonical class, defined in `styles.css` (position, sizing, shadow, `display:none` default, `max-height:240px`, `overflow-y:auto`). `.typeahead-dd` is retired — do not use. All three search pages (search.html, candidates.html, committees.html) use `.typeahead-dropdown`. Toggle mechanism differs by page: browse pages use `classList.add/remove('open')` with `.typeahead-dropdown.open { display:block }`; search.html uses `style.display` directly.
+
+**Typeahead item format:** candidates.html right side = office word only (`House`/`Senate`/`President`, no state, no bullet). committees.html right side = status dot only (no text label). search.html uses the same format as these — it is the reference.
+
 **Chart colors:** `--chart-*` CSS vars in `styles.css :root` are the canonical chart palette. JS chart configs reference the `CHART_COLORS` constant at the top of `candidate.html`'s `<script>` block (same rgba values). HTML legend swatches use the CSS vars directly (`style="background:var(--chart-raised)"`). Add new chart color vars to `styles.css :root` and `CHART_COLORS` before using hardcoded rgba in chart configs.
 
 ### Token naming tiers

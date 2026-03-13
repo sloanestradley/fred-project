@@ -928,3 +928,43 @@ The through-line: Sloane consistently enforces the system — the token hierarch
 – Filing status UX debt: the dot + label pattern is more correct but Sloane flagged it's not as clean as she wants. Worth a dedicated design pass — what would the ideal treatment look like? Is the label necessary, or can the dot alone carry enough meaning with a tooltip?
 
 – Token system maturity: this session surfaced a gap between Tier 1 primitives and Tier 2 semantic tokens — specifically, no clear process for deciding when a primitive warrants a semantic token vs. inline hex. Worth defining a rule of thumb before the token table grows further.
+
+---
+2026-03-12 — Polish pass: load-more UX, typeahead unification, CSS refactor
+
+## Process log draft
+Title: Polish pass — the gap that wasn't there, the components that were
+
+The browse/search overhaul from the last few sessions left some seams visible: a gap below the search.html typeahead, an oversized search bar that didn't match the filter bar style on the other pages, and typeahead items with different layouts depending on which page you were on. This session closed all of them — plus two refactors that the accumulated changes had finally made obvious.
+
+Changelog:
+– search.html: typeahead gap fixed — #typeahead-dropdown moved inside the <form> so .search-bar is the positioning ancestor; dropdown now sits flush below the input
+– search.html: search input and button swapped from .search-input/.search-btn to .form-input/.form-search-btn — compact size, matches the filter bar on candidates/committees
+– candidates.html + committees.html: typeahead items updated to .typeahead-row layout (name + ID left, contextual right), matching search.html's richer format
+– candidates.html: typeahead right side shows office only — state and bullet separator removed
+– committees.html: typeahead right side shows status dot only — state and type label removed
+– candidates.html + committees.html: load-more spinner (#load-more-spinner) and end-of-results marker (#end-of-results) added to infinite scroll; both centered
+– styles.css: .form-select, .form-input, .form-search-btn extracted from three pages' inline styles into shared stylesheet
+– styles.css: .typeahead-dropdown gains display:none, max-height:240px, overflow-y:auto, and .typeahead-dropdown.open; .typeahead-dd retired
+– candidates.html + committees.html: typeahead container swapped from .typeahead-dd to .typeahead-dropdown; inline .typeahead-dd rules deleted
+– tests/search.spec.js: .search-input class selectors replaced with #search-input ID (selector stability)
+– tests/pages.spec.js: 4 new tests — #load-more-spinner and #end-of-results DOM presence + hidden state on candidates and committees
+– Test count: 222 → 226
+
+Field notes:
+The positioning bug on search.html was the most instructive moment of the session. The typeahead dropdown was positioned relative to .search-bar-wrap (a container with 2.5rem of top padding), not to .search-bar (the actual input row). The fix was two edits — move the element, change the CSS. The refactors that followed were made easy by the fact that the class names had already been aligned across pages: three files doing the same thing with the same names made the extraction obvious. Code that wants to be shared announces itself by repeating.
+
+Stack tags: none
+
+## How Sloane steered the work
+**"Match the format to search.html" — a consistent reference point**
+Every typeahead tweak this session was anchored to search.html as the standard: first the overall .typeahead-row structure, then removing the state+bullet from candidates, then removing state+type from committees to match the dot-only format. Naming search.html as the reference up front meant each follow-on decision was obvious rather than a judgment call.
+
+**Acting on the refactor recommendations immediately**
+When the two refactors were proposed at the end of the polish pass, Sloane approved them in the same session rather than deferring. That's the right call — the relevant code was still in working memory, the class names were fresh, and both extractions went cleanly. Deferred refactors accumulate debt; same-session ones don't.
+
+The through-line: Sloane is consistently using existing, already-polished work as the standard for new or misaligned work. "Match search.html" is a more precise and faster instruction than "make it look right" — it tells the implementation exactly where to look.
+
+## What to bring to Claude Chat
+– The filter bar CSS (.filter-bar-wrap, .filter-bar, .form-field, .form-label, .state-combo, chip styles, etc.) is still duplicated between candidates.html and committees.html — now that form controls are extracted, this is the remaining obvious duplication. Worth a dedicated session, or fold into Phase 3 remaining work?
+– Phase 3 remaining: committee filing history, associated candidates on committee.html, ad hoc race mode. What's the priority order?

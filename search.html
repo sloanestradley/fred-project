@@ -16,18 +16,7 @@
     /* Search bar — always visible at top */
     .search-bar-wrap { padding:2.5rem var(--page-gutter) 2rem; border-bottom:1px solid var(--border); }
     .search-bar { display:flex; gap:0; max-width:600px; }
-    .search-input { flex:1; padding:0.65rem 1rem; font-family:'DM Sans',sans-serif;
-      font-size:16px; /* 16px prevents iOS auto-zoom */
-      background:var(--surface); border:1px solid var(--border-strong);
-      border-right:none; color:var(--text); outline:none;
-      transition:border-color 0.15s; border-radius:0; }
-    .search-input:focus { border-color:var(--accent); }
-    .search-input::placeholder { color:var(--muted); }
-    .search-btn { padding:0.65rem 1.25rem; background:var(--text); color:var(--bg);
-      border:1px solid var(--text); font-family:'Barlow Condensed',sans-serif;
-      font-size:0.9rem; font-weight:700; letter-spacing:0; text-transform:uppercase;
-      cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
-    .search-btn:hover { opacity:0.85; }
+    .search-bar .form-input { flex:1; border-right:none; }
 
     /* Empty / hero state */
     .search-hero { padding:5rem var(--page-gutter); max-width:560px; }
@@ -102,12 +91,12 @@
     <!-- Search bar — always visible -->
     <div class="search-bar-wrap">
       <form class="search-bar" id="search-form" onsubmit="handleSubmit(event)">
-        <input type="search" class="search-input" id="search-input"
+        <input type="search" class="form-input" id="search-input"
           placeholder="Search candidates and committees…" autocomplete="off" spellcheck="false"/>
-        <button type="submit" class="search-btn">Search</button>
+        <button type="submit" class="form-search-btn">Search</button>
+        <div id="typeahead-dropdown" class="typeahead-dropdown" style="display:none"
+             role="listbox" aria-label="Search suggestions"></div>
       </form>
-      <div id="typeahead-dropdown" class="typeahead-dropdown" style="display:none"
-           role="listbox" aria-label="Search suggestions"></div>
     </div>
 
     <!-- State: empty (pre-search) -->

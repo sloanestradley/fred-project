@@ -5,7 +5,7 @@
 
 ## How to use this file
 
-**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 222 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
+**Automated tests (Track 1):** Run `npx playwright test` from the project root before and after changes. 226 structural tests across all pages run in ~1 minute with mocked API. See `TESTING.md` for full details.
 
 **Smoke tests (Track 2):** Run `npm run test:smoke` before deploys. Hits the live FEC API — 5 key checks. Requires the dev server to be running.
 
@@ -151,10 +151,10 @@
 
 ### Typeahead
 - [ ] Typing 1 character → no dropdown appears (wait 400ms to confirm)
-- [ ] Typing 2+ characters → dropdown appears within ~350ms
+- [ ] Typing 2+ characters → dropdown appears within ~350ms, flush below the input (no gap)
 - [ ] Dropdown shows "Candidates" and "Committees" group labels
 - [ ] Each candidate row: `First Last (CANDIDATE_ID)` on left, `House`/`Senate`/`President` on right
-- [ ] Each committee row: `Committee Name (COMMITTEE_ID)` on left, colored status dot + `Active`/`Terminated` on right (green dot = active, grey = terminated; `filing_frequency 'T'` or `'A'` both show as Terminated)
+- [ ] Each committee row: `Committee Name (COMMITTEE_ID)` on left, colored status dot only on right (no text label)
 - [ ] "No candidates found" shown when API returns 0 candidates for that group
 - [ ] "No committees found" shown when API returns 0 committees for that group
 - [ ] Pressing Escape closes the dropdown
@@ -330,9 +330,16 @@
 
 ### Typeahead (search field)
 - [ ] Typing 1 character → no dropdown
-- [ ] Typing 2+ characters → typeahead dropdown appears within ~350ms
+- [ ] Typing 2+ characters → typeahead dropdown appears within ~350ms, flush below the input (no gap)
+- [ ] Each typeahead item: candidate name + `(ID)` on the left, office (`House`/`Senate`/`President`) on the right — no state, no bullet separator
 - [ ] Clicking a typeahead result navigates directly to `/candidate/{id}`
 - [ ] Clicking outside the dropdown closes it
+
+### Infinite scroll
+- [ ] ✅ `#load-more-spinner` exists in DOM, hidden initially
+- [ ] ✅ `#end-of-results` exists in DOM, hidden initially
+- [ ] Scrolling near the bottom while more pages remain triggers a load-more fetch; spinner appears centered below results, disappears when cards append
+- [ ] When all pages are loaded, "End of results" marker appears centered below the last card
 
 ### Search via `?q=` param
 **Test URL:** `localhost:8080/candidates.html?q=marie`
@@ -378,9 +385,16 @@
 - [ ] No-results state renders if filters return nothing
 
 ### Typeahead (search field)
-- [ ] Typing 2+ characters → typeahead shows committee results with type label
+- [ ] Typing 2+ characters → typeahead dropdown appears, flush below the input (no gap)
+- [ ] Each typeahead item: committee name + `(ID)` on the left, colored status dot only on the right — no state, no type label
 - [ ] Clicking a typeahead result navigates to `/committee/{id}`
 - [ ] Clicking outside closes dropdown
+
+### Infinite scroll
+- [ ] ✅ `#load-more-spinner` exists in DOM, hidden initially
+- [ ] ✅ `#end-of-results` exists in DOM, hidden initially
+- [ ] Scrolling near the bottom while more pages remain: spinner appears centered below results, disappears when rows append
+- [ ] When all pages are loaded, "End of results" marker appears centered below the last row
 
 ### Search via `?q=` param
 **Test URL:** `localhost:8080/committees.html?q=marie`
@@ -524,3 +538,4 @@ Append a row after each test run. Never delete old rows.
 | 2026-03-12 | Search overhaul (Session 2) — ?q= search mode on candidates.html and committees.html (filter bar hide, infinite scroll, clean URL links, treasurer in committee search rows) | candidates.html, committees.html, pages.spec.js (automated) | None | 209/209 Track 1 passing |
 | 2026-03-12 | Unified browse+search control surface — auto-load, inline search + typeahead, state combo, filter chips, URL sync, error state, clean URLs in all modes; apiFetch concurrency queue (MAX_CONCURRENT=4) | candidates.html, committees.html, utils.js, pages.spec.js, shared.spec.js, api-mock.js (automated) | None | 222/222 Track 1 passing |
 | 2026-03-12 | Filing status refactor — filing_frequency 'A' (admin terminated) fix; filingFrequencyLabel/DotClass utilities; replace binary Active/Terminated with raw labels + semantic dot tokens; token naming correction (--filing-active, --filing-terminated) | candidate.html, search.html, committees.html, committee.html, utils.js, styles.css, design-system.html (automated) | None | 222/222 Track 1 passing |
+| 2026-03-12 | Polish pass — load-more spinner + end-of-results; typeahead gap fix; search bar compact style; typeahead row unification (.typeahead-row on browse pages); typeahead right-side content trimmed; CSS refactor (.form-input/.form-search-btn + .typeahead-dropdown into styles.css) | candidates.html, committees.html, search.html, styles.css, tests/search.spec.js, tests/pages.spec.js (automated) | None | 226/226 Track 1 passing |
